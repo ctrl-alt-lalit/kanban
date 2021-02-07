@@ -1,0 +1,8 @@
+.vscode
+.eslintrc.json
+.vscodeignore
+node_modules
+package-lock.json
+vsc-extension-quickstart.md
+dist
+src/test
