@@ -1,3 +1,36 @@
 h1 {
     color: red;
 }
+
+.board {
+    display: flex;
+    width: 80%;
+    margin-left: 10%;
+}
+
+.col {
+    width: 100%;
+    margin-left: 0.5ch;
+    margin-right: 0.5ch;
+    background-color: grey;
+    padding: 1ch;
+}
+
+.header {
+    color: black;
+    text-align: center;
+    background-color: aqua;
+    border-radius: 5px 5px 0px 0px;
+    padding: 0.5ch;
+}
+
+.task {
+    color: black;
+    background-color: white;
+    width: 100%;
+    margin-top: 0.5ch;
+    margin-bottom: 0.5ch;
+    border-radius: 5px;
+
+    font-size: medium;
+}

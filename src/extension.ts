@@ -20,7 +20,6 @@ export function activate(context: vscode.ExtensionContext) {
 		);
 		const webview = panel.webview;
 		
-		
 		//load board.html into string
 		const htmlPath = path.join(context.extensionPath, "src", "board", "index.html");
 		const htmlUri = vscode.Uri.file(htmlPath).with({scheme: "vscode-resource"}); 
@@ -36,7 +35,6 @@ export function activate(context: vscode.ExtensionContext) {
 		//attach URIs to html string and render
 		webview.html = sprintf(htmlString, webview.cspSource.toString(), webview.cspSource.toString(), cssUri.toString(), jsUri.toString());
 		console.log(webview.html);
-		
 
 	});
 
