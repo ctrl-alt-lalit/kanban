@@ -28,7 +28,6 @@
     background: var(--vscode-editor-background);
     margin: 0.5vh;
     border-radius: 5px;
-
     font-size: medium;
 }
 
@@ -45,4 +44,3 @@
     display: flex;
     margin-left: 10%;
 }
-

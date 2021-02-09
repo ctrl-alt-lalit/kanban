@@ -2,13 +2,9 @@
 
 class MessageSender {
 
-    #vscode;
+    static #vscode = acquireVsCodeApi();
 
-    constructor() {
-        this.#vscode = acquireVsCodeApi();
-    }
-
-    send(command, data) {
+    static send(command, data) {
         this.#vscode.postMessage({
             command: command,
             data: data
@@ -16,7 +12,6 @@ class MessageSender {
     }
 }
 
-const sender = new MessageSender();
 let keysPressed = {}; //keep track of what keys are pressed
 
 function addListeners() {
@@ -37,7 +32,7 @@ function addListeners() {
         saveData();
     });
 
-    window.addEventListener("message", event=> { // listen for message
+    window.addEventListener("message", event => { // listen for message
         const message = event.data;
         switch (message.command) {
             case "load":
@@ -74,7 +69,7 @@ function addListeners() {
             data.cols.push(col);
         }
 
-        sender.send("save", data);
+        MessageSender.send("save", data);
     }
 
 
@@ -82,7 +77,7 @@ function addListeners() {
 
     for (const col of columns) {
         const children = col.firstElementChild.children;
-        
+
         const addBtn = children[1];
         const remBtn = children[2];
 
@@ -140,7 +135,7 @@ function makeColumn(title) {
     let headerText = document.createElement("h2");
     headerText.contentEditable = true;
     headerText.innerHTML = title;
-    
+
     let newTask = document.createElement("button");
     newTask.innerText = "Add Task";
     newTask.addEventListener("click", () => {
@@ -169,14 +164,14 @@ function makeTask(column, text) {
         task.classList.add("dragging");
     });
 
-    task.addEventListener("dragend", ()=>{
+    task.addEventListener("dragend", () => {
         task.classList.remove("dragging");
     });
-  
+
     let taskText = document.createElement("p");
     taskText.contentEditable = true;
     taskText.innerHTML = text;
-    
+
     let delTask = document.createElement("a");
     delTask.innerHTML = "Remove";
     delTask.addEventListener("click", () => {
@@ -205,7 +200,7 @@ function getClosestTask(col, x, y) {
         }
 
         const box = task.getBoundingClientRect();
-        const offset = y - box.top - box.height/2;
+        const offset = y - box.top - box.height / 2;
         if (offset < 0 && offset > closestOffset) {
             closestOffset = offset;
             closestTask = task;
