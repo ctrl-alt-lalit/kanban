@@ -2,6 +2,7 @@
     display: flex;
     max-width: 80%;
     margin-left: 10%;
+    min-height: 80vh;
     flex-flow: row;
     justify-content: center;
 }
@@ -10,35 +11,37 @@
     border-radius: 5px 5px 0px 0px;
     margin-left: 0.5vh;
     margin-right: 0.5vh;
-    background-color: grey;
-    padding: 1vh;
+    background: var(--vscode-textBlockQuote-background);
     flex-direction: column;
 }
 
 .header {
-    color: black;
+    color: var(--vscode-editor-background);
     text-align: center;
-    background-color: aqua;
+    background: var(--vscode-editor-selectionBackground);
     border-radius: 5px 5px 0px 0px;
     padding: 0.5ch;
 }
 
 .task {
-    color: black;
-    background-color: white;
-    margin-top: 0.5vh;
-    margin-bottom: 0.5vh;
+    color: var(--vscode-editor-foreground);
+    background: var(--vscode-editor-background);
+    margin: 0.5vh;
     border-radius: 5px;
 
     font-size: medium;
 }
 
+.task p {
+    margin: 5px;
+}
+
 .dragging {
-    background: lightslategray;
+    background: var(--vscode-list-hoverBackground);
 }
 
 .titlebar {
-    background: antiquewhite;
+    color: var(--vscode-editor-foreground);
     display: flex;
     margin-left: 10%;
 }

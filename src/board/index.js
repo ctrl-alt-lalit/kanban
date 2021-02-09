@@ -46,6 +46,10 @@ function addListeners() {
         }
     });
 
+    window.addEventListener("resize", () => {
+        setColumnWidths();
+    });
+
 
     function saveData() {
         const columns = document.getElementById("board").children;
