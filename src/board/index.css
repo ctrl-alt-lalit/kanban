@@ -1,15 +1,18 @@
 #board {
     display: flex;
-    width: 80%;
+    max-width: 80%;
     margin-left: 10%;
+    flex-flow: row;
+    justify-content: center;
 }
 
 .col {
-    width: 100%;
+    border-radius: 5px 5px 0px 0px;
     margin-left: 0.5vh;
     margin-right: 0.5vh;
     background-color: grey;
-    padding: 1ch;
+    padding: 1vh;
+    flex-direction: column;
 }
 
 .header {
@@ -23,7 +26,6 @@
 .task {
     color: black;
     background-color: white;
-    width: 100%;
     margin-top: 0.5vh;
     margin-bottom: 0.5vh;
     border-radius: 5px;
@@ -34,3 +36,10 @@
 .dragging {
     background: lightslategray;
 }
+
+.titlebar {
+    background: antiquewhite;
+    display: flex;
+    margin-left: 10%;
+}
+

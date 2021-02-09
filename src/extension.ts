@@ -36,7 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const jsUri = webview.asWebviewUri(jsPath);
 
 		//attach URIs to html string and render html in webview
-		webview.html = sprintf(htmlString, webview.cspSource.toString(), webview.cspSource.toString(), cssUri.toString(), jsUri.toString());
+		webview.html = sprintf(htmlString, webview.cspSource.toString(), webview.cspSource.toString(), cssUri.toString(), vscode.workspace.name || "Kanban Board", jsUri.toString());
 
 		createBoard(storage, webview); //load board from local storage
 

@@ -83,7 +83,7 @@ function addListeners() {
         const remBtn = children[2];
 
         addBtn.addEventListener("click", () => { //create new task and add it to bottom of column
-            addTask(col, "Add your own text here!");
+            makeTask(col, "Add your own text here!");
         });
 
         remBtn.addEventListener("click", () => { //delete col
@@ -94,8 +94,7 @@ function addListeners() {
     const addCol = document.getElementById("add-col");
     addCol.addEventListener("click", () => {
         let board = document.getElementById("board");
-        const column = addColumn(`Column ${board.children.length + 1}`);
-        board.appendChild(column);
+        const column = makeColumn(`Column ${board.children.length + 1}`);
     });
 }
 
@@ -108,16 +107,15 @@ function loadData(data) {
 
     data.cols.forEach(col => {
         console.log(JSON.stringify(col));
-        let column = addColumn(col.title);
+        let column = makeColumn(col.title);
         col.tasks.forEach(task => {
-            addTask(column, task);
+            makeTask(column, task);
         });
-        board.appendChild(column);
     });
 
 }
 
-function addColumn(title) {
+function makeColumn(title) {
     let column = document.createElement("div");
     column.className = "col";
 
@@ -142,7 +140,7 @@ function addColumn(title) {
     let newTask = document.createElement("button");
     newTask.innerText = "Add Task";
     newTask.addEventListener("click", () => {
-        addTask(column, "Add your own text here!");
+        makeTask(column, "Add your own text here!");
     });
 
     let delCol = document.createElement("button");
@@ -153,10 +151,12 @@ function addColumn(title) {
 
     header.append(headerText, newTask, delCol);
     column.appendChild(header);
+    document.getElementById("board").appendChild(column);
+    setColumnWidths();
     return column;
 }
 
-function addTask(column, text) {
+function makeTask(column, text) {
     let task = document.createElement("div");
     task.className = "task";
     task.draggable = true;
@@ -187,6 +187,7 @@ function addTask(column, text) {
 function removeColumn(column) {
     //TODO: Add way to restore column
     column.remove();
+    setColumnWidths();
 }
 
 function getClosestTask(col, x, y) {
@@ -208,6 +209,16 @@ function getClosestTask(col, x, y) {
     }
 
     return closestTask;
+}
+
+function setColumnWidths() {
+    const board = document.getElementById("board");
+    const columns = document.getElementsByClassName("col");
+    for (let column of columns) {
+        column.style.width = board.clientWidth / columns.length + "px";
+        column.style.maxWidth = column.style.width;
+        column.style.minWidth = column.style.maxWidth;
+    }
 }
 
 addListeners();
