@@ -7,6 +7,10 @@
     justify-content: center;
 }
 
+a {
+    cursor: pointer;
+}
+
 .col {
     border-radius: 5px 5px 0px 0px;
     margin-left: 0.5vh;
@@ -29,18 +33,28 @@
     margin: 0.5vh;
     border-radius: 5px;
     font-size: medium;
+    cursor: grab;
 }
 
 .task p {
     margin: 5px;
+    cursor: text;
+}
+
+.task img {
+    height: 1vh;
 }
 
 .dragging {
     background: var(--vscode-list-hoverBackground);
 }
 
-.titlebar {
+#titlebar {
     color: var(--vscode-editor-foreground);
     display: flex;
     margin-left: 10%;
+}
+
+#titlebar img {
+    height: 5vh;
 }

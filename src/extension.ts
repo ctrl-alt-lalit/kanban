@@ -29,14 +29,32 @@ export function activate(context: vscode.ExtensionContext) {
 		const htmlUri = vscode.Uri.file(htmlPath).with({scheme: "vscode-resource"}); 
 		const htmlString = fs.readFileSync(htmlUri.fsPath, "utf8");
 		
-		//load css and js URIs
-		const cssPath = vscode.Uri.joinPath(context.extensionUri, "src", "board", "index.css");
-		const cssUri = webview.asWebviewUri(cssPath);
-		const jsPath = vscode.Uri.joinPath(context.extensionUri, "src", "board", "index.js");
-		const jsUri = webview.asWebviewUri(jsPath);
+		function loadResource(path : string) {
+			const uri = vscode.Uri.file(path);
+			return webview.asWebviewUri(uri);
+		}
+
+		//load css, js, and icon URIs
+		const stylesheet = loadResource(path.join(context.extensionPath, "src", "board", "index.css"));
+		const mainScript = loadResource(path.join(context.extensionPath, "src", "board", "index.js"));
+		const filterScript = loadResource(path.join(context.extensionPath, "src", "board", "filter.js"));
+		const addColIcon = loadResource(path.join(context.extensionPath, "src", "icons", "add-column.svg"));
+		const deleteIcon = loadResource(path.join(context.extensionPath, "src", "icons", "delete.svg"));
+		const saveIcon = loadResource(path.join(context.extensionPath, "src", "icons", "save.svg"));
 
 		//attach URIs to html string and render html in webview
-		webview.html = sprintf(htmlString, webview.cspSource.toString(), webview.cspSource.toString(), cssUri.toString(), vscode.workspace.name || "Kanban Board", jsUri.toString());
+		webview.html = sprintf(
+			htmlString, webview.cspSource.toString(), webview.cspSource.toString(), webview.cspSource.toString(),
+			stylesheet.toString(), vscode.workspace.name || "Kanban Board", addColIcon.toString(),
+			saveIcon.toString(), filterScript.toString(), mainScript.toString()
+		);
+
+		webview.postMessage({
+			command: "icons",
+			data: {
+				delete: deleteIcon.toString(),
+			}
+		});
 
 		createBoard(storage, webview); //load board from local storage
 

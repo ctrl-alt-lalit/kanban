@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <!-- Only allow local .css and .js files to be loaded -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src %s; style-src %s">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src %s; style-src %s; img-src %s">
     <meta name="viewport" content="width=device-width" , initial-scale="1.0">
 
     <link rel="stylesheet" type="text/css" href="%s">
@@ -13,10 +13,14 @@
 
 <body>
 
-    <div class="titlebar">
+    <div id="titlebar">
         <h1> %s </h1>
-        <a id="add-col"> Add Column </button>
-            <a id="save"> Save </button>
+        <a id="add-col"> 
+            <img src="%s" alt="Add Column"/>
+        </a>
+        <a id="save">
+            <img src="%s" alt="Save"/>
+        </a>
     </div>
 
     <div id="board">
@@ -42,5 +46,6 @@
         </div>
     </div>
 
+    <script type="text/javascript" src="%s"> </script>
     <script type="text/javascript" src="%s"> </script>
 </body>

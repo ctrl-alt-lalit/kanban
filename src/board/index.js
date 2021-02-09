@@ -1,7 +1,6 @@
 "use strict";
 
 class MessageSender {
-
     static #vscode = acquireVsCodeApi();
 
     static send(command, data) {
@@ -13,6 +12,7 @@ class MessageSender {
 }
 
 let keysPressed = {}; //keep track of what keys are pressed
+let icons = {};
 
 function addListeners() {
 
@@ -28,15 +28,14 @@ function addListeners() {
         keysPressed[event.key] = false;
     });
 
-    document.getElementById("save").addEventListener("click", () => { //save button clicked
-        saveData();
-    });
-
     window.addEventListener("message", event => { // listen for message
         const message = event.data;
         switch (message.command) {
             case "load":
                 loadData(message.data);
+                break;
+            case "icons":
+                icons = message;
                 break;
         }
     });
@@ -90,11 +89,31 @@ function addListeners() {
         });
     }
 
+    const iconColor = colorToFilter(getComputedStyle(document.getElementById("titlebar")).color);
+    const iconHover = colorToFilter(getComputedStyle(document.getElementsByClassName("header")[0]).backgroundColor);
+    console.log(iconHover);
+
     const addCol = document.getElementById("add-col");
     addCol.addEventListener("click", () => {
         let board = document.getElementById("board");
         const column = makeColumn(`Column ${board.children.length + 1}`);
     });
+
+    const saveBtn = document.getElementById("save");
+    saveBtn.addEventListener("click", () => { //save button clicked
+        saveData();
+    });
+    
+    const buttonIcons = document.getElementById("titlebar").getElementsByTagName("img");
+    for (let icon of buttonIcons) {
+        icon.style.filter = iconColor;
+        icon.addEventListener("mouseenter", () => {
+            icon.style.filter = iconHover;
+        });
+        icon.addEventListener("mouseleave", () => {
+            icon.style.filter = iconColor;
+        });
+    }
 }
 
 function loadData(data) {
@@ -105,7 +124,6 @@ function loadData(data) {
     }
 
     data.cols.forEach(col => {
-        console.log(JSON.stringify(col));
         let column = makeColumn(col.title);
         col.tasks.forEach(task => {
             makeTask(column, task);
@@ -173,11 +191,19 @@ function makeTask(column, text) {
     taskText.innerHTML = text;
 
     let delTask = document.createElement("a");
-    delTask.innerHTML = "Remove";
     delTask.addEventListener("click", () => {
         //TODO: Add way to restore task
         task.remove();
     });
+
+    let delTaskIcon = document.createElement("img");
+    delTaskIcon.src = icons.delete;
+
+    //TODO: Calculate all filters at beginning
+    //TODO: Make del icon change colors like titlebar
+
+
+    delTask.appendChild(delTaskIcon);
 
     task.append(taskText, delTask);
     column.appendChild(task);
@@ -218,6 +244,21 @@ function setColumnWidths() {
         column.style.maxWidth = column.style.width;
         column.style.minWidth = column.style.maxWidth;
     }
+}
+
+// This function is my own
+function colorToFilter(colorStr /* "rgb(r, g, b)" */) {
+    //get rgb of element (color we are trying to emulate)
+    const rgbArr = colorStr.slice(4, -1).split(",");
+    const r = parseInt(rgbArr[0]);
+    const g = parseInt(rgbArr[1]);
+    const b = parseInt(rgbArr[2]);
+
+    //turn color into filter params
+    let color = new Color(r, g, b);
+    let solver = new Solver(color);
+    const ans = solver.solve().filter;
+    return ans.slice(8, -1);
 }
 
 addListeners();

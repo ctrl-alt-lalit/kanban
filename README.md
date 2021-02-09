@@ -47,24 +47,16 @@ Fixed issue #.
 
 Added features X, Y, and Z.
 
------------------------------------------------------------------------------------------------------------
+---
+
 ## Following extension guidelines
 
 Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
 
 * [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
 
-## Working with Markdown
+## Attributions
 
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
+All icons were downloaded from [flaticon.com](https://www.flaticon.com) under the Creative Commons Attribution License (CC BY 3.0). The "Save" and "Add Column" icons were uploaded by FreepIk, and the "Delete" icon was uploaded by Google.
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+This program uses code from [Stack Overflow](https://stackoverflow.com/questions/42966641/how-to-transform-black-into-any-given-color-using-only-css-filters/43960991#43960991) written by [MultiplyByZer0](https://stackoverflow.com/users/2688027/multiplybyzer0) that lets you transform black into any color using only CSS filters. That code is in the file "filter.js" and was released under the MIT License.
