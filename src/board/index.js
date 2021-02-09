@@ -17,23 +17,23 @@ class MessageSender {
 }
 
 const sender = new MessageSender();
-let keysPressed = {};
+let keysPressed = {}; //keep track of what keys are pressed
 
 function addListeners() {
 
-    document.addEventListener("keydown", event => {
+    document.addEventListener("keydown", event => { //key is pressed
         keysPressed[event.key] = true;
 
-        if (keysPressed["Control"] && event.key === "s") {
+        if (keysPressed["Control"] && event.key === "s") { //check if ctrl + s is pressed
             saveData();
         }
     });
 
-    document.addEventListener("keyup", event => {
+    document.addEventListener("keyup", event => { //key is unpressed
         keysPressed[event.key] = false;
     });
 
-    document.getElementById("save").addEventListener("click", () => {
+    document.getElementById("save").addEventListener("click", () => { //save button clicked
         saveData();
     });
 
@@ -121,6 +121,17 @@ function addColumn(title) {
     let column = document.createElement("div");
     column.className = "col";
 
+    column.addEventListener("dragover", event => {
+        event.preventDefault();
+        const draggable = document.getElementsByClassName("dragging")[0];
+        const taskBelow = getClosestTask(column, event.clientX, event.clientY);
+        if (taskBelow === null) {
+            column.appendChild(draggable);
+        } else {
+            column.insertBefore(draggable, taskBelow);
+        }
+    });
+
     let header = document.createElement("div");
     header.className = "header";
 
@@ -148,7 +159,16 @@ function addColumn(title) {
 function addTask(column, text) {
     let task = document.createElement("div");
     task.className = "task";
-    
+    task.draggable = true;
+
+    task.addEventListener("dragstart", () => {
+        task.classList.add("dragging");
+    });
+
+    task.addEventListener("dragend", ()=>{
+        task.classList.remove("dragging");
+    });
+  
     let taskText = document.createElement("p");
     taskText.contentEditable = true;
     taskText.innerHTML = text;
@@ -167,6 +187,27 @@ function addTask(column, text) {
 function removeColumn(column) {
     //TODO: Add way to restore column
     column.remove();
+}
+
+function getClosestTask(col, x, y) {
+    let closestOffset = Number.NEGATIVE_INFINITY;
+    let closestTask = null;
+
+    const tasks = document.getElementsByClassName("task");
+    for (const task of tasks) {
+        if (col !== task.parentNode) {
+            continue;
+        }
+
+        const box = task.getBoundingClientRect();
+        const offset = y - box.top - box.height/2;
+        if (offset < 0 && offset > closestOffset) {
+            closestOffset = offset;
+            closestTask = task;
+        }
+    }
+
+    return closestTask;
 }
 
 addListeners();

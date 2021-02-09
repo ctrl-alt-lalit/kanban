@@ -6,8 +6,8 @@
 
 .col {
     width: 100%;
-    margin-left: 0.5ch;
-    margin-right: 0.5ch;
+    margin-left: 0.5vh;
+    margin-right: 0.5vh;
     background-color: grey;
     padding: 1ch;
 }
@@ -24,9 +24,13 @@
     color: black;
     background-color: white;
     width: 100%;
-    margin-top: 0.5ch;
-    margin-bottom: 0.5ch;
+    margin-top: 0.5vh;
+    margin-bottom: 0.5vh;
     border-radius: 5px;
 
     font-size: medium;
+}
+
+.dragging {
+    background: lightslategray;
 }

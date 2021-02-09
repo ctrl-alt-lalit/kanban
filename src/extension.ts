@@ -3,18 +3,17 @@ import * as vscode from 'vscode'; //contains the VS Code extensibility API
 import { Memento } from "vscode";
 import * as path from "path"; //make path names
 import * as fs from "fs"; //file I/O
-import { TextDecoder, TextEncoder } from 'util';
 var sprintf = require("sprintf-js").sprintf; //format strings (like C)
 
 
-//this method is called when your extension is activated
-//your extension is activated the very first time the command is executed
+//extension is activated the very first time a command is executed
 export function activate(context: vscode.ExtensionContext) {
 
 	let storage = new StorageManager(context.workspaceState);
 
-	let view = vscode.commands.registerCommand("kanban-board.view", () => {
-		const panel = vscode.window.createWebviewPanel(
+	let view = vscode.commands.registerCommand("kanban-board.view", () => { // View the kanban board
+		
+		const panel = vscode.window.createWebviewPanel( //Create tab/window to view board in
 			"kanban-board", //id
 			"Kanban Board", //title
 			vscode.ViewColumn.One, //open at first (leftmost) tab
@@ -33,16 +32,15 @@ export function activate(context: vscode.ExtensionContext) {
 		//load css and js URIs
 		const cssPath = vscode.Uri.joinPath(context.extensionUri, "src", "board", "index.css");
 		const cssUri = webview.asWebviewUri(cssPath);
-
 		const jsPath = vscode.Uri.joinPath(context.extensionUri, "src", "board", "index.js");
 		const jsUri = webview.asWebviewUri(jsPath);
 
-		//attach URIs to html string and render
+		//attach URIs to html string and render html in webview
 		webview.html = sprintf(htmlString, webview.cspSource.toString(), webview.cspSource.toString(), cssUri.toString(), jsUri.toString());
 
-		createBoard(storage, webview);
+		createBoard(storage, webview); //load board from local storage
 
-		webview.onDidReceiveMessage(message => {
+		webview.onDidReceiveMessage(message => { //save board to storage
 			switch(message.command) {
 				case "save":
 					storage.store("columns", message.data);
