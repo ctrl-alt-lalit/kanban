@@ -27,6 +27,12 @@ a {
     padding: 0.5ch;
 }
 
+.header img {
+    height: 3ch;
+    margin-left: 1vh;
+    margin-right: 1vh;
+}
+
 .task {
     color: var(--vscode-editor-foreground);
     background: var(--vscode-editor-background);
@@ -42,7 +48,9 @@ a {
 }
 
 .task img {
-    height: 1vh;
+    margin-top: 0.75ch;
+    height: 1.75ch;
+    align-self: flex-end;
 }
 
 .dragging {
@@ -55,6 +63,11 @@ a {
     margin-left: 10%;
 }
 
+#titlebar a {
+    align-self: center;
+    margin-left: 2vh
+}
+
 #titlebar img {
-    height: 5vh;
+    height: 4ch;
 }

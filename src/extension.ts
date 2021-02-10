@@ -13,6 +13,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let view = vscode.commands.registerCommand("kanban-board.view", () => { // View the kanban board
 		
+		console.log("view start");
+
 		const panel = vscode.window.createWebviewPanel( //Create tab/window to view board in
 			"kanban-board", //id
 			"Kanban Board", //title
@@ -23,6 +25,8 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		);
 		const webview = panel.webview;
+
+		console.log("panel made");
 		
 		//load board.html into string
 		const htmlPath = path.join(context.extensionPath, "src", "board", "index.html");
@@ -34,13 +38,22 @@ export function activate(context: vscode.ExtensionContext) {
 			return webview.asWebviewUri(uri);
 		}
 
+		console.log("html loaded");
+
 		//load css, js, and icon URIs
 		const stylesheet = loadResource(path.join(context.extensionPath, "src", "board", "index.css"));
 		const mainScript = loadResource(path.join(context.extensionPath, "src", "board", "index.js"));
 		const filterScript = loadResource(path.join(context.extensionPath, "src", "board", "filter.js"));
+
+		console.log("scripts loaded");
+
 		const addColIcon = loadResource(path.join(context.extensionPath, "src", "icons", "add-column.svg"));
 		const deleteIcon = loadResource(path.join(context.extensionPath, "src", "icons", "delete.svg"));
 		const saveIcon = loadResource(path.join(context.extensionPath, "src", "icons", "save.svg"));
+		const delColIcon = loadResource(path.join(context.extensionPath, "src", "icons", "delete-column.svg"));
+		const addIcon = loadResource(path.join(context.extensionPath, "src", "icons", "add.svg"));
+
+		console.log("icons loaded");
 
 		//attach URIs to html string and render html in webview
 		webview.html = sprintf(
@@ -53,6 +66,8 @@ export function activate(context: vscode.ExtensionContext) {
 			command: "icons",
 			data: {
 				delete: deleteIcon.toString(),
+				delCol: delColIcon.toString(),
+				add: addIcon.toString()
 			}
 		});
 

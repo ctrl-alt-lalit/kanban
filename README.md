@@ -57,6 +57,6 @@ Ensure that you've read through the extensions guidelines and follow the best pr
 
 ## Attributions
 
-All icons were downloaded from [flaticon.com](https://www.flaticon.com) under the Creative Commons Attribution License (CC BY 3.0). The "Save" and "Add Column" icons were uploaded by FreepIk, and the "Delete" icon was uploaded by Google.
+All icons were downloaded from [flaticon.com](https://www.flaticon.com) under the Creative Commons Attribution License (CC BY 3.0). The "Save", "Add Column", and "Delete Column" icons were uploaded by Freepik. The "Delete" icon was uploaded by Google, and the "Add" icon was uploaded by Pixel perfect.
 
 This program uses code from [Stack Overflow](https://stackoverflow.com/questions/42966641/how-to-transform-black-into-any-given-color-using-only-css-filters/43960991#43960991) written by [MultiplyByZer0](https://stackoverflow.com/users/2688027/multiplybyzer0) that lets you transform black into any color using only CSS filters. That code is in the file "filter.js" and was released under the MIT License.

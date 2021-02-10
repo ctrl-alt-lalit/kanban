@@ -14,6 +14,12 @@ class MessageSender {
 let keysPressed = {}; //keep track of what keys are pressed
 let icons = {};
 
+const filters = {
+    textColor: colorToFilter(getComputedStyle(document.getElementById("titlebar")).color),
+    headerColor: colorToFilter(getComputedStyle(document.getElementsByClassName("header")[0]).backgroundColor),
+    backgroundColor: colorToFilter(getComputedStyle(document.getElementsByClassName("header")[0]).color) //text color of headers = background color
+};
+
 function addListeners() {
 
     document.addEventListener("keydown", event => { //key is pressed
@@ -28,14 +34,15 @@ function addListeners() {
         keysPressed[event.key] = false;
     });
 
-    window.addEventListener("message", event => { // listen for message
+    window.addEventListener("message", event => { //listen for message
         const message = event.data;
         switch (message.command) {
             case "load":
                 loadData(message.data);
                 break;
             case "icons":
-                icons = message;
+                icons = message.data;
+                console.log(icons.delete);
                 break;
         }
     });
@@ -44,41 +51,13 @@ function addListeners() {
         setColumnWidths();
     });
 
-
-    function saveData() {
-        const columns = document.getElementById("board").children;
-        let data = {};
-        data.ncols = columns.length;
-        data.cols = [];
-
-        for (const column of columns) {
-            let col = {};
-            const children = column.children;
-            col.ntasks = children.length - 1;
-            col.tasks = [];
-
-            for (const child of children) {
-                if (child.className === "header") {
-                    col.title = child.firstElementChild.innerHTML;
-                } else {
-                    col.tasks.push(child.firstElementChild.innerHTML);
-                }
-            }
-
-            data.cols.push(col);
-        }
-
-        MessageSender.send("save", data);
-    }
-
-
     const columns = document.getElementsByClassName("col");
 
     for (const col of columns) {
-        const children = col.firstElementChild.children;
+        const headerChildren = col.firstElementChild.children;
 
-        const addBtn = children[1];
-        const remBtn = children[2];
+        const addBtn = headerChildren[1];
+        const remBtn = headerChildren[2];
 
         addBtn.addEventListener("click", () => { //create new task and add it to bottom of column
             makeTask(col, "Add your own text here!");
@@ -88,10 +67,6 @@ function addListeners() {
             removeColumn(col);
         });
     }
-
-    const iconColor = colorToFilter(getComputedStyle(document.getElementById("titlebar")).color);
-    const iconHover = colorToFilter(getComputedStyle(document.getElementsByClassName("header")[0]).backgroundColor);
-    console.log(iconHover);
 
     const addCol = document.getElementById("add-col");
     addCol.addEventListener("click", () => {
@@ -106,12 +81,12 @@ function addListeners() {
     
     const buttonIcons = document.getElementById("titlebar").getElementsByTagName("img");
     for (let icon of buttonIcons) {
-        icon.style.filter = iconColor;
+        icon.style.filter = filters.textColor;
         icon.addEventListener("mouseenter", () => {
-            icon.style.filter = iconHover;
+            icon.style.filter = filters.headerColor;
         });
         icon.addEventListener("mouseleave", () => {
-            icon.style.filter = iconColor;
+            icon.style.filter = filters.textColor;
         });
     }
 }
@@ -130,6 +105,32 @@ function loadData(data) {
         });
     });
 
+}
+
+function saveData() {
+    const columns = document.getElementById("board").children;
+    let data = {};
+    data.ncols = columns.length;
+    data.cols = [];
+
+    for (const column of columns) {
+        let col = {};
+        const children = column.children;
+        col.ntasks = children.length - 1;
+        col.tasks = [];
+
+        for (const child of children) {
+            if (child.className === "header") {
+                col.title = child.firstElementChild.innerHTML;
+            } else {
+                col.tasks.push(child.firstElementChild.innerHTML);
+            }
+        }
+
+        data.cols.push(col);
+    }
+
+    MessageSender.send("save", data);
 }
 
 function makeColumn(title) {
@@ -154,19 +155,20 @@ function makeColumn(title) {
     headerText.contentEditable = true;
     headerText.innerHTML = title;
 
-    let newTask = document.createElement("button");
-    newTask.innerText = "Add Task";
-    newTask.addEventListener("click", () => {
+    let addTask = document.createElement("a");
+    addTask.addEventListener("click", () => {
         makeTask(column, "Add your own text here!");
     });
+    makeButton(addTask, icons.add, filters.backgroundColor, filters.textColor, "Create Task");
 
-    let delCol = document.createElement("button");
-    delCol.innerHTML = "Delete Column";
+    let delCol = document.createElement("a");
     delCol.addEventListener("click", () => {
         removeColumn(column);
     });
+    makeButton(delCol, icons.delCol, filters.backgroundColor, filters.textColor, "Remove Column");
+    
 
-    header.append(headerText, newTask, delCol);
+    header.append(headerText, addTask, delCol);
     column.appendChild(header);
     document.getElementById("board").appendChild(column);
     setColumnWidths();
@@ -195,15 +197,7 @@ function makeTask(column, text) {
         //TODO: Add way to restore task
         task.remove();
     });
-
-    let delTaskIcon = document.createElement("img");
-    delTaskIcon.src = icons.delete;
-
-    //TODO: Calculate all filters at beginning
-    //TODO: Make del icon change colors like titlebar
-
-
-    delTask.appendChild(delTaskIcon);
+    makeButton(delTask, icons.delete, filters.textColor, filters.headerColor, "Delete Task");
 
     task.append(taskText, delTask);
     column.appendChild(task);
@@ -246,8 +240,8 @@ function setColumnWidths() {
     }
 }
 
-// This function is my own
 function colorToFilter(colorStr /* "rgb(r, g, b)" */) {
+
     //get rgb of element (color we are trying to emulate)
     const rgbArr = colorStr.slice(4, -1).split(",");
     const r = parseInt(rgbArr[0]);
@@ -259,6 +253,21 @@ function colorToFilter(colorStr /* "rgb(r, g, b)" */) {
     let solver = new Solver(color);
     const ans = solver.solve().filter;
     return ans.slice(8, -1);
+}
+
+function makeButton(element, icon, filter, hoverFilter, title) {
+    let img = document.createElement("img");
+    img.src = icon;
+    img.style.filter = filter;
+    img.addEventListener("mouseenter", () => {
+        img.style.filter = hoverFilter;
+    });
+    img.addEventListener("mouseleave", () => {
+        img.style.filter = filter;
+    });
+
+    element.title = title;
+    element.appendChild(img);
 }
 
 addListeners();
