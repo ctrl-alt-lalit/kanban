@@ -13,6 +13,7 @@ class MessageSender {
 
 let keysPressed = {}; //keep track of what keys are pressed
 let icons = {};
+let history = []; //list of deleted elements. {element, parent, position}
 
 const filters = {
     textColor: colorToFilter(getComputedStyle(document.getElementById("titlebar")).color),
@@ -42,7 +43,6 @@ function addListeners() {
                 break;
             case "icons":
                 icons = message.data;
-                console.log(icons.delete);
                 break;
         }
     });
@@ -51,32 +51,20 @@ function addListeners() {
         setColumnWidths();
     });
 
-    const columns = document.getElementsByClassName("col");
-
-    for (const col of columns) {
-        const headerChildren = col.firstElementChild.children;
-
-        const addBtn = headerChildren[1];
-        const remBtn = headerChildren[2];
-
-        addBtn.addEventListener("click", () => { //create new task and add it to bottom of column
-            makeTask(col, "Add your own text here!");
-        });
-
-        remBtn.addEventListener("click", () => { //delete col
-            removeColumn(col);
-        });
-    }
-
     const addCol = document.getElementById("add-col");
     addCol.addEventListener("click", () => {
         let board = document.getElementById("board");
-        const column = makeColumn(`Column ${board.children.length + 1}`);
+        const column = appendColumn(`Column ${board.children.length + 1}`);
     });
 
     const saveBtn = document.getElementById("save");
     saveBtn.addEventListener("click", () => { //save button clicked
         saveData();
+    });
+
+    const undoBtn = document.getElementById("undo");
+    undoBtn.addEventListener("click", () => {
+        restoreElement();
     });
     
     const buttonIcons = document.getElementById("titlebar").getElementsByTagName("img");
@@ -99,9 +87,9 @@ function loadData(data) {
     }
 
     data.cols.forEach(col => {
-        let column = makeColumn(col.title);
-        col.tasks.forEach(task => {
-            makeTask(column, task);
+        let column = appendColumn(col.title);
+        col.tasks.forEach(taskText => {
+            column.appendChild(makeTask(taskText));
         });
     });
 
@@ -133,6 +121,13 @@ function saveData() {
     MessageSender.send("save", data);
 }
 
+function appendColumn(title) {
+    const column = makeColumn(title);
+    document.getElementById("board").appendChild(column);
+    setColumnWidths();
+    return column;
+}
+
 function makeColumn(title) {
     let column = document.createElement("div");
     column.className = "col";
@@ -157,7 +152,7 @@ function makeColumn(title) {
 
     let addTask = document.createElement("a");
     addTask.addEventListener("click", () => {
-        makeTask(column, "Add your own text here!");
+        column.appendChild(makeTask("Add your own text here!"));
     });
     makeButton(addTask, icons.add, filters.backgroundColor, filters.textColor, "Create Task");
 
@@ -170,12 +165,10 @@ function makeColumn(title) {
 
     header.append(headerText, addTask, delCol);
     column.appendChild(header);
-    document.getElementById("board").appendChild(column);
-    setColumnWidths();
     return column;
 }
 
-function makeTask(column, text) {
+function makeTask(text) {
     let task = document.createElement("div");
     task.className = "task";
     task.draggable = true;
@@ -194,18 +187,16 @@ function makeTask(column, text) {
 
     let delTask = document.createElement("a");
     delTask.addEventListener("click", () => {
-        //TODO: Add way to restore task
-        task.remove();
+        deleteElement(task);
     });
     makeButton(delTask, icons.delete, filters.textColor, filters.headerColor, "Delete Task");
 
     task.append(taskText, delTask);
-    column.appendChild(task);
+    return task;
 }
 
 function removeColumn(column) {
-    //TODO: Add way to restore column
-    column.remove();
+    deleteElement(column);
     setColumnWidths();
 }
 
@@ -268,6 +259,67 @@ function makeButton(element, icon, filter, hoverFilter, title) {
 
     element.title = title;
     element.appendChild(img);
+}
+
+function deleteElement(element) {
+    let save = {};
+    save.type = element.className;
+    save.parent = element.parentNode;
+
+    //determine position of element
+    let siblings = element.parentNode.children;
+    for (let i = 0; i < siblings.length; ++i) {
+        if (siblings[i].isSameNode(element)) {
+            save.position = i;
+            break;
+        }
+    }
+
+    if (save.type === "task") { //save task text
+        save.data = element.firstElementChild.innerHTML;
+    } else {
+        save.data = {
+            title: "",
+            tasks: []
+        };
+        const children = element.children;
+        for (const child of children) {
+            if (child.className === "header") {
+                save.data.title = child.firstElementChild.innerHTML;
+            } else {
+                save.data.tasks.push(child.firstElementChild.innerHTML);
+            }
+        }
+    }
+
+    history.push(save);
+    element.remove();
+}
+
+function restoreElement() {
+    if (history.length === 0) {
+        return;
+    }
+
+    //restore element data
+    const restore = history.pop();
+    let element;
+    if (restore.type === "task") {
+        element = makeTask(restore.data);
+    } else {
+        element = makeColumn(restore.data.title);
+        restore.data.tasks.forEach(taskText => {
+            element.appendChild(makeTask(taskText));
+        });
+    }
+
+    //put in right position
+    const siblings = restore.parent.children;
+    if (restore.position === siblings.length) {
+        restore.parent.appendChild(element);
+    } else {
+        restore.parent.insertBefore(element, siblings[restore.position]);
+    }
 }
 
 addListeners();

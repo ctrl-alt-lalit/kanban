@@ -172,7 +172,7 @@ class Solver {
         return `filter: invert(${fmt(0)}%) sepia(${fmt(1)}%) saturate(${fmt(2)}%) hue-rotate(${fmt(3, 3.6)}deg) brightness(${fmt(4)}%) contrast(${fmt(5)}%);`;
     }
 
-    spsa(A, a, c, values, iters) {
+    spsa(bigA, a, c, values, iters) {
         const alpha = 1;
         const gamma = 0.16666666666666666;
 
@@ -193,7 +193,7 @@ class Solver {
             let lossDiff = this.loss(highArgs) - this.loss(lowArgs);
             for (let i = 0; i < 6; i++) {
                 let g = lossDiff / (2 * ck) * deltas[i];
-                let ak = a[i] / Math.pow(A + k + 1, alpha);
+                let ak = a[i] / Math.pow(bigA + k + 1, alpha);
                 values[i] = fix(values[i] - ak * g, i);
             }
 
