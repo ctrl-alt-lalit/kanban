@@ -10,7 +10,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:kanban-board.view"
+		"*"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {

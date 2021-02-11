@@ -13,7 +13,7 @@ class MessageSender {
 
 let keysPressed = {}; //keep track of what keys are pressed
 let icons = {};
-let history = []; //list of deleted elements. {element, parent, position}
+let history = []; //list of deleted elements. {type, data, parent, position}
 
 const filters = {
     textColor: colorToFilter(getComputedStyle(document.getElementById("titlebar")).color),
@@ -48,7 +48,7 @@ function addListeners() {
     });
 
     window.addEventListener("resize", () => {
-        setColumnWidths();
+        resizeColumns();
     });
 
     const addCol = document.getElementById("add-col");
@@ -66,7 +66,7 @@ function addListeners() {
     undoBtn.addEventListener("click", () => {
         restoreElement();
     });
-    
+
     const buttonIcons = document.getElementById("titlebar").getElementsByTagName("img");
     for (let icon of buttonIcons) {
         icon.style.filter = filters.textColor;
@@ -124,7 +124,7 @@ function saveData() {
 function appendColumn(title) {
     const column = makeColumn(title);
     document.getElementById("board").appendChild(column);
-    setColumnWidths();
+    resizeColumns();
     return column;
 }
 
@@ -161,7 +161,7 @@ function makeColumn(title) {
         removeColumn(column);
     });
     makeButton(delCol, icons.delCol, filters.backgroundColor, filters.textColor, "Remove Column");
-    
+
 
     header.append(headerText, addTask, delCol);
     column.appendChild(header);
@@ -197,7 +197,7 @@ function makeTask(text) {
 
 function removeColumn(column) {
     deleteElement(column);
-    setColumnWidths();
+    resizeColumns();
 }
 
 function getClosestTask(col, x, y) {
@@ -221,7 +221,7 @@ function getClosestTask(col, x, y) {
     return closestTask;
 }
 
-function setColumnWidths() {
+function resizeColumns() {
     const board = document.getElementById("board");
     const columns = document.getElementsByClassName("col");
     for (let column of columns) {
@@ -231,7 +231,7 @@ function setColumnWidths() {
     }
 }
 
-function colorToFilter(colorStr /* "rgb(r, g, b)" or "rgba(r, g, b, a)" */) {
+function colorToFilter(colorStr /* "rgb(r, g, b)" or "rgba(r, g, b, a)" */ ) {
 
     console.log(colorStr);
     //get rgb of element (color we are trying to emulate)
@@ -320,6 +320,10 @@ function restoreElement() {
         restore.parent.appendChild(element);
     } else {
         restore.parent.insertBefore(element, siblings[restore.position]);
+    }
+
+    if (restore.type === "col") {
+        resizeColumns();
     }
 }
 

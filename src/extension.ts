@@ -11,7 +11,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let storage = new StorageManager(context.workspaceState);
 
-	let view = vscode.commands.registerCommand("kanban-board.view", () => { // View the kanban board
+	const viewCmdId = "kanban-board.view";
+	const view = vscode.commands.registerCommand(viewCmdId, () => { // View the kanban board
 		
 		console.log("view start");
 
@@ -82,8 +83,13 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		});
 	});
-
 	context.subscriptions.push(view);
+
+	const viewButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+	viewButton.command = viewCmdId;
+	viewButton.text = "View Kanban Board";
+	viewButton.show();
+	context.subscriptions.push(viewButton);
 }
 
 class StorageManager {
