@@ -1,6 +1,8 @@
 .vscode
+.vscodeignore
 .eslintrc.json
 node_modules
 vsc-extension-quickstart.md
 dist
 src/test
+CHANGELOG.md

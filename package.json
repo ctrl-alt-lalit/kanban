@@ -1,7 +1,7 @@
 {
-	"name": "kanban-board",
-	"displayName": "Kanban Board",
-	"description": "Kanban Board for VS Code, similar to Trello.",
+	"name": "kanban",
+	"displayName": "Kanban",
+	"description": "Kanban board for VS Code, similar to Trello.",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.52.0"
@@ -14,10 +14,20 @@
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
+		"configuration": {
+				"title": "Kanban",
+				"properties": {
+					"kanban.showViewButton": {
+						"type": "boolean",
+						"default": true,
+						"description": "Show the button on the top right that lets you view your Kanban board. You can still view the board in the Command pallete with 'Kanban Board: View'"
+					}
+				}
+		},
 		"commands": [
 			{
-				"command": "kanban-board.view",
-				"title": "View Kanban Board"
+				"command": "kanban.view",
+				"title": "Kanban: View"
 			}
 		]
 	},

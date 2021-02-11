@@ -11,14 +11,14 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let storage = new StorageManager(context.workspaceState);
 
-	const viewCmdId = "kanban-board.view";
+	const viewCmdId = "kanban.view";
 	const view = vscode.commands.registerCommand(viewCmdId, () => { // View the kanban board
 		
 		console.log("view start");
 
 		const panel = vscode.window.createWebviewPanel( //Create tab/window to view board in
-			"kanban-board", //id
-			"Kanban Board", //title
+			"kanban", //id
+			"Kanban", //title
 			vscode.ViewColumn.One, //open at first (leftmost) tab
 			{
 				enableScripts: true, //allow JS to be used in webview
@@ -48,12 +48,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 		console.log("scripts loaded");
 
-		const addColIcon = loadResource(path.join(context.extensionPath, "src", "icons", "add-column.svg"));
-		const deleteIcon = loadResource(path.join(context.extensionPath, "src", "icons", "delete.svg"));
-		const saveIcon = loadResource(path.join(context.extensionPath, "src", "icons", "save.svg"));
-		const delColIcon = loadResource(path.join(context.extensionPath, "src", "icons", "delete-column.svg"));
-		const addIcon = loadResource(path.join(context.extensionPath, "src", "icons", "add.svg"));
-		const undoIcon = loadResource(path.join(context.extensionPath, "src", "icons", "undo.svg"));
+		const addColIcon = loadResource(path.join(context.extensionPath, "src", "icons", "add-column.png"));
+		const deleteIcon = loadResource(path.join(context.extensionPath, "src", "icons", "delete.png"));
+		const saveIcon = loadResource(path.join(context.extensionPath, "src", "icons", "save.png"));
+		const delColIcon = loadResource(path.join(context.extensionPath, "src", "icons", "delete-column.png"));
+		const addIcon = loadResource(path.join(context.extensionPath, "src", "icons", "add.png"));
+		const undoIcon = loadResource(path.join(context.extensionPath, "src", "icons", "undo.png"));
 
 		console.log("icons loaded");
 
@@ -145,7 +145,7 @@ function createBoard(storage: StorageManager, webview: vscode.Webview) {
 					title: "To-Do",
 					ntasks: 1,
 					tasks: [
-						"Put text here!"
+						"Add your own text here!"
 					]
 				},
 				{
