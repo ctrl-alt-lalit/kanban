@@ -1,13 +1,16 @@
-# Kanban Board for VS Code
+# Kanban: A Kanban Board for VS Code
 
-This is the README for your extension "kanban-board". After writing up a brief description, we recommend including the following sections.
+Visual way to keep track of your progress and boost productivity for your projects.
 
 ![feature X\]\(https://media.giphy.com/media/1yDS3RXAonwdg5Cy9J/giphy.gif)
 
+## Using Kanban
+
+Kanban automatically creates a kanban board for each workspace you use. To view this board, click the `Kanban` button on the bottom right of the status bar or enter `Kanban: View` in the Command Pallete `(ctrl+shift+P)`.
+
 ## Extension Settings
 
-* `kanban.enable`: Enable/Disable extension
-* `kanban.showViewButton`: Show the button on the top right that lets you view your Kanban board. You can still view the board in the Command pallete with "Kanban Board: View"
+* `kanban.showViewButton`: Display the `Kanban` button on the bottom right that lets you view your board.
 
 ## Release Notes
 
@@ -15,10 +18,12 @@ This is the README for your extension "kanban-board". After writing up a brief d
 
 Initial release.
 
----
+## Wishlist
 
-## Following extension guidelines
+Below is a list of features or fixes I would like to add to this extension at some point in the future. If you've got an idea or implementation for a feature to add, feel free to message me or submit a pull request.
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+* Add ability to perform all operations on the board with a keyboard (accessibility)
+  * Currently you can save `(ctrl+S)` and undo `(ctrl+Z)`
+* Update icon colors immediately when color theme is changed
+* Update settings immediately, rather than on next startup
+* Periodically scan comments for *TODO*s and *FIXME*s and add them to a corresponding column on the board

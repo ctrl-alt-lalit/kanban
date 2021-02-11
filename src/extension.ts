@@ -9,13 +9,12 @@ var sprintf = require("sprintf-js").sprintf; //format strings (like C)
 //extension is activated the very first time a command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	let storage = new StorageManager(context.workspaceState);
+	const config = vscode.workspace.getConfiguration("kanban");
+	const storage = new StorageManager(context.workspaceState);
 
 	const viewCmdId = "kanban.view";
 	const view = vscode.commands.registerCommand(viewCmdId, () => { // View the kanban board
-		
-		console.log("view start");
-
+	
 		const panel = vscode.window.createWebviewPanel( //Create tab/window to view board in
 			"kanban", //id
 			"Kanban", //title
@@ -26,8 +25,6 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		);
 		const webview = panel.webview;
-
-		console.log("panel made");
 		
 		//load board.html into string
 		const htmlPath = path.join(context.extensionPath, "src", "board", "index.html");
@@ -39,14 +36,10 @@ export function activate(context: vscode.ExtensionContext) {
 			return webview.asWebviewUri(uri);
 		}
 
-		console.log("html loaded");
-
 		//load css, js, and icon URIs
 		const stylesheet = loadResource(path.join(context.extensionPath, "src", "board", "index.css"));
 		const mainScript = loadResource(path.join(context.extensionPath, "src", "board", "index.js"));
 		const filterScript = loadResource(path.join(context.extensionPath, "src", "board", "filter.js"));
-
-		console.log("scripts loaded");
 
 		const addColIcon = loadResource(path.join(context.extensionPath, "src", "icons", "add-column.png"));
 		const deleteIcon = loadResource(path.join(context.extensionPath, "src", "icons", "delete.png"));
@@ -54,8 +47,6 @@ export function activate(context: vscode.ExtensionContext) {
 		const delColIcon = loadResource(path.join(context.extensionPath, "src", "icons", "delete-column.png"));
 		const addIcon = loadResource(path.join(context.extensionPath, "src", "icons", "add.png"));
 		const undoIcon = loadResource(path.join(context.extensionPath, "src", "icons", "undo.png"));
-
-		console.log("icons loaded");
 
 		//attach URIs to html string and render html in webview
 		webview.html = sprintf(
@@ -85,11 +76,13 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(view);
 
-	const viewButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-	viewButton.command = viewCmdId;
-	viewButton.text = "View Kanban Board";
-	viewButton.show();
-	context.subscriptions.push(viewButton);
+	if (config.showViewButton) {
+		const viewButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+		viewButton.command = viewCmdId;
+		viewButton.text = "Kanban";
+		viewButton.show();
+		context.subscriptions.push(viewButton);
+	}
 }
 
 class StorageManager {
