@@ -52,6 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const saveIcon = loadResource(path.join(context.extensionPath, "src", "icons", "save.svg"));
 		const delColIcon = loadResource(path.join(context.extensionPath, "src", "icons", "delete-column.svg"));
 		const addIcon = loadResource(path.join(context.extensionPath, "src", "icons", "add.svg"));
+		const undoIcon = loadResource(path.join(context.extensionPath, "src", "icons", "undo.svg"));
 
 		console.log("icons loaded");
 
@@ -59,7 +60,7 @@ export function activate(context: vscode.ExtensionContext) {
 		webview.html = sprintf(
 			htmlString, webview.cspSource.toString(), webview.cspSource.toString(), webview.cspSource.toString(),
 			stylesheet.toString(), vscode.workspace.name || "Kanban Board", addColIcon.toString(),
-			saveIcon.toString(), filterScript.toString(), mainScript.toString()
+			saveIcon.toString(), undoIcon.toString(), filterScript.toString(), mainScript.toString()
 		);
 
 		webview.postMessage({

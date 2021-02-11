@@ -231,10 +231,11 @@ function setColumnWidths() {
     }
 }
 
-function colorToFilter(colorStr /* "rgb(r, g, b)" */) {
+function colorToFilter(colorStr /* "rgb(r, g, b)" or "rgba(r, g, b, a)" */) {
 
+    console.log(colorStr);
     //get rgb of element (color we are trying to emulate)
-    const rgbArr = colorStr.slice(4, -1).split(",");
+    const rgbArr = colorStr.slice(colorStr.indexOf('(') + 1, -1).split(",");
     const r = parseInt(rgbArr[0]);
     const g = parseInt(rgbArr[1]);
     const b = parseInt(rgbArr[2]);
