@@ -2,7 +2,7 @@
 
 Visual way to keep track of your progress and boost productivity for your projects.
 
-![feature X\]\(https://media.giphy.com/media/1yDS3RXAonwdg5Cy9J/giphy.gif)
+![Kanban Animation](https://i.giphy.com/media/1yDS3RXAonwdg5Cy9J/giphy.webp)
 
 ## Using Kanban
 

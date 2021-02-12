@@ -6,3 +6,4 @@ vsc-extension-quickstart.md
 dist
 src/test
 CHANGELOG.md
+*.vsix
