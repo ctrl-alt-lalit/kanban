@@ -32,6 +32,7 @@
 			}
 		]
 	},
+	"repository": "https://github.com/lbauskar/kanban.git",
 	"scripts": {
 		"vscode:prepublish": "npm run package",
 		"compile": "webpack",
