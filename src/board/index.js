@@ -26,8 +26,10 @@ function addListeners() {
     document.addEventListener("keydown", event => { //key is pressed
         keysPressed[event.key] = true;
 
-        if (keysPressed["Control"] && event.key === "s") { //check if ctrl + s is pressed
+        if (keysPressed["Control"] && event.key === "s") {
             saveData();
+        } else if (keysPressed["Control"] && event.key === "z") {
+            restoreElement();
         }
     });
 

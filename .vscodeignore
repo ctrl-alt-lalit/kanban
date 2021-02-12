@@ -10,3 +10,4 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 CHANGELOG.md
+*.svg

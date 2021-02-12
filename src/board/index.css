@@ -15,7 +15,7 @@ a {
     border-radius: 5px 5px 0px 0px;
     margin-left: 0.5vh;
     margin-right: 0.5vh;
-    background: var(--vscode-textBlockQuote-background);
+    background-color: var(--vscode-textBlockQuote-background);
     flex-direction: column;
 }
 

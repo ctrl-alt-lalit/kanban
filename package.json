@@ -2,6 +2,7 @@
 	"name": "kanban",
 	"displayName": "Kanban",
 	"description": "Kanban board for VS Code, similar to Trello.",
+	"icon": "https://i.imgur.com/i0nfdZV.png",
 	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.52.0"
