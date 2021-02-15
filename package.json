@@ -4,15 +4,27 @@
 	"displayName": "Kanban",
 	"description": "Kanban board for VS Code, similar to Trello.",
 	"icon": "icon.png",
-	"version": "1.0.0",
+	"version": "1.0.3",
 	"engines": {
 		"vscode": "^1.53.2"
 	},
+	"license": "SEE LICENSE IN LICENSE.md",
 	"categories": [
-		"Other"
+		"Visualization",
+		"Notebooks"
+	],
+	"keywords": [
+		"kanban",
+		"board",
+		"agile",
+		"scrum",
+		"sprint"
+	],
+	"extensionKind": [
+		"ui"
 	],
 	"activationEvents": [
-		"*"
+		"onStartupFinished"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {

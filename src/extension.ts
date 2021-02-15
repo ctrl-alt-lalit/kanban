@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const webview = panel.webview;
 		
 		//load board.html into string
-		const htmlPath = path.join(context.extensionPath, "src", "board", "index.html");
+		const htmlPath = path.join(context.extensionPath, "view", "board", "index.html");
 		const htmlUri = vscode.Uri.file(htmlPath).with({scheme: "vscode-resource"}); 
 		const htmlString = fs.readFileSync(htmlUri.fsPath, "utf8");
 		
@@ -37,16 +37,16 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		//load css, js, and icon URIs
-		const stylesheet = loadResource(path.join(context.extensionPath, "src", "board", "index.css"));
-		const mainScript = loadResource(path.join(context.extensionPath, "src", "board", "index.js"));
-		const filterScript = loadResource(path.join(context.extensionPath, "src", "board", "filter.js"));
+		const stylesheet = loadResource(path.join(context.extensionPath, "view", "board", "index.css"));
+		const mainScript = loadResource(path.join(context.extensionPath, "view", "board", "index.js"));
+		const filterScript = loadResource(path.join(context.extensionPath, "view", "board", "filter.js"));
 
-		const addColIcon = loadResource(path.join(context.extensionPath, "src", "icons", "add-column.png"));
-		const deleteIcon = loadResource(path.join(context.extensionPath, "src", "icons", "delete.png"));
-		const saveIcon = loadResource(path.join(context.extensionPath, "src", "icons", "save.png"));
-		const delColIcon = loadResource(path.join(context.extensionPath, "src", "icons", "delete-column.png"));
-		const addIcon = loadResource(path.join(context.extensionPath, "src", "icons", "add.png"));
-		const undoIcon = loadResource(path.join(context.extensionPath, "src", "icons", "undo.png"));
+		const addColIcon = loadResource(path.join(context.extensionPath, "view", "icons", "add-column.png"));
+		const deleteIcon = loadResource(path.join(context.extensionPath, "view", "icons", "delete.png"));
+		const saveIcon = loadResource(path.join(context.extensionPath, "view", "icons", "save.png"));
+		const delColIcon = loadResource(path.join(context.extensionPath, "view", "icons", "delete-column.png"));
+		const addIcon = loadResource(path.join(context.extensionPath, "view", "icons", "add.png"));
+		const undoIcon = loadResource(path.join(context.extensionPath, "view", "icons", "undo.png"));
 
 		//attach URIs to html string and render html in webview
 		webview.html = sprintf(
