@@ -1,4 +1,5 @@
-declare var acquireVsCodeApi: any; //acquireVsCodeApi() function gets linked at runtime
+declare var colorToFilter: (rgbStr: string) => string; // found in filter.js
+declare var acquireVsCodeApi: Function; // linked by VSCode at runtime
 
 type ColumnJSON = {title: string, ntasks: number, tasks: string[]};
 type KanbanJSON = {ncols: number, cols: ColumnJSON[]};
@@ -79,7 +80,7 @@ function addListeners() {
 
     // key is released
     document.addEventListener("keyup", event => {
-        keysPressed.set("event.key", false);
+        keysPressed.set(event.key, false);
     });
 
     // listen for message from VSCode API

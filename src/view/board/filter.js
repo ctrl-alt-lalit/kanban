@@ -8,7 +8,7 @@
  * @param {String} rgbStr must be "rgb(`R`, `G`, `B`)" or "rgba(`R`, `G`, `B`, `A`)"
  * @returns CSS filters that mimic the color `rgbStr` represents
  */
- function colorToFilter(rgbStr /* "rgb(r, g, b)" or "rgba(r, g, b, a)" */ ) {
+function colorToFilter(rgbStr /* "rgb(r, g, b)" or "rgba(r, g, b, a)" */ ) {
 
     //get rgb of element (color we are trying to emulate)
     const rgbArr = rgbStr.slice(rgbStr.indexOf('(') + 1, -1).split(",");
@@ -25,7 +25,7 @@
 
 /* ########################################
  * RGB to CSS Filter Converter
- * From: https://stackoverflow.com/questions/42966641/how-to-transform-black-into-any-given-color-using-only-css-filters/43960991#43960991
+ * All code below is from: https://stackoverflow.com/questions/42966641/how-to-transform-black-into-any-given-color-using-only-css-filters/43960991#43960991
  * ########################################
  */
 
