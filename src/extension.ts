@@ -5,6 +5,8 @@ import * as path from "path"; //make path names
 import * as fs from "fs"; //file I/O
 var sprintf = require("sprintf-js").sprintf; //format strings (like C)
 
+type ColumnJSON = {title: string, ntasks: number, tasks: string[]};
+type KanbanJSON = {ncols: number, cols: ColumnJSON[]};
 
 //extension is activated the very first time a command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -31,8 +33,8 @@ export function activate(context: vscode.ExtensionContext) {
 		const htmlUri = vscode.Uri.file(htmlPath).with({scheme: "vscode-resource"}); 
 		const htmlString = fs.readFileSync(htmlUri.fsPath, "utf8");
 		
-		function loadResource(path : string) {
-			const uri = vscode.Uri.file(path);
+		function loadResource(uriPath : string) {
+			const uri = vscode.Uri.file(uriPath);
 			return webview.asWebviewUri(uri);
 		}
 
@@ -67,10 +69,8 @@ export function activate(context: vscode.ExtensionContext) {
 		createBoard(storage, webview); //load board from local storage
 
 		webview.onDidReceiveMessage(message => { //save board to storage
-			switch(message.command) {
-				case "save":
-					storage.store("columns", message.data);
-					break;
+			if (message.command === "save") {
+				storage.store("columns", message.data);
 			}
 		});
 	});
@@ -98,35 +98,10 @@ class StorageManager {
 }
 
 function createBoard(storage: StorageManager, webview: vscode.Webview) {
-	/*
-	 * EXAMPLE OF COLUMNS OBJECT
-	 * {
-	 *  	ncols: 2,
-	 *  	cols: [
-	 *  		{
-	 * 				title: "column 1"
-	 * 				ntasks: 2,
-	 * 				tasks: [
-	 * 					"task 1",
-	 * 					"task 2",
-	 * 				]
-	 * 			},
-	 * 			{
-	 * 				title: "example"
-	 * 				ntasks: 3,
-	 * 				tasks: [
-	 * 					"foo",
-	 * 					"bar",
-	 * 					"baz"
-	 * 				]
-	 * 			},
-	 * 		],
-	 * }
-	 */
-
-	let columns = storage.retrieve("columns");
-	if (columns === null) {
-		columns = {
+	let savedData: KanbanJSON = storage.retrieve("columns");
+	// make example board if nothing is saved
+	if (savedData === null) {
+		savedData = {
 			ncols: 4,
 			cols: [
 				{
@@ -157,7 +132,7 @@ function createBoard(storage: StorageManager, webview: vscode.Webview) {
 
 	webview.postMessage({
 		command: "load",
-		data: columns
+		data: savedData
 	});
 }
 
