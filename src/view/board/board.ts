@@ -1,9 +1,176 @@
 declare var colorToFilter: (rgbStr: string) => string; // found in filter.js
 declare var acquireVsCodeApi: Function; // linked by VSCode at runtime
 
-type ColumnJSON = {title: string, ntasks: number, tasks: string[]};
+type ColumnJSON = {title: string, ntasks?: number, tasks: string[]};
 type KanbanJSON = {ncols: number, cols: ColumnJSON[]};
 type HistoryJSON = {type: string, parent: HTMLDivElement, position: number, data: (string | ColumnJSON)};
+
+/**
+ * Represents an HTMLDivElement that contains editable text for a user to 
+ * write things they need to do.
+ */
+class Task extends HTMLDivElement {
+
+    /**
+     * Creates a task with the given text.
+     * 
+     * @param text text the task will show
+     * @returns the new task
+     */
+    constructor(text: string) {
+        super();
+        this.draggable = true;
+        this.className = "task";
+
+        this.addEventListener("dragstart", () => {
+            this.classList.add("dragging");
+        });
+
+        this.addEventListener("dragend", () => {
+            this.classList.remove("dragging");
+        });
+
+        const taskText = document.createElement("p");
+        taskText.contentEditable = "true";
+        taskText.innerHTML = text;
+
+        const delTask = makeButton(icons.delete, filters.textColor, filters.headerColor, "Delete Task");
+        delTask.addEventListener("click", () => {
+            deleteElement(this);
+        });
+        
+
+        this.append(taskText, delTask);
+    }
+
+    /**
+     * the editable text in this Task
+     */
+    get text() {
+        return this.firstElementChild!.innerHTML;
+    }
+}
+
+/**
+ * Represents an HTMLDivElement that resides in a KanbanBoard and contains Tasks.
+ */
+class Column extends HTMLDivElement {
+    /**
+     * Creates an empty column -- one with no tasks inside -- that has the given `title`.
+     *  
+     * @param title text shown at the top of the column
+     */
+    constructor(title: string) {
+        super();
+        this.className = "col";
+
+        this.addEventListener("dragover", event => {
+            event.preventDefault();
+            const draggable = document.getElementsByClassName("dragging")[0];
+            const taskBelow = getClosestTask(this, event.clientY);
+            if (taskBelow === null) {
+                this.appendChild(draggable);
+            } else {
+                this.insertBefore(draggable, taskBelow);
+            }
+        });
+
+        const header = document.createElement("div");
+        header.className = "header";
+
+        const headerText = document.createElement("h2");
+        headerText.contentEditable = "true";
+        headerText.innerHTML = title;
+
+        const addTask = makeButton(icons.add, filters.backgroundColor, filters.textColor, "Create Task");
+        addTask.addEventListener("click", () => {
+            this.appendTask("Add your own text here!");
+        });
+        
+
+        const delCol = makeButton(icons.delCol, filters.backgroundColor, filters.textColor, "Remove Column");
+        delCol.addEventListener("click", () => {
+            removeColumn(this);
+        });
+
+        header.append(headerText, addTask, delCol);
+        this.appendChild(header);
+    }
+
+    /**
+     * Adds a Task with the given `text` to the bottom of this column.
+     */
+    appendTask(text: string) {
+        this.appendChild(new Task(text));
+    }
+
+
+    /**
+     * the String shown at the top of this Column.
+     */
+    get title() {
+        return this.firstElementChild!.firstElementChild!.innerHTML;
+    }
+
+    /**
+     * an array of all Tasks in this Column.
+     */
+    get tasks() {
+        return <Task[]> Array.from(this.getElementsByClassName("task"));
+    }
+
+    /**
+     * Serializes this column into a ColumnJSON.
+     * 
+     * @returns a ColumnJSON that represents this Column
+     */
+    toJSON(): ColumnJSON {
+        const tasks = this.tasks;
+        return {
+            title: this.title,
+            tasks: tasks.map(task => task.text)
+        };
+    }
+}
+/**
+ * Represents an HTMLDivElement that holds multiple columns
+ */
+class KanbanBoard extends HTMLDivElement {
+
+    constructor(id: string) {
+        super();
+        this.id = id;
+    }
+
+    /**
+     * an array of Columns under this KanbanBoard
+     */
+    get columns() {
+        const arr =  <Column[]> Array.from(this.children);
+        return arr;
+    }
+
+    /**
+     * Creates an empty Column with the given title and adds it to the right
+     * of the kanban board.
+     * 
+     * @param title text shown at the top of the Column
+     * @returns the new Column
+     */
+    appendColumn(title: string) {
+        const column = new Column(title);
+        this.appendChild(column);
+        resizeColumns();
+        return column;
+    }
+}
+
+window.customElements.define("kanban-column", Column, {extends: "div"});
+window.customElements.define("kanban-task", Task, {extends: "div"});
+window.customElements.define("kanban-board", KanbanBoard, {extends: "div"});
+
+const board = new KanbanBoard("board");
+document.body.appendChild(board);
 
 /**
  * Wrapper class to send messages to VSCode API
@@ -63,8 +230,9 @@ const filters = {
 };
 
 
+
 /**
- * Only function manually called, everything below is function definitions
+ * Only function manually called, everything below isfunction definitions
  */
 addListeners();
 
@@ -79,7 +247,6 @@ addListeners();
  * - VSCode API listener to load data
  */
 function addListeners() {
-    
     /**
      * Listeners for user input
      */
@@ -121,8 +288,7 @@ function addListeners() {
      */
     const addCol = document.getElementById("add-col")!;
     addCol.addEventListener("click", () => {
-        const board = document.getElementById("board")!;
-        appendColumn(`Column ${board.children.length + 1}`);
+        board.appendColumn(`Column ${board.children.length + 1}`);
     });
 
     const saveBtn = document.getElementById("save")!;
@@ -148,20 +314,24 @@ function addListeners() {
 }
 
 
+
+
 /**
  * Takes the serialized kanban board JSON and renders it onto the DOM.
+ * 
+ * This clears the old board in the process.
+ * 
+ * @param savedData the kanbanJSON you want rendered
  */
 function loadData(savedData: KanbanJSON) {
-    const columns = document.getElementsByClassName("col");
-    const board = document.getElementById("board")!;
-    while (columns.length > 0) {
-        board.removeChild(columns[0]);
+    for (const column of board.columns) {
+        column.remove();
     }
 
     savedData.cols.forEach(col => {
-        const column = appendColumn(col.title);
+        const column = board.appendColumn(col.title);
         col.tasks.forEach(taskText => {
-            column.appendChild(makeTask(taskText));
+            column.appendChild(new Task(taskText));
         });
     });
 }
@@ -171,165 +341,46 @@ function loadData(savedData: KanbanJSON) {
  * the VSCode API to be stored in the workspace. 
  */
 function saveData() {
-    const columns = document.getElementById("board")!.children;
+    const columns = board.columns;
     const data: KanbanJSON = {
         ncols: columns.length,
-        cols: []
+        cols: columns.map(column => column.toJSON())
     };
-
-    for (const column of Array.from(columns)) {
-        const children = column.children;
-        const col: ColumnJSON = {
-            title: "",
-            ntasks: children.length - 1,
-            tasks: []
-        };
-
-        for (const child of Array.from(children)) {
-            if (child.className === "header") {
-                col.title = child.firstElementChild!.innerHTML;
-            } else {
-                col.tasks.push(child.firstElementChild!.innerHTML);
-            }
-        }
-
-        data.cols.push(col);
-    }
-
     MessageSender.send("save", data);
 }
 
 
-
 /**
- * Creates an empty column with the given title and adds it to the right
- * of the kanban board.
+ * Removes a Column from the DOM
  * 
- * @see makeColumn
- * 
- * @param title text shown at the top of the column
- * @returns the new column
- */
- function appendColumn(title: string) {
-    const column = makeColumn(title);
-    document.getElementById("board")!.appendChild(column);
-    resizeColumns();
-    return column;
-}
-
-/**
- * Creates an empty column -- one with no tasks inside -- that has the given title.
- *  
- * @param title text shown at the top of the column
- * @returns the new column
- */
- function makeColumn(title: string) {
-    let column = document.createElement("div");
-    column.className = "col";
-
-    column.addEventListener("dragover", event => {
-        event.preventDefault();
-        const draggable = document.getElementsByClassName("dragging")[0];
-        const taskBelow = getClosestTask(column, event.clientY);
-        if (taskBelow === null) {
-            column.appendChild(draggable);
-        } else {
-            column.insertBefore(draggable, taskBelow);
-        }
-    });
-
-    const header = document.createElement("div");
-    header.className = "header";
-
-    const headerText = document.createElement("h2");
-    headerText.contentEditable = "true";
-    headerText.innerHTML = title;
-
-    const addTask = makeButton(icons.add, filters.backgroundColor, filters.textColor, "Create Task");
-    addTask.addEventListener("click", () => {
-        column.appendChild(makeTask("Add your own text here!"));
-    });
-    
-
-    const delCol = makeButton(icons.delCol, filters.backgroundColor, filters.textColor, "Remove Column");
-    delCol.addEventListener("click", () => {
-        removeColumn(column);
-    });
-
-    header.append(headerText, addTask, delCol);
-    column.appendChild(header);
-    return column;
-}
-
-/**
- * Creates a task with the given text.
- * 
- * @param text text the task will show
- * @returns the new task
- */
- function makeTask(text: string) {
-    const task = document.createElement("div");
-    task.className = "task";
-    task.draggable = true;
-
-    task.addEventListener("dragstart", () => {
-        task.classList.add("dragging");
-    });
-
-    task.addEventListener("dragend", () => {
-        task.classList.remove("dragging");
-    });
-
-    const taskText = document.createElement("p");
-    taskText.contentEditable = "true";
-    taskText.innerHTML = text;
-
-    const delTask = makeButton(icons.delete, filters.textColor, filters.headerColor, "Delete Task");
-    delTask.addEventListener("click", () => {
-        deleteElement(task);
-    });
-    
-
-    task.append(taskText, delTask);
-    return task;
-}
-
-/**
- * Removes a column from the kanban board.
- * 
- * The column is removed via deleteElement, so it can be recovered.
- * The other columns have their width adjusted to accomodate for the deletion
+ * The Column is removed via deleteElement, so it can be recovered.
+ * The other Columns have their width adjusted to accomodate for the deletion
  * of this one.
  * 
- * @param column column being removed
+ * @param column Column being removed
  */
- function removeColumn(column: HTMLDivElement) {
+function removeColumn(column: Column) {
     deleteElement(column);
     resizeColumns();
 }
 
 /**
- * Find the task object in `column` that is closest to the vertical position `y`.
+ * Find the Task in `column` that is closest to the vertical position `y`.
  * 
- * @param column column task must be in
+ * @param column Column the Task must be in
  * @param y vertical position in pixels
- * @returns task in `column` closest to `y` position
+ * @returns Task in `column` closest to `y` position, or null
  */
- function getClosestTask(column: HTMLDivElement, y: number) {
+function getClosestTask(column: Column, y: number) {
     let closestOffset = Number.NEGATIVE_INFINITY;
-    let closestTask: HTMLDivElement | null = null;
-    const tasks = document.getElementsByClassName("task");
+    let closestTask: Task | null = null;
     
-    for (const task of Array.from(tasks)) {
-        if (column !== task.parentNode) {
-            continue;
-        }
-
+    for (const task of column.tasks) {
         const box = task.getBoundingClientRect();
         const offset = y - box.top - box.height / 2;
         if (offset < 0 && offset > closestOffset) {
             closestOffset = offset;
-            closestTask = <HTMLDivElement> task;
+            closestTask = task;
         }
     }
 
@@ -340,13 +391,11 @@ function saveData() {
  * Makes all the columns have equal width.
  * 
  * More specifically, if the kanban board has a width of `w` and there are `n` columns
- * in the board, then each column will have a width of `w/n` after this function has been called.
+ * in the board, then each column will have a width of `w/n` after thisfunction has been called.
  */
- function resizeColumns() {
-    const board = document.getElementById("board")!;
-    const columns = <HTMLCollectionOf<HTMLElement>> document.getElementsByClassName("col");
-    for (const column of Array.from(columns)) {
-        column.style.width = board.clientWidth / columns.length + "px";
+function resizeColumns() {
+    for (const column of board.columns) {
+        column.style.width = board.clientWidth / board.columns.length + "px";
         column.style.maxWidth = column.style.width;
         column.style.minWidth = column.style.maxWidth;
     }
@@ -367,11 +416,7 @@ function saveData() {
  * 
  * @return HTMLAnchorElement containing `icon`
  */
- function makeButton(
-     icon: string, filter: string, 
-     hoverFilter: string, tooltip: string)
-{
-    const button = document.createElement("a");
+function makeButton(icon: string, filter: string, hoverFilter: string, tooltip: string) {
     const img = document.createElement("img");
     img.src = icon;
     img.style.filter = filter;
@@ -382,6 +427,7 @@ function saveData() {
         img.style.filter = filter;
     });
 
+    const button = document.createElement("a");
     button.title = tooltip;
     button.appendChild(img);
     return button;
@@ -392,7 +438,7 @@ function saveData() {
  * 
  * @param element task or column to delete
  */
- function deleteElement(element: HTMLDivElement) {
+function deleteElement(element: Task | Column) {
     const save: HistoryJSON = {
         type: element.className,
         parent: <HTMLDivElement> element.parentNode,
@@ -410,23 +456,9 @@ function saveData() {
     }
 
     if (save.type === "task") { // save task
-        save.data = element.firstElementChild!.innerHTML;
+        save.data = (<Task> element).text;
     } else { // save column and child tasks
-        const colJSON: ColumnJSON = {
-            title: "",
-            ntasks: 0,
-            tasks: []
-        };
-        const children = element.children;
-        for (const child of Array.from(children)) {
-            if (child.className === "header") {
-                colJSON.title = child.firstElementChild!.innerHTML;
-            } else {
-                colJSON.tasks.push(child.firstElementChild!.innerHTML);
-                colJSON.ntasks++;
-            }
-        }
-        save.data = colJSON;
+        save.data = (<Column> element).toJSON();
     }
 
     deleteHistory.push(save);
@@ -437,21 +469,22 @@ function saveData() {
  * Deserializes the most recently deleted task or column and puts it back into the DOM
  * to where it was before it was deleted.
  */
- function restoreElement() {
-    if (history.length === 0) {
+function restoreElement() {
+    if (deleteHistory.length === 0) {
         return;
     }
 
     const restore: HistoryJSON = deleteHistory.pop()!;
-    let element: HTMLDivElement;
+    let element: Column | Task;
     if (restore.type === "task") {
-        element = makeTask(<string> restore.data);
+        element = new Task(<string> restore.data);
     } else {
         const colJSON = <ColumnJSON> restore.data;
-        element = makeColumn(colJSON.title);
+        const column = new Column(colJSON.title);
         colJSON.tasks.forEach(taskText => {
-            element.appendChild(makeTask(taskText));
+            column.appendTask(taskText);
         });
+        element = column;
     }
 
     //put in right position

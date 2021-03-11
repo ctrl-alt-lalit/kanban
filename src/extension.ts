@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const stylesheet = loadResource(path.join(context.extensionPath, "dist", "view", "board", "board.css"));
 		const filterScript = loadResource(path.join(context.extensionPath, "dist", "view", "board", "filter.js"));
 		const mainScript = loadResource(path.join(context.extensionPath, "dist", "view", "board", "board.js"));
-
+		
 		const addColIcon = loadResource(path.join(context.extensionPath, "dist", "view", "icons", "add-column.png"));
 		const deleteIcon = loadResource(path.join(context.extensionPath, "dist", "view", "icons", "delete.png"));
 		const saveIcon = loadResource(path.join(context.extensionPath, "dist", "view", "icons", "save.png"));

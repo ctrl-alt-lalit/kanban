@@ -50,7 +50,7 @@
 		"vscode:prepublish": "yarn run compile",
 		"compile": "rollup -c && webpack --mode production",
 		"lint": "eslint src --ext ts",
-		"watch": "concurrently \"rollup -c -w\" \"webpack --mode development --watch\"",
+		"watch": "concurrently \"rollup -c -w\" \"webpack --watch\"",
 		"pretest": "yarn run compile && yarn run lint",
 		"test": "node ./out/test/runTest.js"
 	},
@@ -71,6 +71,7 @@
 		"webpack-cli": "^4.4.0"
 	},
 	"dependencies": {
+		"@rollup/plugin-typescript": "^8.2.0",
 		"fs": "0.0.1-security",
 		"rollup": "^2.41.0",
 		"rollup-plugin-terser": "^7.0.2",

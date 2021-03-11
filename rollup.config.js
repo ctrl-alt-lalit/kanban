@@ -1,5 +1,5 @@
-import typescript from "rollup-plugin-typescript";
-import {terser} from "rollup-plugin-terser";
+import typescript from "@rollup/plugin-typescript";
+import { terser } from "rollup-plugin-terser";
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -9,6 +9,7 @@ export default [
         output: {
             file: "dist/view/board/board.js",
             format: "es",
+            sourcemap: "inline"
         },
         plugins: [
             //compile ts file to js

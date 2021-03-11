@@ -19,10 +19,14 @@ a {
     flex-direction: column;
 }
 
+.hidden {
+    display: none;
+}
+
 .header {
     color: var(--vscode-editor-background);
     text-align: center;
-    background: var(--vscode-editor-selectionBackground);
+    background-color: var(--vscode-editor-selectionBackground);
     border-radius: 5px 5px 0px 0px;
     padding: 0.5ch;
 }
