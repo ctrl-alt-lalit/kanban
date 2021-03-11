@@ -11,6 +11,14 @@ type HistoryJSON = {type: string, parent: HTMLDivElement, position: number, data
 class MessageSender {
     static vscode = acquireVsCodeApi();
 
+    /**
+     * Sends a message to the vscode API
+     * 
+     * Right now the only valid message is to save the board.
+     * 
+     * @param command must be "save"
+     * @param data must be a kanbanJSON
+     */
     static send(command: string, data: any) {
         this.vscode.postMessage({
             command: command,
@@ -48,11 +56,17 @@ const deleteHistory: HistoryJSON[] = [];
  * When the CSS "filter" attribute is set to one of these strings, and the object being filtered
  * is black, the object will be colorized to whatever color the filter string corresponds to.
  */
- const filters = {
+const filters = {
     textColor: colorToFilter(getComputedStyle(document.getElementById("titlebar")!).color),
     headerColor: colorToFilter(getComputedStyle(document.getElementsByClassName("header")[0]).backgroundColor),
     backgroundColor: colorToFilter(getComputedStyle(document.getElementsByClassName("header")[0]).color) //text color of headers = background color
 };
+
+
+/**
+ * Only function manually called, everything below is function definitions
+ */
+addListeners();
 
 /**
  * Adds event listeners to the "Kanban: View" page.
@@ -66,11 +80,12 @@ const deleteHistory: HistoryJSON[] = [];
  */
 function addListeners() {
     
-    // key is pressed
+    /**
+     * Listeners for user input
+     */
     document.addEventListener("keydown", event => {
         keysPressed.set(event.key, true);
 
-        // ctrl+s or ctrl+z is pressed
         if (keysPressed.get("Control") && event.key === "s") {
             saveData();
         } else if (keysPressed.get("Control") && event.key === "z") {
@@ -78,12 +93,17 @@ function addListeners() {
         }
     });
 
-    // key is released
     document.addEventListener("keyup", event => {
         keysPressed.set(event.key, false);
     });
 
-    // listen for message from VSCode API
+    window.addEventListener("resize", () => {
+        resizeColumns();
+    });
+
+    /**
+     * Listener for VSCode API
+     */
     window.addEventListener("message", event => {
         const message: {command: string, data: any} = event.data;
         switch (message.command) {
@@ -96,31 +116,25 @@ function addListeners() {
         }
     });
 
-    // listen for window resizing
-    window.addEventListener("resize", () => {
-        resizeColumns();
-    });
-
-    // "Add Column" button clicked
+    /**
+     * Listeners for buttons in titlebar
+     */
     const addCol = document.getElementById("add-col")!;
     addCol.addEventListener("click", () => {
         const board = document.getElementById("board")!;
         appendColumn(`Column ${board.children.length + 1}`);
     });
 
-    // "Save" button clicked
     const saveBtn = document.getElementById("save")!;
-    saveBtn.addEventListener("click", () => { //save button clicked
+    saveBtn.addEventListener("click", () => {
         saveData();
     });
 
-    // "Undo" button clicked
     const undoBtn = document.getElementById("undo")!;
     undoBtn.addEventListener("click", () => {
         restoreElement();
     });
 
-    // Save and Undo buttons change color when moused over
     const buttonIcons = document.getElementById("titlebar")!.getElementsByTagName("img");
     for (const buttonIcon of Array.from(buttonIcons)) {
         buttonIcon.style.filter = filters.textColor;
@@ -137,7 +151,7 @@ function addListeners() {
 /**
  * Takes the serialized kanban board JSON and renders it onto the DOM.
  */
- function loadData(savedData: KanbanJSON) {
+function loadData(savedData: KanbanJSON) {
     const columns = document.getElementsByClassName("col");
     const board = document.getElementById("board")!;
     while (columns.length > 0) {
@@ -156,7 +170,7 @@ function addListeners() {
  * Serializes the current state of the kanban board then sends it to
  * the VSCode API to be stored in the workspace. 
  */
- function saveData() {
+function saveData() {
     const columns = document.getElementById("board")!.children;
     const data: KanbanJSON = {
         ncols: columns.length,
@@ -184,6 +198,8 @@ function addListeners() {
 
     MessageSender.send("save", data);
 }
+
+
 
 /**
  * Creates an empty column with the given title and adds it to the right
@@ -229,18 +245,16 @@ function addListeners() {
     headerText.contentEditable = "true";
     headerText.innerHTML = title;
 
-    const addTask = document.createElement("a");
+    const addTask = makeButton(icons.add, filters.backgroundColor, filters.textColor, "Create Task");
     addTask.addEventListener("click", () => {
         column.appendChild(makeTask("Add your own text here!"));
     });
-    makeButton(addTask, icons.add, filters.backgroundColor, filters.textColor, "Create Task");
+    
 
-    const delCol = document.createElement("a");
+    const delCol = makeButton(icons.delCol, filters.backgroundColor, filters.textColor, "Remove Column");
     delCol.addEventListener("click", () => {
         removeColumn(column);
     });
-    makeButton(delCol, icons.delCol, filters.backgroundColor, filters.textColor, "Remove Column");
-
 
     header.append(headerText, addTask, delCol);
     column.appendChild(header);
@@ -270,11 +284,11 @@ function addListeners() {
     taskText.contentEditable = "true";
     taskText.innerHTML = text;
 
-    const delTask = document.createElement("a");
+    const delTask = makeButton(icons.delete, filters.textColor, filters.headerColor, "Delete Task");
     delTask.addEventListener("click", () => {
         deleteElement(task);
     });
-    makeButton(delTask, icons.delete, filters.textColor, filters.headerColor, "Delete Task");
+    
 
     task.append(taskText, delTask);
     return task;
@@ -339,19 +353,25 @@ function addListeners() {
 }
 
 /**
- * TODO
+ * Creates an anchor ("a" tag) element containing the `icon` image, with `filter` applied
+ * normally, `hoverFilter` applied when moused over, and displaying `tooltip` when moused over.
+ * 
+ * For the filters to show their intended color, `icon` should be completely black. This anchor
+ * element does not link to anything nor does it have a click listener.
  * 
  * @param element element this button will go in
  * @param icon VSCode URI for image file
  * @param filter CSS filters applied when this isn't moused over
  * @param hoverFilter CSS filters applied when this is moused over
  * @param tooltip text that appears when this is moused over
+ * 
+ * @return HTMLAnchorElement containing `icon`
  */
  function makeButton(
-     element: HTMLAnchorElement, icon: string, filter: string, 
-     hoverFilter: string, tooltip: string
-    ) 
+     icon: string, filter: string, 
+     hoverFilter: string, tooltip: string)
 {
+    const button = document.createElement("a");
     const img = document.createElement("img");
     img.src = icon;
     img.style.filter = filter;
@@ -362,8 +382,9 @@ function addListeners() {
         img.style.filter = filter;
     });
 
-    element.title = tooltip;
-    element.appendChild(img);
+    button.title = tooltip;
+    button.appendChild(img);
+    return button;
 }
 
 /**
@@ -445,9 +466,4 @@ function addListeners() {
         resizeColumns();
     }
 }
-
-/**
- * Actually add the event listeners, rather than just defining how to do so.
- */
- addListeners();
 
