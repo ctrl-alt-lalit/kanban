@@ -69,9 +69,9 @@ class Column extends HTMLDivElement {
             const draggable = document.getElementsByClassName("dragging")[0];
             const taskBelow = getClosestTask(this, event.clientY);
             if (taskBelow === null) {
-                this.appendChild(draggable);
+                this.lastElementChild!.appendChild(draggable);
             } else {
-                this.insertBefore(draggable, taskBelow);
+                this.lastElementChild!.insertBefore(draggable, taskBelow);
             }
         });
 
@@ -95,13 +95,17 @@ class Column extends HTMLDivElement {
 
         header.append(headerText, addTask, delCol);
         this.appendChild(header);
+
+        const tasksDiv = document.createElement("div");
+        tasksDiv.className = "tasks";
+        this.appendChild(tasksDiv);
     }
 
     /**
      * Adds a Task with the given `text` to the bottom of this column.
      */
     appendTask(text: string) {
-        this.appendChild(new Task(text));
+        this.getElementsByClassName("tasks")[0].appendChild(new Task(text));
     }
 
 
@@ -165,10 +169,12 @@ class KanbanBoard extends HTMLDivElement {
     }
 }
 
+//define the above classes for use in HTML
 window.customElements.define("kanban-column", Column, {extends: "div"});
 window.customElements.define("kanban-task", Task, {extends: "div"});
 window.customElements.define("kanban-board", KanbanBoard, {extends: "div"});
 
+//add a kanban board to the html document
 const board = new KanbanBoard("board");
 document.body.appendChild(board);
 
@@ -331,7 +337,7 @@ function loadData(savedData: KanbanJSON) {
     savedData.cols.forEach(col => {
         const column = board.appendColumn(col.title);
         col.tasks.forEach(taskText => {
-            column.appendChild(new Task(taskText));
+            column.appendTask(taskText);
         });
     });
 }

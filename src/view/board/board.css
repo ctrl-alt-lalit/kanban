@@ -3,6 +3,7 @@
     max-width: 80%;
     margin-left: 10%;
     min-height: 80vh;
+    max-height: 80vh;
     flex-flow: row;
     justify-content: center;
 }
@@ -19,6 +20,12 @@ a {
     flex-direction: column;
 }
 
+.tasks {
+    overflow-y: auto;
+    flex-direction: column;
+    max-height: 68vh;
+}
+
 .hidden {
     display: none;
 }
@@ -26,9 +33,12 @@ a {
 .header {
     color: var(--vscode-editor-background);
     text-align: center;
-    background-color: var(--vscode-editor-selectionBackground);
+    background: var(--vscode-editor-selectionBackground);
     border-radius: 5px 5px 0px 0px;
     padding: 0.5ch;
+    position: sticky;
+    min-height: 10vh;
+    max-height: 10vh;
 }
 
 .header img {
