@@ -63,7 +63,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(view);
 
 	if (config.showViewButton) {
-		const viewButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+		const viewButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
 		viewButton.command = viewCmdId;
 		viewButton.text = 'Kanban';
 		viewButton.show();

@@ -6,13 +6,20 @@ Visual way to keep track of your progress and boost productivity for your projec
 
 ## Using Kanban
 
-Kanban automatically creates a kanban board for each workspace you use. To view this board, click the ```Kanban``` button on the bottom right of the status bar or enter ```Kanban: View``` in the Command Pallete ```(ctrl+shift+P)```.
+Kanban automatically creates a kanban board for each workspace you use. To view this board, click the ```Kanban``` button on the bottom left of the status bar or enter ```Kanban: View``` in the Command Pallete ```(ctrl+shift+P)```.
 
 ## Extension Settings
 
  - `kanban.showViewButton`: Display the ```Kanban``` button on the bottom right that lets you view your board.
 
 ## Release Notes
+
+### 1.1.0
+ - Kanban button is on the left side of the status bar, per the VS Code API reference
+ - Board uses Codicon icons rather than PNGs
+   - removed ```filter.js``` and PNGs from project directory
+ - Added toggle to autosave every second
+ 
 
 ### 1.0.6
  - Refactored ```board.ts``` by making classes for the board, column, and task html elements

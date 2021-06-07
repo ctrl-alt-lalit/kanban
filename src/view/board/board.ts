@@ -74,6 +74,12 @@ function addListeners() {
         }
     });
 
+    setInterval(() => {
+        if (autosave) {
+            saveData();
+        }
+    }, 1000);
+
     // listen for window resizing
     window.addEventListener('resize', () => {
         resizeColumns();
@@ -129,6 +135,11 @@ function addListeners() {
     }
 }
 
+/**
+ * Updates the autosave variable and icon to match the value of `save`.
+ * 
+ * @param save true to enable autosave, false to disable it
+ */
 function updateAutosave(save: boolean) {
     if (save === autosave) {
         return;
