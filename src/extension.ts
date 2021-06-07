@@ -41,8 +41,8 @@ export function activate(context: vscode.ExtensionContext) {
 		//load css, js, and icon URIs
 		const stylesheet = loadResource(path.join(extPath, 'dist', 'view', 'board', 'board.css'));
 		const mainScript = loadResource(path.join(extPath, 'dist', 'view', 'board', 'board.js'));
-		const icons = loadResource(path.join(extPath, 'node_modules', 'vscode-codicons', 'dist', 'codicon.css'));
-		const iconFont = loadResource(path.join(extPath, 'node_modules', 'vscode-codicons', 'dist', 'codicon.ttf'));
+		const icons = loadResource(path.join(extPath, 'dist', 'view', 'icons', 'codicon.css'));
+		const iconFont = loadResource(path.join(extPath,'dist', 'view', 'icons', 'codicon.ttf'));
 
 
 		//attach URIs to html string and render html in webview

@@ -2,9 +2,9 @@
   "publisher": "lbauskar",
   "name": "kanban",
   "displayName": "Kanban",
-  "description": "Kanban board for VS Code, similar to Trello.",
+  "description": "Simple kanban board for VS Code. Visually organize your ideas!",
   "icon": "icon.png",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "engines": {
     "vscode": "^1.53.2"
   },

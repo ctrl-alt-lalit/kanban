@@ -14,7 +14,10 @@ Kanban automatically creates a kanban board for each workspace you use. To view 
 
 ## Release Notes
 
-### 1.1.1
+#### 1.1.2
+ - Fixed bug where icon font wouldn't load
+
+#### 1.1.1
  - Changed ```Add Column``` and ```Undo``` icons to make their function clearer
 
 ### 1.1.0
@@ -24,14 +27,14 @@ Kanban automatically creates a kanban board for each workspace you use. To view 
  - Added toggle to autosave every second
  
 
-### 1.0.6
+#### 1.0.6
  - Refactored ```board.ts``` by making classes for the board, column, and task html elements
  - Added a scrollbar to the column whenever too many tasks are on it to fit onscreen
 
-### 1.0.5
+#### 1.0.5
  - Cleaned up source code and reorganized directories
 
-### 1.0.4
+#### 1.0.4
 - Fixed directory structure so compiled extension would run
 
 ### 1.0.0
