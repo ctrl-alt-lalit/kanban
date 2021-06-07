@@ -14,6 +14,9 @@ Kanban automatically creates a kanban board for each workspace you use. To view 
 
 ## Release Notes
 
+### 1.1.1
+ - Changed ```Add Column``` and ```Undo``` icons to make their function clearer
+
 ### 1.1.0
  - Kanban button is on the left side of the status bar, per the VS Code API reference
  - Board uses Codicon icons rather than PNGs

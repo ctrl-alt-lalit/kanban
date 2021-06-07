@@ -5,7 +5,7 @@ import * as fs from 'fs'; //file I/O
 var sprintf = require('sprintf-js').sprintf; //format strings (like C)
 
 type ColumnJSON = {title: string, ntasks: number, tasks: string[]};
-type KanbanJSON = {ncols: number, cols: ColumnJSON[], settings?: {autosave?: boolean}};
+type KanbanJSON = {ncols: number, cols: ColumnJSON[], settings?: any};
 
 //extension is activated the very first time a command is executed
 export function activate(context: vscode.ExtensionContext) {

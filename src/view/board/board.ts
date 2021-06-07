@@ -1,7 +1,7 @@
 declare var acquireVsCodeApi: Function; // linked by VSCode at runtime
 
 type ColumnJSON = {title: string, ntasks: number, tasks: string[]};
-type KanbanJSON = {ncols: number, cols: ColumnJSON[], settings?: {autosave?: boolean}};
+type KanbanJSON = {ncols: number, cols: ColumnJSON[], settings?: any};
 type HistoryJSON = {type: string, parent: HTMLDivElement, position: number, data: (string | ColumnJSON)};
 
 /**
@@ -74,6 +74,7 @@ function addListeners() {
         }
     });
 
+    //autosave every second
     setInterval(() => {
         if (autosave) {
             saveData();
