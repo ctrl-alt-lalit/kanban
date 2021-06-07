@@ -1,7 +1,7 @@
 declare var acquireVsCodeApi: Function; // linked by VSCode at runtime
 
 type ColumnJSON = {title: string, ntasks: number, tasks: string[]};
-type KanbanJSON = {ncols: number, cols: ColumnJSON[]};
+type KanbanJSON = {ncols: number, cols: ColumnJSON[], settings?: {autosave?: boolean}};
 type HistoryJSON = {type: string, parent: HTMLDivElement, position: number, data: (string | ColumnJSON)};
 
 /**
@@ -32,6 +32,8 @@ const keysPressed: Map<string, boolean> = new Map();
  * Elements at the end of the list have been deleted more recently.
  */
 const deleteHistory: HistoryJSON[] = [];
+
+let autosave = false;
 
 /**
  * Adds event listeners to the 'Kanban: View' page.
@@ -95,6 +97,11 @@ function addListeners() {
     undoBtn.addEventListener('click', () => {
         restoreElement();
     });
+
+    const autosaveBtn = document.getElementById('autosave')!;
+    autosaveBtn.addEventListener('click', () => {
+        updateAutosave(!autosave);
+    });
 }
 
 
@@ -114,6 +121,31 @@ function addListeners() {
             column.appendChild(makeTask(taskText));
         });
     });
+
+    if (savedData.settings?.autosave) {
+        updateAutosave(true);
+    } else {
+        updateAutosave(false);
+    }
+}
+
+function updateAutosave(save: boolean) {
+    if (save === autosave) {
+        return;
+    }
+
+    autosave = save;
+    const element = document.getElementById('autosave')!;
+    const iconClasses = element?.firstElementChild?.classList!;
+    if (save) {
+        element.title = 'Autosave';
+        iconClasses.remove('codicon-sync-ignored');
+        iconClasses.add('codicon-sync');
+    } else {
+        element.title = "Don't autosave";
+        iconClasses.remove('codicon-sync');
+        iconClasses.add('codicon-sync-ignored');
+    }
 }
 
 /**
@@ -124,7 +156,10 @@ function addListeners() {
     const columns = document.getElementById('board')!.children;
     const data: KanbanJSON = {
         ncols: columns.length,
-        cols: []
+        cols: [],
+        settings: {
+            autosave: autosave
+        }
     };
 
     for (const column of Array.from(columns)) {
