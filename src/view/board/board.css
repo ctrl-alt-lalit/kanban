@@ -3,7 +3,6 @@
     max-width: 80%;
     margin-left: 10%;
     min-height: 80vh;
-    max-height: 80vh;
     flex-flow: row;
     justify-content: center;
 }
@@ -20,31 +19,23 @@ a {
     flex-direction: column;
 }
 
-.tasks {
-    overflow-y: auto;
-    flex-direction: column;
-    max-height: 68vh;
-}
-
-.hidden {
-    display: none;
-}
-
 .header {
     color: var(--vscode-editor-background);
     text-align: center;
     background: var(--vscode-editor-selectionBackground);
     border-radius: 5px 5px 0px 0px;
     padding: 0.5ch;
-    position: sticky;
-    min-height: 10vh;
-    max-height: 10vh;
 }
 
-.header img {
-    height: 3ch;
+.header i {
+    font-size: 12pt;
     margin-left: 1vh;
     margin-right: 1vh;
+    color: var(--vscode-editor-background);
+}
+
+.header i:hover {
+    color: var(--vscode-editor-foreground);
 }
 
 .task {
@@ -61,10 +52,15 @@ a {
     cursor: text;
 }
 
-.task img {
+.task i {
     margin-top: 0.75ch;
     height: 1.75ch;
     align-self: flex-end;
+    color: var(--vscode-editor-foreground);
+}
+
+.task i:hover {
+    color: var(--vscode-editor-selectionBackground);
 }
 
 .dragging {
@@ -82,6 +78,11 @@ a {
     margin-left: 2vh
 }
 
-#titlebar img {
-    height: 4ch;
+#titlebar i {
+    color: var(--vscode-editor-foreground);
+    font-size: 18pt;
+}
+
+#titlebar i:hover {
+    color: var(--vscode-editor-selectionBackground);
 }

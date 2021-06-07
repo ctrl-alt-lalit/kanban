@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <!-- Only allow local files to be loaded -->
     <!-- percent-s is used for string formatting done at extension.ts-->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src %s; style-src %s; img-src %s">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src %s; style-src %s; font-src %s">
     <meta name="viewport" content="width=device-width" , initial-scale="1.0">
 
+    <link rel="stylesheet" type="text/css" href="%s">
+
+    <!-- Codicons -->
+    <link rel="stylesheet" type="text/css" href="%s">
     <link rel="stylesheet" type="text/css" href="%s">
 
     <title>Kanban Board</title>
@@ -17,18 +21,37 @@
     <div id="titlebar">
         <h1> %s </h1>
         <a id="add-col" title="Add Column">
-            <img src="%s" />
+            <i class="codicon codicon-file-add"> </i>
         </a>
         <a id="save" title="Save Board">
-            <img src="%s" />
+            <i class="codicon codicon-save"> </i>
         </a>
         <a id="undo" title="Undo Last Deletion">
-            <img src="%s">
+            <i class="codicon codicon-reply"> </i>
         </a>
     </div>
 
-    <div class="header hidden"></div>
+    <div id="board">
+        <div class="col">
+            <div class="header">
+                <h2 contenteditable="true"> Example Column </h2>
+                <!-- Add task and remove column buttons go here -->
+            </div>
+            <div class="task" contenteditable="true">
+                Example task
+                <a>
+                    <!--Where delete task button would be -->
+                    <i></i>
+                </a>
+            </div>
+        </div>
+        <div class="col">
+            <div class="header">
+                <h2 contenteditable="true"> This is a Bug </h2>
+                <!-- Add task and remove column buttons go here -->
+            </div>
+        </div>
+    </div>
 
-    <script type="text/javascript" src="%s"> </script>
     <script type="text/javascript" src="%s"> </script>
 </body>

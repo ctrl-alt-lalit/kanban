@@ -1,9 +1,8 @@
 
 import * as vscode from 'vscode'; //contains the VS Code extensibility API
-import { Memento } from "vscode";
-import * as path from "path"; //make path names
-import * as fs from "fs"; //file I/O
-var sprintf = require("sprintf-js").sprintf; //format strings (like C)
+import * as path from 'path'; //make path names
+import * as fs from 'fs'; //file I/O
+var sprintf = require('sprintf-js').sprintf; //format strings (like C)
 
 type ColumnJSON = {title: string, ntasks: number, tasks: string[]};
 type KanbanJSON = {ncols: number, cols: ColumnJSON[]};
@@ -11,15 +10,15 @@ type KanbanJSON = {ncols: number, cols: ColumnJSON[]};
 //extension is activated the very first time a command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	const config = vscode.workspace.getConfiguration("kanban");
+	const config = vscode.workspace.getConfiguration('kanban');
 	const storage = new StorageManager(context.workspaceState);
 
-	const viewCmdId = "kanban.view";
+	const viewCmdId = 'kanban.view';
 	const view = vscode.commands.registerCommand(viewCmdId, () => { // View the kanban board
 	
 		const panel = vscode.window.createWebviewPanel( //Create tab/window to view board in
-			"kanban", //id
-			"Kanban", //title
+			'kanban', //id
+			'Kanban', //title
 			vscode.ViewColumn.One, //open at first (leftmost) tab
 			{
 				enableScripts: true, //allow JS to be used in webview
@@ -29,9 +28,10 @@ export function activate(context: vscode.ExtensionContext) {
 		const webview = panel.webview;
 		
 		//load board.html into string
-		const htmlPath = path.join(context.extensionPath, "dist", "view", "board", "board.html");
-		const htmlUri = vscode.Uri.file(htmlPath).with({scheme: "vscode-resource"}); 
-		const htmlString = fs.readFileSync(htmlUri.fsPath, "utf8");
+		const extPath = context.extensionPath;
+		const htmlPath = path.join(extPath, 'dist', 'view', 'board', 'board.html');
+		const htmlUri = vscode.Uri.file(htmlPath).with({scheme: 'vscode-resource'}); 
+		const htmlString = fs.readFileSync(htmlUri.fsPath, 'utf8');
 		
 		function loadResource(uriPath : string) {
 			const uri = vscode.Uri.file(uriPath);
@@ -39,38 +39,24 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		//load css, js, and icon URIs
-		const stylesheet = loadResource(path.join(context.extensionPath, "dist", "view", "board", "board.css"));
-		const filterScript = loadResource(path.join(context.extensionPath, "dist", "view", "board", "filter.js"));
-		const mainScript = loadResource(path.join(context.extensionPath, "dist", "view", "board", "board.js"));
-		
-		const addColIcon = loadResource(path.join(context.extensionPath, "dist", "view", "icons", "add-column.png"));
-		const deleteIcon = loadResource(path.join(context.extensionPath, "dist", "view", "icons", "delete.png"));
-		const saveIcon = loadResource(path.join(context.extensionPath, "dist", "view", "icons", "save.png"));
-		const delColIcon = loadResource(path.join(context.extensionPath, "dist", "view", "icons", "delete-column.png"));
-		const addIcon = loadResource(path.join(context.extensionPath, "dist", "view", "icons", "add.png"));
-		const undoIcon = loadResource(path.join(context.extensionPath, "dist", "view", "icons", "undo.png"));
+		const stylesheet = loadResource(path.join(extPath, 'dist', 'view', 'board', 'board.css'));
+		const mainScript = loadResource(path.join(extPath, 'dist', 'view', 'board', 'board.js'));
+		const icons = loadResource(path.join(extPath, 'node_modules', 'vscode-codicons', 'dist', 'codicon.css'));
+		const iconFont = loadResource(path.join(extPath, 'node_modules', 'vscode-codicons', 'dist', 'codicon.ttf'));
+
 
 		//attach URIs to html string and render html in webview
+		const csp = webview.cspSource.toString();
 		webview.html = sprintf(
-			htmlString, webview.cspSource.toString(), webview.cspSource.toString(), webview.cspSource.toString(),
-			stylesheet.toString(), vscode.workspace.name || "Kanban Board", addColIcon.toString(),
-			saveIcon.toString(), undoIcon.toString(), filterScript.toString(), mainScript.toString()
+			htmlString, csp, csp, csp, stylesheet.toString(), icons.toString(), iconFont.toString(), 
+			vscode.workspace.name || 'Kanban Board', mainScript.toString()
 		);
-
-		webview.postMessage({
-			command: "icons",
-			data: {
-				delete: deleteIcon.toString(),
-				delCol: delColIcon.toString(),
-				add: addIcon.toString()
-			}
-		});
 
 		createBoard(storage, webview); //load board from local storage
 
 		webview.onDidReceiveMessage(message => { //save board to storage
-			if (message.command === "save") {
-				storage.store("columns", message.data);
+			if (message.command === 'save') {
+				storage.store('columns', message.data);
 			}
 		});
 	});
@@ -79,14 +65,14 @@ export function activate(context: vscode.ExtensionContext) {
 	if (config.showViewButton) {
 		const viewButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
 		viewButton.command = viewCmdId;
-		viewButton.text = "Kanban";
+		viewButton.text = 'Kanban';
 		viewButton.show();
 		context.subscriptions.push(viewButton);
 	}
 }
 
 class StorageManager {
-	constructor(private storage: Memento) {}
+	constructor(private storage: vscode.Memento) {}
 
 	public retrieve<T>(key: string) : T {
 		return this.storage.get<T>(key, null as any);
@@ -98,31 +84,31 @@ class StorageManager {
 }
 
 function createBoard(storage: StorageManager, webview: vscode.Webview) {
-	let savedData: KanbanJSON = storage.retrieve("columns");
+	let savedData: KanbanJSON = storage.retrieve('columns');
 	// make example board if nothing is saved
 	if (savedData === null) {
 		savedData = {
 			ncols: 4,
 			cols: [
 				{
-					title: "Bugs",
+					title: 'Bugs',
 					ntasks: 0,
 					tasks: []
 				},
 				{
-					title: "To-Do",
+					title: 'To-Do',
 					ntasks: 1,
 					tasks: [
-						"Add your own text here!"
+						'Add your own text here!'
 					]
 				},
 				{
-					title: "Doing",
+					title: 'Doing',
 					ntasks: 0,
 					tasks: []
 				},
 				{
-					title: "Done",
+					title: 'Done',
 					ntasks: 0,
 					tasks: []
 				}
@@ -131,7 +117,7 @@ function createBoard(storage: StorageManager, webview: vscode.Webview) {
 	}
 
 	webview.postMessage({
-		command: "load",
+		command: 'load',
 		data: savedData
 	});
 }

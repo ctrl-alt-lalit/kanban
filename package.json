@@ -1,84 +1,86 @@
 {
-	"publisher": "lbauskar",
-	"name": "kanban",
-	"displayName": "Kanban",
-	"description": "Kanban board for VS Code, similar to Trello.",
-	"icon": "icon.png",
-	"version": "1.0.6",
-	"engines": {
-		"vscode": "^1.53.2"
-	},
-	"license": "SEE LICENSE IN LICENSE.md",
-	"categories": [
-		"Visualization",
-		"Notebooks"
-	],
-	"keywords": [
-		"kanban",
-		"board",
-		"agile",
-		"scrum",
-		"sprint"
-	],
-	"extensionKind": [
-		"ui"
-	],
-	"activationEvents": [
-		"onStartupFinished"
-	],
-	"main": "./dist/extension.js",
-	"contributes": {
-		"configuration": {
-			"title": "Kanban",
-			"properties": {
-				"kanban.showViewButton": {
-					"type": "boolean",
-					"default": true,
-					"description": "Show the button on the top right that lets you view your Kanban board. You can still view the board in the Command Pallete with 'Kanban Board: View'"
-				}
-			}
-		},
-		"commands": [
-			{
-				"command": "kanban.view",
-				"title": "Kanban: View"
-			}
-		]
-	},
-	"repository": "https://github.com/lbauskar/kanban.git",
-	"scripts": {
-		"vscode:prepublish": "yarn run compile",
-		"compile": "gulp && rollup -c && webpack --mode production",
-		"lint": "eslint src --ext ts",
-		"watch": "gulp && concurrently \"rollup -c -w\" \"webpack --watch\"",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.3",
-		"@types/mocha": "^8.0.4",
-		"@types/node": "^12.11.7",
-		"@types/vscode": "^1.53.0",
-		"@typescript-eslint/eslint-plugin": "^4.14.1",
-		"@typescript-eslint/parser": "^4.14.1",
-		"eslint": "^7.19.0",
-		"glob": "^7.1.6",
-		"mocha": "^8.2.1",
-		"ts-loader": "^8.0.14",
-		"typescript": "^4.1.3",
-		"vscode-test": "^1.5.0",
-		"webpack": "^5.19.0",
-		"webpack-cli": "^4.4.0"
-	},
-	"dependencies": {
-		"@rollup/plugin-typescript": "^8.2.0",
-		"fs": "0.0.1-security",
-		"gulp": "^4.0.2",
-		"gulp-clean-css": "^4.3.0",
-		"gulp-htmlmin": "^5.0.1",
-		"gulp-minify": "^3.1.0",
-		"rollup": "^2.41.0",
-		"rollup-plugin-terser": "^7.0.2",
-		"rollup-plugin-typescript": "^1.0.1",
-		"sprintf-js": "^1.1.2"
-	}
+  "publisher": "lbauskar",
+  "name": "kanban",
+  "displayName": "Kanban",
+  "description": "Kanban board for VS Code, similar to Trello.",
+  "icon": "icon.png",
+  "version": "1.0.6",
+  "engines": {
+    "vscode": "^1.53.2"
+  },
+  "license": "SEE LICENSE IN LICENSE.md",
+  "categories": [
+    "Visualization",
+    "Notebooks"
+  ],
+  "keywords": [
+    "kanban",
+    "board",
+    "agile",
+    "scrum",
+    "sprint"
+  ],
+  "extensionKind": [
+    "ui"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Kanban",
+      "properties": {
+        "kanban.showViewButton": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the button on the top right that lets you view your Kanban board. You can still view the board in the Command Pallete with 'Kanban Board: View'"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "kanban.view",
+        "title": "Kanban: View"
+      }
+    ]
+  },
+  "repository": "https://github.com/lbauskar/kanban.git",
+  "scripts": {
+    "vscode:prepublish": "yarn run compile",
+    "compile": "gulp && rollup -c && webpack --mode production",
+    "lint": "eslint src --ext ts",
+    "watch": "gulp && concurrently \"rollup -c -w\" \"webpack --watch\"",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.0.4",
+    "@types/node": "^12.11.7",
+    "@types/vscode": "^1.53.0",
+    "@typescript-eslint/eslint-plugin": "^4.14.1",
+    "@typescript-eslint/parser": "^4.14.1",
+    "eslint": "^7.19.0",
+    "glob": "^7.1.6",
+    "gulp": "^4.0.2",
+    "jest": "^26.6.3",
+    "mocha": "^8.2.1",
+    "ts-loader": "^8.0.14",
+    "typescript": "^4.1.3",
+    "vscode-test": "^1.5.0",
+    "webpack": "^5.19.0",
+    "webpack-cli": "^4.4.0"
+  },
+  "dependencies": {
+    "@rollup/plugin-typescript": "^8.2.0",
+    "fs": "0.0.1-security",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-minify": "^3.1.0",
+    "rollup": "^2.41.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript": "^1.0.1",
+    "sprintf-js": "^1.1.2",
+    "vscode-codicons": "^0.0.17"
+  }
 }
