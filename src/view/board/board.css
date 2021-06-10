@@ -2,72 +2,67 @@
     display: flex;
     max-width: 80%;
     margin-left: 10%;
-    min-height: 80vh;
-    flex-flow: row;
+    max-height: 80vh;
+    flex-direction: row;
     justify-content: center;
+}
+
+body {
+    color: var(--vscode-editor-foreground);
 }
 
 a {
     cursor: pointer;
+    color: var(--vscode-editor-foreground);
+}
+
+a:hover {
+    color: var(--vscode-editor-selectionBackground);
 }
 
 .col {
-    border-radius: 5px 5px 0px 0px;
     margin-left: 0.5vh;
     margin-right: 0.5vh;
-    background-color: var(--vscode-textBlockQuote-background);
     flex-direction: column;
+    align-items: center;
+    display: flex;
+    height: 80vh;
+}
+
+.tasks {
+    overflow-x: visible;
+    overflow-y: scroll;
+    width: 100%;
+    flex-grow: 1;
+}
+
+.tasks::-webkit-scrollbar {
+    display: none;
 }
 
 .header {
-    color: var(--vscode-editor-background);
     text-align: center;
     background: var(--vscode-editor-selectionBackground);
     padding: 0.5ch;
+    width: 100%;
+    flex-grow: 0;
 }
 
 .header i {
     font-size: 12pt;
     margin-left: 1vh;
     margin-right: 1vh;
+}
+
+.header a:hover {
     color: var(--vscode-editor-background);
 }
 
-.header i:hover {
-    color: var(--vscode-editor-foreground);
-}
-
-.task {
-    color: var(--vscode-editor-foreground);
-    background: var(--vscode-editor-background);
-    margin: 0.5vh;
-    border-radius: 5px;
-    font-size: medium;
-    cursor: grab;
-}
-
-.task p {
-    margin: 5px;
-    cursor: text;
-}
-
-.task i {
-    margin-top: 0.75ch;
-    height: 1.75ch;
-    align-self: flex-end;
-    color: var(--vscode-editor-foreground);
-}
-
-.task i:hover {
-    color: var(--vscode-editor-selectionBackground);
-}
-
 .dragging {
-    background: var(--vscode-list-hoverBackground);
+    opacity: 0.5;
 }
 
 #titlebar {
-    color: var(--vscode-editor-foreground);
     display: flex;
     margin-left: 10%;
 }
@@ -78,10 +73,65 @@ a {
 }
 
 #titlebar i {
-    color: var(--vscode-editor-foreground);
     font-size: 18pt;
 }
 
-#titlebar i:hover {
-    color: var(--vscode-editor-selectionBackground);
+
+.task {
+    margin-top: 1.5ch;
+    align-self: center;
+    overflow-x: visible;
+    width: 99%;
+    display: inline-block;
+    text-align: center;
+}
+
+body.vscode-dark .task {
+    background-color: rgb(44, 44, 44);
+}
+
+body.vscode-light .task {
+    background-color: rgb(221, 221, 221);
+}
+
+
+.task textarea {
+    text-align: left;
+    background-color: var(--vscode-panel-background);
+    color: var(--vscode-editor-foreground);
+    margin: 5px 5px 5px 0;
+    resize: none;
+    overflow: hidden;
+}
+
+.task div {
+    width: 95%;
+    text-align: left;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.task i {
+    margin-top: 0.75ch;
+    height: 1.75ch;
+}
+
+.grow-wrap {
+    display: grid;
+}
+
+.grow-wrap::after {
+    content: attr(data-replicated-value) " ";
+    white-space: pre-wrap;
+    visibility: hidden;
+}
+
+.grow-wrap > textarea,
+.grow-wrap::after {
+    border: none;
+    padding: 0.5rem;
+    font: inherit;
+    grid-area: 1 / 1 / 2 / 2;
+    word-wrap: break-word;
+    word-break: break-all;
 }

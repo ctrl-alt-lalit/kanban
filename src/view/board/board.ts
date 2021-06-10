@@ -18,6 +18,15 @@ class MessageSender {
     }
 }
 
+const currentlyDraggedTask = {
+    text: '',
+    column: document.createElement('div'),
+    taskBelowIndex: -1,
+    height: 0,
+    yOffset: 0,
+    distFromCenter: 0
+};
+
 /**
  * Keeps track of what keys are pressed.
  * 
@@ -74,17 +83,14 @@ function addListeners() {
         }
     });
 
+    window.addEventListener('resize', ()=>{resizeColumns();});
+
     //autosave every second
     setInterval(() => {
         if (autosave) {
             saveData();
         }
     }, 1000);
-
-    // listen for window resizing
-    window.addEventListener('resize', () => {
-        resizeColumns();
-    });
 
     // 'Add Column' button clicked
     const addCol = document.getElementById('add-col')!;
@@ -115,7 +121,7 @@ function addListeners() {
 /**
  * Takes the serialized kanban board JSON and renders it onto the DOM.
  */
- function loadData(savedData: KanbanJSON) {
+function loadData(savedData: KanbanJSON) {
     const columns = document.getElementsByClassName('col');
     const board = document.getElementById('board')!;
     while (columns.length > 0) {
@@ -125,7 +131,7 @@ function addListeners() {
     savedData.cols.forEach(col => {
         const column = appendColumn(col.title);
         col.tasks.forEach(taskText => {
-            column.appendChild(makeTask(taskText));
+            column.querySelector('.tasks')!.appendChild(makeTask(taskText));
         });
     });
 
@@ -164,7 +170,7 @@ function updateAutosave(save: boolean) {
  * Serializes the current state of the kanban board then sends it to
  * the VSCode API to be stored in the workspace. 
  */
- function saveData() {
+function saveData() {
     const columns = document.getElementById('board')!.children;
     const data: KanbanJSON = {
         ncols: columns.length,
@@ -175,21 +181,12 @@ function updateAutosave(save: boolean) {
     };
 
     for (const column of Array.from(columns)) {
-        const children = column.children;
+        const tasks = Array.from(column.querySelectorAll('.tasks .task'));
         const col: ColumnJSON = {
-            title: '',
-            ntasks: children.length - 1,
-            tasks: []
+            title: column.querySelector('.header > h2')!.innerHTML,
+            ntasks: tasks.length,
+            tasks: tasks.map(task => {return (<HTMLTextAreaElement>task.querySelector('div > textarea')!).value;})
         };
-
-        for (const child of Array.from(children)) {
-            if (child.className === 'header') {
-                col.title = child.firstElementChild!.innerHTML;
-            } else {
-                col.tasks.push(child.firstElementChild!.innerHTML);
-            }
-        }
-
         data.cols.push(col);
     }
 
@@ -205,7 +202,7 @@ function updateAutosave(save: boolean) {
  * @param title text shown at the top of the column
  * @returns the new column
  */
- function appendColumn(title: string) {
+function appendColumn(title: string) {
     const column = makeColumn(title);
     document.getElementById('board')!.appendChild(column);
     resizeColumns();
@@ -218,18 +215,50 @@ function updateAutosave(save: boolean) {
  * @param title text shown at the top of the column
  * @returns the new column
  */
- function makeColumn(title: string) {
-    let column = document.createElement('div');
+function makeColumn(title: string) {
+    const column = document.createElement('div');
     column.className = 'col';
+
+    const tasks = document.createElement('div');
+    tasks.classList.add('tasks');
 
     column.addEventListener('dragover', event => {
         event.preventDefault();
-        const draggable = document.getElementsByClassName('dragging')[0];
-        const taskBelow = getClosestTask(column, event.clientY);
-        if (taskBelow === null) {
-            column.appendChild(draggable);
-        } else {
-            column.insertBefore(draggable, taskBelow);
+        const {yOffset, height} = currentlyDraggedTask;
+        const taskArr = Array.from(tasks.getElementsByClassName('task')) as HTMLDivElement[];
+
+        const indexAbove = getClosestTaskIndex(tasks, event.clientY - yOffset - height);
+        for (let i = 0; i < Math.min(indexAbove, taskArr.length); ++i) {
+            taskArr[i].style.transform = 'translateY(0px)'; 
+        }
+
+        const indexBelow = getClosestTaskIndex(tasks, event.clientY - yOffset);
+        currentlyDraggedTask.taskBelowIndex = indexBelow;
+        if (indexBelow !== -1) {
+            for (let i = indexBelow; i < taskArr.length; ++i) {
+                taskArr[i].style.transform = `translateY(${height}px)`; 
+            }
+        }
+    });
+
+    column.addEventListener('dragenter', () => {
+        for (const task of <HTMLDivElement[]>Array.from(tasks.getElementsByClassName('task'))) {
+            task.style.transition = 'transform 0.5s';
+        }
+    });
+
+    column.addEventListener('dragleave', event => {
+        event.preventDefault();
+        const taskArr = Array.from(tasks.getElementsByClassName('task'));
+        for (const task of <HTMLDivElement[]>taskArr) {
+            task.style.transform = 'translateY(0)';
+        }
+    });
+
+    column.addEventListener('drop', () => {
+        for (const elem of <HTMLDivElement[]>Array.from(tasks.getElementsByClassName('task'))) {
+            elem.style.transition = 'transform 0s';
+            elem.style.transform = 'translateY(0)';
         }
     });
 
@@ -242,7 +271,7 @@ function updateAutosave(save: boolean) {
 
     const addTask = document.createElement('a');
     addTask.addEventListener('click', () => {
-        column.appendChild(makeTask('Add your own text here!'));
+        tasks.appendChild(makeTask(''));
     });
     addIcon(addTask, 'add', 'Create Task');
 
@@ -254,7 +283,10 @@ function updateAutosave(save: boolean) {
 
 
     header.append(headerText, addTask, delCol);
-    column.appendChild(header);
+
+    
+
+    column.append(header, tasks);
     return column;
 }
 
@@ -276,25 +308,50 @@ function addIcon(element: HTMLAnchorElement, iconName: string, label: string) {
     task.className = 'task';
     task.draggable = true;
 
-    task.addEventListener('dragstart', () => {
+    task.addEventListener('dragstart', (event) => {
         task.classList.add('dragging');
+        currentlyDraggedTask.text = taskText.querySelector('textarea')!.value;
+        currentlyDraggedTask.height = task.clientHeight;
+        window.requestAnimationFrame(() => {task.style.display = 'none';});
+        currentlyDraggedTask.yOffset = event.offsetY - task.clientHeight / 2;
     });
 
     task.addEventListener('dragend', () => {
         task.classList.remove('dragging');
+        const col = currentlyDraggedTask.column;
+        const tasks = col.querySelector('.tasks')!;
+        const index = currentlyDraggedTask.taskBelowIndex;
+        if (index === -1) {
+            tasks.appendChild(makeTask(currentlyDraggedTask.text));
+        } else {
+            tasks.insertBefore(
+                makeTask(currentlyDraggedTask.text),
+                Array.from(tasks.getElementsByClassName('task'))[index]
+            );
+        }
+        task.remove();
     });
 
-    const taskText = document.createElement('p');
-    taskText.contentEditable = 'true';
-    taskText.innerHTML = text;
-
+    const taskText = document.createElement('div');
+    taskText.classList.add('grow-wrap');
+    taskText.innerHTML = `<textarea placeholder="Add your own text here!">${text}</textarea>`;
+    
+    //sync div with textarea on page load and on input
+    taskText.dataset!.replicatedValue = taskText.querySelector('textarea')?.value;
+    taskText.addEventListener('input', () => {
+        taskText.dataset!.replicatedValue = taskText.querySelector('textarea')?.value;
+    });
+    
     const delTask = document.createElement('a');
     delTask.addEventListener('click', () => {
         deleteElement(task);
     });
     addIcon(delTask, 'trash', 'Delete Task');
 
-    task.append(taskText, delTask);
+    const delTaskDiv = document.createElement('div');
+    delTaskDiv.appendChild(delTask);
+
+    task.append(taskText, delTaskDiv);
     return task;
 }
 
@@ -307,7 +364,7 @@ function addIcon(element: HTMLAnchorElement, iconName: string, label: string) {
  * 
  * @param column column being removed
  */
- function removeColumn(column: HTMLDivElement) {
+function removeColumn(column: HTMLDivElement) {
     deleteElement(column);
     resizeColumns();
 }
@@ -319,25 +376,22 @@ function addIcon(element: HTMLAnchorElement, iconName: string, label: string) {
  * @param y vertical position in pixels
  * @returns task in `column` closest to `y` position
  */
- function getClosestTask(column: HTMLDivElement, y: number) {
+function getClosestTaskIndex(tasks: HTMLDivElement, y: number) {
     let closestOffset = Number.NEGATIVE_INFINITY;
-    let closestTask: HTMLDivElement | null = null;
-    const tasks = document.getElementsByClassName('task');
+    let closestIndex: number = -1;
+    const taskArr = Array.from(tasks.getElementsByClassName('task'));
     
-    for (const task of Array.from(tasks)) {
-        if (column !== task.parentNode) {
-            continue;
-        }
-
+    for (let i = 0; i < taskArr.length; ++i) {
+        const task = taskArr[i];
         const box = task.getBoundingClientRect();
         const offset = y - box.top - box.height / 2;
         if (offset < 0 && offset > closestOffset) {
             closestOffset = offset;
-            closestTask = <HTMLDivElement> task;
+            closestIndex = i;
         }
     }
 
-    return closestTask;
+    return closestIndex;
 }
 
 /**
@@ -346,7 +400,7 @@ function addIcon(element: HTMLAnchorElement, iconName: string, label: string) {
  * More specifically, if the kanban board has a width of `w` and there are `n` columns
  * in the board, then each column will have a width of `w/n` after this function has been called.
  */
- function resizeColumns() {
+function resizeColumns() {
     const board = document.getElementById('board')!;
     const columns = <HTMLCollectionOf<HTMLElement>> document.getElementsByClassName('col');
     for (const column of Array.from(columns)) {
@@ -361,7 +415,7 @@ function addIcon(element: HTMLAnchorElement, iconName: string, label: string) {
  * 
  * @param element task or column to delete
  */
- function deleteElement(element: HTMLDivElement) {
+function deleteElement(element: HTMLDivElement) {
     const save: HistoryJSON = {
         type: element.className,
         parent: <HTMLDivElement> element.parentNode,
@@ -406,7 +460,7 @@ function addIcon(element: HTMLAnchorElement, iconName: string, label: string) {
  * Deserializes the most recently deleted task or column and puts it back into the DOM
  * to where it was before it was deleted.
  */
- function restoreElement() {
+function restoreElement() {
     if (history.length === 0) {
         return;
     }
@@ -430,14 +484,13 @@ function addIcon(element: HTMLAnchorElement, iconName: string, label: string) {
     } else {
         restore.parent.insertBefore(element, siblings[restore.position]);
     }
-
-    if (restore.type === 'col') {
-        resizeColumns();
-    }
 }
 
 /**
  * Actually add the event listeners, rather than just defining how to do so.
  */
- addListeners();
+addListeners();
 
+
+
+//BUG: dragging between columns deletes task

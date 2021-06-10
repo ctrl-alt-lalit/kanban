@@ -90,32 +90,12 @@ function createBoard(storage: StorageManager, webview: vscode.Webview) {
 		savedData = {
 			ncols: 4,
 			cols: [
-				{
-					title: 'Bugs',
-					ntasks: 0,
-					tasks: []
-				},
-				{
-					title: 'To-Do',
-					ntasks: 1,
-					tasks: [
-						'Add your own text here!'
-					]
-				},
-				{
-					title: 'Doing',
-					ntasks: 0,
-					tasks: []
-				},
-				{
-					title: 'Done',
-					ntasks: 0,
-					tasks: []
-				}
+				{title: 'Bugs', ntasks: 0, tasks: []},
+				{title: 'To-Do', ntasks: 1, tasks: ['']},
+				{title: 'Doing', ntasks: 0, tasks: []},
+				{title: 'Done', ntasks: 0, tasks: []}
 			],
-			settings: {
-				autosave: false
-			}
+			settings: {autosave: false}
 		};
 	}
 
