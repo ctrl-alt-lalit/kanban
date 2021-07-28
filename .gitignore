@@ -1,9 +1,8 @@
 .vscodeignore
-.eslintrc.json
 node_modules
-vsc-extension-quickstart.md
-dist
+build
 src/test
 CHANGELOG.md
 *.vsix
 out
+yarn.lock

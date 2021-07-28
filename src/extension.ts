@@ -1,8 +1,4 @@
-
-import * as vscode from 'vscode'; //contains the VS Code extensibility API
-import * as path from 'path'; //make path names
-import * as fs from 'fs'; //file I/O
-var sprintf = require('sprintf-js').sprintf; //format strings (like C)
+import vscode from 'vscode'; //contains the VS Code extensibility API
 
 type ColumnJSON = {title: string, ntasks: number, tasks: string[]};
 type KanbanJSON = {ncols: number, cols: ColumnJSON[], settings?: any};
@@ -11,76 +7,119 @@ type KanbanJSON = {ncols: number, cols: ColumnJSON[], settings?: any};
 export function activate(context: vscode.ExtensionContext) {
 
 	const config = vscode.workspace.getConfiguration('kanban');
-	const storage = new StorageManager(context.workspaceState);
 
-	const viewCmdId = 'kanban.view';
-	const view = vscode.commands.registerCommand(viewCmdId, () => { // View the kanban board
-	
-		const panel = vscode.window.createWebviewPanel( //Create tab/window to view board in
-			'kanban', //id
-			'Kanban', //title
-			vscode.ViewColumn.One, //open at first (leftmost) tab
-			{
-				enableScripts: true, //allow JS to be used in webview
-				retainContextWhenHidden: true //TODO: replace with get/setState at some point
-			}
-		);
-		const webview = panel.webview;
-		
-		//load board.html into string
-		const extPath = context.extensionPath;
-		const htmlPath = path.join(extPath, 'dist', 'view', 'board', 'board.html');
-		const htmlUri = vscode.Uri.file(htmlPath).with({scheme: 'vscode-resource'}); 
-		const htmlString = fs.readFileSync(htmlUri.fsPath, 'utf8');
-		
-		function loadResource(uriPath : string) {
-			const uri = vscode.Uri.file(uriPath);
-			return webview.asWebviewUri(uri);
-		}
-
-		//load css, js, and icon URIs
-		const stylesheet = loadResource(path.join(extPath, 'dist', 'view', 'board', 'board.css'));
-		const mainScript = loadResource(path.join(extPath, 'dist', 'view', 'board', 'board.js'));
-		const icons = loadResource(path.join(extPath, 'dist', 'view', 'icons', 'codicon.css'));
-		const iconFont = loadResource(path.join(extPath,'dist', 'view', 'icons', 'codicon.ttf'));
-
-
-		//attach URIs to html string and render html in webview
-		const csp = webview.cspSource.toString();
-		webview.html = sprintf(
-			htmlString, csp, csp, csp, stylesheet.toString(), icons.toString(), iconFont.toString(), 
-			vscode.workspace.name || 'Kanban Board', mainScript.toString()
-		);
-
-		createBoard(storage, webview); //load board from local storage
-
-		webview.onDidReceiveMessage(message => { //save board to storage
-			if (message.command === 'save') {
-				storage.store('columns', message.data);
-			}
-		});
-	});
-	context.subscriptions.push(view);
+	const viewCommand = 'kanban.view';
+	context.subscriptions.push(
+		vscode.commands.registerCommand(viewCommand, () => Panel.show(context))
+	);
 
 	if (config.showViewButton) {
 		const viewButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-		viewButton.command = viewCmdId;
+		viewButton.command = viewCommand;
 		viewButton.text = 'Kanban';
 		viewButton.show();
 		context.subscriptions.push(viewButton);
 	}
 }
 
+class Panel {
+
+	static show(context: vscode.ExtensionContext) {
+		const column = vscode.window.activeTextEditor?.viewColumn;
+
+		if (Panel.current) {
+			Panel.current.webviewPanel.reveal(column);
+		} else {
+			this.current = new Panel(context, column ?? vscode.ViewColumn.One);
+		}
+	}
+
+	private static current: Panel | undefined = undefined;
+	private readonly webviewPanel: vscode.WebviewPanel;
+	private storage: StorageManager;
+	private extensionPath: string;
+	private disposables: vscode.Disposable[] = [];
+
+	private constructor(context: vscode.ExtensionContext, column: vscode.ViewColumn) {
+		this.extensionPath = context.extensionPath;
+		this.storage = new StorageManager(context.workspaceState);
+		this.webviewPanel = vscode.window.createWebviewPanel(
+			'kanban',
+			'React Panel',
+			column,
+			{
+				enableScripts: true,
+				localResourceRoots: [vscode.Uri.file(this.extensionPath + '/build')]
+			}
+		);
+		
+		this.webviewPanel.webview.html = this.makeHtml();
+		this.webviewPanel.onDidDispose(() => this.dispose(), null, this.disposables);
+		this.webviewPanel.webview.onDidReceiveMessage(
+			message => this.receiveMessage(message),
+			null,
+			this.disposables
+		);
+	}
+
+	private dispose() {
+		this.webviewPanel.dispose();
+		this.disposables.reverse();
+		this.disposables.forEach(disposable => {
+			if (disposable) {
+				disposable.dispose();
+			}
+		});
+		this.disposables = [];
+	}
+
+	private makeHtml(): string {
+		const manifest = require(this.extensionPath + '/build/asset-manifest.json');
+
+		const csp = this.webviewPanel.webview.cspSource;
+		const scriptSource = vscode.Uri.file(this.extensionPath + '/build' + manifest.files['main.js']).with({scheme: 'vscode-resource'});
+		return (
+			`
+			<!DOCTYPE html>
+			<html lang="en-US">
+			<head>
+				<meta charset="utf-8">
+				<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+				<meta name="theme-color" content="#000000">
+				<title>React App</title>
+				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src ${csp}; style-src ${csp}">
+			</head
+			<body>
+				<noscript> This extension needs JavaScript in order to run </noscript>
+				<div id="root"></div>
+
+				<script src="${scriptSource}"></script>
+			</body>
+			</html>
+			`
+		);
+	}
+
+	private receiveMessage(message: {command: string, data: any}): void {
+		console.log(message);
+		//fill in later
+	}
+}
+
 class StorageManager {
-	constructor(private storage: vscode.Memento) {}
+	constructor(memento: vscode.Memento) {
+		this.memento = memento;
+	}
 
 	public retrieve<T>(key: string) : T {
-		return this.storage.get<T>(key, null as any);
+		return this.memento.get<T>(key, null as any);
 	}
 
 	public store<T>(key: string, value: T) {
-		this.storage.update(key, value);
+		this.memento.update(key, value);
 	}
+
+	private memento: vscode.Memento;
 }
 
 function createBoard(storage: StorageManager, webview: vscode.Webview) {
@@ -104,6 +143,3 @@ function createBoard(storage: StorageManager, webview: vscode.Webview) {
 		data: savedData
 	});
 }
-
-// this method is called when your extension is deactivated
-export function deactivate() {}

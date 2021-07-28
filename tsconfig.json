@@ -1,18 +1,36 @@
 {
-	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es6",
-		"outDir": "out",
-		"lib": [
-			"es6"
-		],
-		"sourceMap": true,
-		"rootDir": "src",
-		"strict": true,
-		"noImplicitReturns": true,
-		"noUnusedParameters": true
-	},
-	"files": [
-		"src/extension.ts"
-	]
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es6",
+    "outDir": "out",
+    "lib": [
+      "es6",
+      "DOM"
+    ],
+    "sourceMap": true,
+    "rootDir": "src",
+    "strict": true,
+    "noImplicitReturns": true,
+    "noUnusedParameters": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx"
+  },
+  "files": [
+    "src/extension.ts"
+  ],
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "src/extension.ts"
+  ]
 }
