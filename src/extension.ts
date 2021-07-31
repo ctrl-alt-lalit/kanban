@@ -1,7 +1,17 @@
-import vscode from 'vscode'; //contains the VS Code extensibility API
+import * as vscode from 'vscode'; //contains the VS Code extensibility API
 
-type ColumnJSON = {title: string, ntasks: number, tasks: string[]};
-type KanbanJSON = {ncols: number, cols: ColumnJSON[], settings?: any};
+type ColumnJSON = {
+    title: string,
+    ntasks: number,
+    tasks: string[]
+};
+
+
+type KanbanJSON = {
+    ncols: number,
+    cols: ColumnJSON[],
+    settings?: any
+};
 
 //extension is activated the very first time a command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -60,6 +70,9 @@ class Panel {
 			null,
 			this.disposables
 		);
+
+		const savedData = this.storage.retrieve('columns');
+		this.webviewPanel.webview.postMessage({command: 'load', data: savedData});
 	}
 
 	private dispose() {
@@ -71,6 +84,7 @@ class Panel {
 			}
 		});
 		this.disposables = [];
+		Panel.current = undefined;
 	}
 
 	private makeHtml(): string {
@@ -78,6 +92,7 @@ class Panel {
 
 		const csp = this.webviewPanel.webview.cspSource;
 		const scriptSource = vscode.Uri.file(this.extensionPath + '/build' + manifest.files['main.js']).with({scheme: 'vscode-resource'});
+		const stylesheet = vscode.Uri.file(this.extensionPath + '/build/index.css').with({scheme: 'vscode-resource'});
 		return (
 			`
 			<!DOCTYPE html>
@@ -88,6 +103,7 @@ class Panel {
 				<meta name="theme-color" content="#000000">
 				<title>React App</title>
 				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src ${csp}; style-src ${csp}">
+				<link rel="stylesheet" type="text/css" href="${stylesheet}"/>
 			</head
 			<body>
 				<noscript> This extension needs JavaScript in order to run </noscript>
@@ -102,7 +118,9 @@ class Panel {
 
 	private receiveMessage(message: {command: string, data: any}): void {
 		console.log(message);
-		//fill in later
+		if (message.command === 'save') {
+			this.storage.store('columns', message.data);
+		}
 	}
 }
 
