@@ -1,34 +1,49 @@
 import React from 'react';
-import Showdown from 'showdown';
+import TextAreaAutosize from 'react-textarea-autosize';
 import ReactMarkdown from 'react-markdown';
 
 
 
-function Task({text}: {text: string}): JSX.Element {
+class Task extends React.Component<{initialText: string},{text: string, editing: boolean}> {
 
-    const [taskText, setTaskText] = React.useState(text);
-    const [editing, setEditing] = React.useState(false);
+    constructor(props: never) {
+        super(props);
+        this.state = {
+            text: this.props.initialText,
+            editing: false
+        };
+    }
 
-    const style = {
+    serialize(): string {
+        return this.state.text;
+    }
+
+    render(): JSX.Element {
+        return (
+            <div className='task' style={this.style}>
+                <TextAreaAutosize
+                    value={this.state.text}
+                    onChange={(event) => this.setState({text: event.target.value})}
+                    onBlur={() => this.setState({editing: false})}
+                    style={{display: this.state.editing ? 'block' : 'none'}}
+                />
+                <div
+                    onClick={() => this.setState({editing: true})}
+                    style={{display: this.state.editing ? 'none' : 'block'}}
+                >
+                    <ReactMarkdown>
+                        {this.state.text || 'Enter markdown here'}
+                    </ReactMarkdown>
+                </div>
+            </div>
+        );
+    }
+
+    private style = {
         backgroundColor: 'blue',
         margin: 5
     } as const;
-
-    return (
-        <div className='task' style={style}>
-            <textarea
-                value={taskText}
-                onChange={(event) => setTaskText(event.target.value)}
-                onBlur={() => setEditing(false)}
-                style={{display: editing ? 'block' : 'none'}}
-            />
-            <div onClick={() => setEditing(true)} style={{display: editing ? 'none' : 'block'}}>
-                    <ReactMarkdown>
-                        {taskText || 'Enter markdown here'}
-                    </ReactMarkdown>
-                </div>
-        </div>
-    );
+    
 }
 
 //TODO: get save button to retrieve data from all items

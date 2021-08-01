@@ -30,10 +30,26 @@ function Board(): JSX.Element {
         backgroundColor: 'green'
     } as const;
 
+    const columnRefs= new Map<string, React.RefObject<Column>>();
+
+    function serialize() {
+        const columns = savedData!.cols.map(col => columnRefs.get(col.title)!.current!.serialize());
+
+        return {
+            ncols: columns.length,
+            cols: columns?.map(col => { return {title: col?.title, ntasks: col?.tasks.length, tasks: col?.tasks}; }),
+            settings: savedData?.settings
+        };
+    }
+
     return (
         <div style={style} className='board'>
-            {savedData?.cols.map(col => <Column title={col.title} tasks={col.tasks}/>)}
-            <button onClick={() => messageHandler.send('save', savedData)}> Save </button>
+            {savedData?.cols.map(col => {
+                const ref = React.createRef() as React.RefObject<Column>;
+                columnRefs.set(col.title, ref);
+                return <Column initialTitle={col.title} initialTasks={col.tasks} ref={ref}/>;
+            })}
+            <button onClick={() => messageHandler.send('save', serialize())}> Save </button>
         </div>
     );
 }
