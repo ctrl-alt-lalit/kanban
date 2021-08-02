@@ -31,7 +31,11 @@ function Task ({text, index, id, callback}:{text: string, index: number, id: str
                     {...provided.draggableProps}
                     className={['task', snapshot.isDragging ? 'drag' : ''].join(' ')}
                 >
-                    <div className='task-handle' {...provided.dragHandleProps}/>
+                    <div
+                        className='task-handle'
+                        {...provided.dragHandleProps}
+                        onMouseDown={() => setEditing(false)}
+                    />
                     <TextAreaAutosize
                         className='task-edit task-section'
                         value={text}

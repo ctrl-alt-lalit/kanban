@@ -8,11 +8,13 @@ interface VsCodeApi {
 
 
 class VscodeHandler {
-    send(command: string, data: any) {
-        VscodeHandler.vscode.postMessage({
-            command: command,
-            data: data
-        });
+    load() {
+        console.log('sending load command');
+        this.send('load', null);
+    }
+
+    save(data: StrictKanbanJSON) {
+        this.send('save', data);
     }
 
     addLoadListener(callback: (data: StrictKanbanJSON) => void) {
@@ -62,6 +64,13 @@ class VscodeHandler {
     private static vscode =  acquireVsCodeApi();
     
     private loadCallbacks: ((data: StrictKanbanJSON) => void)[] = [];
+
+    private send(command: string, data: any) {
+        VscodeHandler.vscode.postMessage({
+            command: command,
+            data: data
+        });
+    }
 }
 
 export default new VscodeHandler();

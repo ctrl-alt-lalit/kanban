@@ -5,11 +5,12 @@ body {
     font-size: var(--vscode-font-size);
     background-color: var(--vscode-editor-background);
     color: var(--vscode-editor-foreground);
+    height: 99vh;
 }
 
 #root {
     width: 100%;
-    height: 100vh;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -24,9 +25,12 @@ body {
 }
 
 .board-titlebar {
+    margin-left: 1rem;
+    margin-right: 1rem;
     width: 100%;
     flex-grow: 0;
-    display: inline-block;
+    display: inline-flex;
+    flex-direction: row;
 }
 
 .board-content {
@@ -44,24 +48,37 @@ body {
     flex-direction: column;
     margin: 1rem;
     display: flex;
+    border-left: 0.2rem solid var(--vscode-editor-foreground);
+    padding-left: 0.3rem;
 }
 
 .column-tasks {
     flex-grow: 1;
+    margin-bottom: 1rem;
+    padding-top: 1rem;
 }
 
 .task {
-    padding: 1rem;
-    background-color: blue;
+    background-color: var(--vscode-activityBar-background);
+    border: 1px solid var(--vscode-activityBar-background);
 }
 
 .task-section {
-    font-family: var(--vscode-font-family);
-    font-size: var(--vscode-font-size);
+    font: 400 var(--vscode-font-size) var(--vscode-font-family) !important;
     background-color: var(--vscode-editor-background);
     color: var(--vscode-editor-foreground);
     margin: 0 !important;
     width: 100% !important;
+}
+
+.task-edit {
+    padding: 0;
+    border-width: 0;
+}
+
+.task-display * {
+    margin-block-start: 0;
+    margin-block-end: 0;
 }
 
 .task-handle {
@@ -69,5 +86,4 @@ body {
     padding: 0;
     margin: 0;
     width: 100%;
-    background-color: aqua;
 }

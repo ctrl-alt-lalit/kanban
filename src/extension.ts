@@ -70,10 +70,6 @@ class Panel {
 			null,
 			this.disposables
 		);
-
-		const savedData = this.storage.retrieve('columns');
-		this.webviewPanel.webview.postMessage({command: 'load', data: savedData});
-		console.log('sent message');
 	}
 
 	private dispose() {
@@ -118,9 +114,13 @@ class Panel {
 	}
 
 	private receiveMessage(message: {command: string, data: any}): void {
+		const {command, data} = message;
 		console.log(message);
-		if (message.command === 'save') {
-			this.storage.store('columns', message.data);
+		if (command === 'save') {
+			this.storage.store('columns', data);
+		} else if (command === 'load') {
+			const savedData = this.storage.retrieve('columns');
+			this.webviewPanel.webview.postMessage({command: 'load', data: savedData});
 		}
 	}
 }
