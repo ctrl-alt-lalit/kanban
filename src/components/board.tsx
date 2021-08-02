@@ -1,30 +1,28 @@
 import React, { useState } from 'react';
-import messageHandler from '../util/message-handler';
+import vscodeHandler from '../util/vscode-handler';
 import Column from './column';
+import {DragDropContext, DropResult} from 'react-beautiful-dnd';
 
 function Board(): JSX.Element {
 
-    const [savedData, updateSavedData] = useState(messageHandler.previouslySavedData);
-    
-    if (!savedData) {
-        const callback = (command: string, data: any) => {
-            if (command === 'load') {
-                const defaultData = {
-                    ncols: 4,
-                    cols: [
-                        {title: 'Bugs', ntasks: 0, tasks: []},
-                        {title: 'To-Do', ntasks: 1, tasks: ['']},
-                        {title: 'Doing', ntasks: 0, tasks: []},
-                        {title: 'Done', ntasks: 0, tasks: []}
-                    ],
-                    settings: {autosave: false}
-                };
+    const defaultData: StrictKanbanJSON = {
+        cols: [
+            {title: 'Bugs', tasks: [], taskIds: []},
+            {title: 'To-Do',tasks: [''], taskIds: [Math.random().toString(36)]},
+            {title: 'Doing', tasks: [], taskIds: []},
+            {title: 'Done',  tasks: [], taskIds: []}
+        ],
+        columnIds: new Array(4).map(() => Math.random().toString(36)),
+        settings: {autosave: false}
+    };
 
-                updateSavedData(data ?? defaultData);
-            }
-        };
-        messageHandler.addListener(callback);
-    }
+    const [savedData, updateSavedData] = useState(defaultData);
+
+    vscodeHandler.addLoadListener((data) => {
+        updateSavedData(data);
+    });
+
+    
 
     const style = {
         backgroundColor: 'green'
@@ -32,24 +30,86 @@ function Board(): JSX.Element {
 
     const columnRefs= new Map<string, React.RefObject<Column>>();
 
-    function serialize() {
-        const columns = savedData!.cols.map(col => columnRefs.get(col.title)!.current!.serialize());
-
+    function serialize(): StrictKanbanJSON {
         return {
-            ncols: columns.length,
-            cols: columns?.map(col => { return {title: col?.title, ntasks: col?.tasks.length, tasks: col?.tasks}; }),
-            settings: savedData?.settings
+            cols: savedData.columnIds.map(id => columnRefs.get(id)!.current!.serialize()),
+            columnIds: savedData.columnIds,
+            settings: savedData.settings
         };
+    }
+
+    function dragEnd(result: DropResult): void {
+        const {source, destination} = result;
+
+        if (!destination) {
+            return;
+        }
+
+        if (source.droppableId  === destination.droppableId) { //same column
+            if (source.index === destination.index) {
+                return;
+            }
+
+            const column = columnRefs.get(source.droppableId)?.current;
+            if (!column) {
+                console.error("could not load column in dragend function");
+                return;
+            }
+
+            let {tasks, taskIds} = column.serialize();
+
+            const [removedText] = tasks.splice(source.index, 1);
+            const [removedId] = taskIds.splice(source.index, 1);
+
+            tasks.splice(destination.index, 0, removedText);
+            taskIds.splice(destination.index, 0, removedId);
+
+            column.updateTasks(tasks, taskIds);
+        } else {
+            const sourceCol = columnRefs.get(source.droppableId)?.current;
+            const destCol = columnRefs.get(destination.droppableId)?.current;
+
+            if (!sourceCol || !destCol) {
+                console.error('could not load at least one column in dragend function');
+                return;
+            }
+
+            let sourceJson = sourceCol.serialize();
+            let destJson = destCol.serialize();
+
+            const [removedText] = sourceJson.tasks.splice(source.index, 1);
+            const [removedId] = sourceJson.taskIds.splice(source.index, 1);
+            
+            destJson.tasks.splice(destination.index, 0, removedText);
+            destJson.taskIds.splice(destination.index, 0, removedId);
+
+            sourceCol.updateTasks(sourceJson.tasks, sourceJson.taskIds);
+            destCol.updateTasks(destJson.tasks, destJson.taskIds);
+        }
+    }
+
+    function Titlebar(): JSX.Element {
+        return (
+            <div className='board-titlebar'>
+                <h1> Kanban </h1>
+                <button onClick={() => vscodeHandler.send('save', serialize())}> Save </button>
+            </div>
+        )
     }
 
     return (
         <div style={style} className='board'>
-            {savedData?.cols.map(col => {
-                const ref = React.createRef() as React.RefObject<Column>;
-                columnRefs.set(col.title, ref);
-                return <Column initialTitle={col.title} initialTasks={col.tasks} ref={ref}/>;
-            })}
-            <button onClick={() => messageHandler.send('save', serialize())}> Save </button>
+            <Titlebar/>
+            <div className='board-content'>
+                <DragDropContext onDragEnd={(result) => dragEnd(result)}>
+                    {savedData?.cols.map((col, index) => {
+                        const ref = React.createRef() as React.RefObject<Column>;
+                        const key = savedData.columnIds[index];
+                        columnRefs.set(key, ref);
+                        return <Column initialState={col} id={key} ref={ref}/>;
+                    })}
+                </DragDropContext>
+            </div>
         </div>
     );
 }

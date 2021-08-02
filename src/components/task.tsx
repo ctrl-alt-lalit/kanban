@@ -1,49 +1,57 @@
 import React from 'react';
 import TextAreaAutosize from 'react-textarea-autosize';
 import ReactMarkdown from 'react-markdown';
+import { Draggable, DraggableProvided, DraggableStateSnapshot, DraggingStyle, NotDraggingStyle } from 'react-beautiful-dnd';
 
 
-
-class Task extends React.Component<{initialText: string},{text: string, editing: boolean}> {
-
-    constructor(props: never) {
-        super(props);
-        this.state = {
-            text: this.props.initialText,
-            editing: false
-        };
+function simpleHash(str: string, salt: number): string {
+    let hash = Math.round(salt);
+    for (let i = 0; i < str.length; ++i) {
+        const ch = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + ch;
+        hash = hash & hash;
     }
+    return hash.toString(36);
+}
 
-    serialize(): string {
-        return this.state.text;
-    }
 
-    render(): JSX.Element {
-        return (
-            <div className='task' style={this.style}>
-                <TextAreaAutosize
-                    value={this.state.text}
-                    onChange={(event) => this.setState({text: event.target.value})}
-                    onBlur={() => this.setState({editing: false})}
-                    style={{display: this.state.editing ? 'block' : 'none'}}
-                />
+function Task ({text, index, id, callback}:{text: string, index: number, id: string, callback: (text: string)=>void}) {
+
+    const [editing, setEditing] = React.useState(false);
+
+    return (
+        <Draggable
+            key={id}
+            draggableId={id}
+            index={index}
+        >
+            {(provided, snapshot) => (
                 <div
-                    onClick={() => this.setState({editing: true})}
-                    style={{display: this.state.editing ? 'none' : 'block'}}
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    className={['task', snapshot.isDragging ? 'drag' : ''].join(' ')}
                 >
-                    <ReactMarkdown>
-                        {this.state.text || 'Enter markdown here'}
-                    </ReactMarkdown>
+                    <div className='task-handle' {...provided.dragHandleProps}/>
+                    <TextAreaAutosize
+                        className='task-edit task-section'
+                        value={text}
+                        onChange={(event) => callback(event.target.value)}
+                        onBlur={() => setEditing(false)}
+                        style={{display: editing ? 'block' : 'none'}}
+                    />
+                    <div
+                        className='task-display task-section'
+                        onClick={() => setEditing(true)}
+                        style={{display: editing ? 'none' : 'block'}}
+                    >
+                        <ReactMarkdown>
+                            {text || '_enter markdown here_'}
+                        </ReactMarkdown>
+                    </div>
                 </div>
-            </div>
-        );
-    }
-
-    private style = {
-        backgroundColor: 'blue',
-        margin: 5
-    } as const;
-    
+            )}
+        </Draggable>
+    );
 }
 
 //TODO: get save button to retrieve data from all items

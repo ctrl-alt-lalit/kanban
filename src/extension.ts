@@ -73,6 +73,7 @@ class Panel {
 
 		const savedData = this.storage.retrieve('columns');
 		this.webviewPanel.webview.postMessage({command: 'load', data: savedData});
+		console.log('sent message');
 	}
 
 	private dispose() {
@@ -102,7 +103,7 @@ class Panel {
 				<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
 				<meta name="theme-color" content="#000000">
 				<title>React App</title>
-				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src ${csp}; style-src ${csp}">
+				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src ${csp}; style-src ${csp} 'unsafe-inline'">
 				<link rel="stylesheet" type="text/css" href="${stylesheet}"/>
 			</head
 			<body>
@@ -138,26 +139,4 @@ class StorageManager {
 	}
 
 	private memento: vscode.Memento;
-}
-
-function createBoard(storage: StorageManager, webview: vscode.Webview) {
-	let savedData: KanbanJSON = storage.retrieve('columns');
-	// make example board if nothing is saved
-	if (savedData === null) {
-		savedData = {
-			ncols: 4,
-			cols: [
-				{title: 'Bugs', ntasks: 0, tasks: []},
-				{title: 'To-Do', ntasks: 1, tasks: ['']},
-				{title: 'Doing', ntasks: 0, tasks: []},
-				{title: 'Done', ntasks: 0, tasks: []}
-			],
-			settings: {autosave: false}
-		};
-	}
-
-	webview.postMessage({
-		command: 'load',
-		data: savedData
-	});
 }

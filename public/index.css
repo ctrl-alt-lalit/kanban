@@ -17,11 +17,57 @@ body {
 
 .board {
     width: 80%;
-    display: inline-flex;
+    height: 90%;
+    display: flex;
     padding: 1rem;
+    flex-direction: column;
+}
+
+.board-titlebar {
+    width: 100%;
+    flex-grow: 0;
+    display: inline-block;
+}
+
+.board-content {
+    width: 100%;
+    flex-basis: 0;
+    flex-grow: 1;
+    display: inline-flex;
     flex-direction: row;
+}
+
+.column {
+    height: 100%;
+    flex-basis: 0;
+    flex-grow: 1;
+    flex-direction: column;
+    margin: 1rem;
+    display: flex;
+}
+
+.column-tasks {
+    flex-grow: 1;
 }
 
 .task {
     padding: 1rem;
+    background-color: blue;
+}
+
+.task-section {
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+    background-color: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+.task-handle {
+    height: 1rem;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    background-color: aqua;
 }
