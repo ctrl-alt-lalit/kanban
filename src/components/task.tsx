@@ -15,9 +15,16 @@ function simpleHash(str: string, salt: number): string {
 }
 
 
-function Task ({text, index, id, callback}:{text: string, index: number, id: string, callback: (text: string)=>void}) {
+function Task ({text, index, id, callback}:{text: string, index: number, id: string, callback: (text: string | null)=>void}) {
 
     const [editing, setEditing] = React.useState(false);
+
+
+    const CloseButton = (): JSX.Element => (
+        <div className='task-close' onClick={() => callback(null)}>
+            <span className='codicon codicon-close'/>
+        </div>
+    );
 
     return (
         <Draggable
@@ -35,7 +42,9 @@ function Task ({text, index, id, callback}:{text: string, index: number, id: str
                         className='task-handle'
                         {...provided.dragHandleProps}
                         onMouseDown={() => setEditing(false)}
-                    />
+                    >
+                        <CloseButton/>
+                    </div>
                     <TextAreaAutosize
                         className='task-edit task-section'
                         value={text}

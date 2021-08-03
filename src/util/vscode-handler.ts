@@ -9,7 +9,6 @@ interface VsCodeApi {
 
 class VscodeHandler {
     load() {
-        console.log('sending load command');
         this.send('load', null);
     }
 
@@ -27,9 +26,18 @@ class VscodeHandler {
 
     constructor() {
         window.addEventListener('message', event => {
-            const {command, data} = event.data as {command: string, data: any};
+            let {command, data} = event.data as {command: string, data: any};
             
             if (command === 'load') {
+                const defaultData = {
+                    cols: [
+                        {title: 'Bugs', tasks: []},
+                        {title: 'To-Do', tasks: ['']},
+                        {title: 'Doing', tasks: []},
+                        {title: 'Done', tasks: []}
+                    ]
+                };
+                data ??= defaultData;
                 const sanitized = this.sanitizeKanbanJson(data as KanbanJSON);
                 this.loadCallbacks.forEach(cb => cb(sanitized));
             }

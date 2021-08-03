@@ -59,7 +59,7 @@ class Panel {
 			column,
 			{
 				enableScripts: true,
-				localResourceRoots: [vscode.Uri.file(this.extensionPath + '/build')]
+				localResourceRoots: [vscode.Uri.file(this.extensionPath)]
 			}
 		);
 		
@@ -90,6 +90,7 @@ class Panel {
 		const csp = this.webviewPanel.webview.cspSource;
 		const scriptSource = vscode.Uri.file(this.extensionPath + '/build' + manifest.files['main.js']).with({scheme: 'vscode-resource'});
 		const stylesheet = vscode.Uri.file(this.extensionPath + '/build/index.css').with({scheme: 'vscode-resource'});
+		const codicons = vscode.Uri.file(this.extensionPath + '/node_modules/@vscode/codicons/dist/codicon.css').with({scheme: 'vscode-resource'});
 		return (
 			`
 			<!DOCTYPE html>
@@ -99,8 +100,9 @@ class Panel {
 				<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
 				<meta name="theme-color" content="#000000">
 				<title>React App</title>
-				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src ${csp}; style-src ${csp} 'unsafe-inline'">
+				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src ${csp}; style-src ${csp} 'unsafe-inline'; font-src ${csp}">
 				<link rel="stylesheet" type="text/css" href="${stylesheet}"/>
+				<link rel="stylesheet" type="text/css" href="${codicons}"/>
 			</head
 			<body>
 				<noscript> This extension needs JavaScript in order to run </noscript>

@@ -63,6 +63,24 @@ body {
     border: 1px solid var(--vscode-activityBar-background);
 }
 
+.task-handle {
+    height: 1rem;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    display: inline-flex;
+    flex-direction: row-reverse;
+}
+
+.task-close  {
+    transition: background-color 0.3s;
+}
+
+.task-close:hover {
+    background-color: var(--vscode-charts-red);
+    cursor: pointer
+}
+
 .task-section {
     font: 400 var(--vscode-font-size) var(--vscode-font-family) !important;
     background-color: var(--vscode-editor-background);
@@ -81,9 +99,19 @@ body {
     margin-block-end: 0;
 }
 
-.task-handle {
-    height: 1rem;
-    padding: 0;
-    margin: 0;
-    width: 100%;
+.toast {
+    background-color: var(--vscode-activityBar-background);
+    display: inline-flex;
+    flex-direction: row;
+    border-radius: 10px;
 }
+
+.toast a {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.toast a:focus {
+    color: var(--vscode-editor-foreground);
+}
+

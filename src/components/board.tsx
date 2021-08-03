@@ -2,6 +2,7 @@ import React from 'react';
 import vscodeHandler from '../util/vscode-handler';
 import Column from './column';
 import {DragDropContext, DropResult} from 'react-beautiful-dnd';
+import {Toaster} from 'react-hot-toast';
 
 class Board extends React.Component<{}, {savedData: StrictKanbanJSON}> {
 
@@ -27,6 +28,7 @@ class Board extends React.Component<{}, {savedData: StrictKanbanJSON}> {
                         })}
                     </DragDropContext>
                 </div>
+                <Toaster/>
             </div>
         );
     }
