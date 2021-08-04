@@ -6,3 +6,4 @@ CHANGELOG.md
 *.vsix
 out
 yarn.lock
+yarn-error.log

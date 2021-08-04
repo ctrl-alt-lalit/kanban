@@ -34,7 +34,7 @@
         "kanban.showViewButton": {
           "type": "boolean",
           "default": true,
-          "description": "Show the button on the top right that lets you view your Kanban board. You can still view the board in the Command Pallete with 'Kanban Board: View'"
+          "description": "Add a button to the bottom left of your status bar to view the kanban board. You can still view the board in the Command Pallete with 'Kanban: View'"
         }
       }
     },
@@ -60,7 +60,6 @@
     "@types/react": "^17.0.15",
     "@types/react-beautiful-dnd": "^13.1.1",
     "@types/react-dom": "^17.0.9",
-    "@types/showdown": "^1.9.4",
     "@types/vscode": "^1.53.0",
     "@typescript-eslint/eslint-plugin": "^4.14.1",
     "@typescript-eslint/parser": "^4.14.1",
@@ -79,12 +78,11 @@
     "@vscode/codicons": "^0.0.21",
     "react": "^17.0.2",
     "react-beautiful-dnd": "^13.1.0",
+    "react-colorful": "^5.3.0",
     "react-dom": "^17.0.2",
     "react-hot-toast": "^2.1.0",
     "react-markdown": "^6.0.3",
-    "react-mde": "^11.5.0",
-    "react-textarea-autosize": "^8.3.3",
-    "vscode-codicons": "^0.0.17"
+    "react-textarea-autosize": "^8.3.3"
   },
   "browserslist": {
     "production": [

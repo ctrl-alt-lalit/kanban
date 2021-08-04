@@ -3,12 +3,14 @@ type ColumnJSON = {
     ntasks?: number,
     id?: string,
     tasks: string[] | TaskJSON[],
+    color?: string,
 };
 
 type StrictColumnJSON = {
     title: string,
     id: string,
     tasks: TaskJSON[],
+    color: string
 };
 
 type KanbanJSON = {

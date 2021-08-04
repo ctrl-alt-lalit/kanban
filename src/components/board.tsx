@@ -27,7 +27,7 @@ class Board extends React.Component<{}, {savedData: StrictKanbanJSON}> {
                 <div className='board-content'>
                     <DragDropContext onDragEnd={(result) => this.dragEnd(result)}>
                         {this.state.savedData.cols.map(col => {
-                            return <Column data={col} callback={data => this.columnCallback(data)}/>;
+                            return <Column data={col} callback={data => this.columnCallback(data)} numCols={this.state.savedData.cols.length}/>;
                         })}
                     </DragDropContext>
                 </div>
@@ -121,19 +121,28 @@ class Board extends React.Component<{}, {savedData: StrictKanbanJSON}> {
                     copy.title = event.target.value;
                     this.updateSavedData(copy);
                 }}/>
-                <a className='board-save' title='Save' onClick={() => vscodeHandler.save(this.state.savedData)}>
+                <a className='board-save' title='Save' onClick={() => {
+                    toast('Board Saved', {duration: 1000});
+                    vscodeHandler.save(this.state.savedData);
+                }}>
                     <span className='codicon codicon-save'/>
                 </a>
                 <a className='board-autosave' title='Toggle Autosave' onClick={() => {
                     const copy = {...this.state.savedData};
                     copy.autosave = !copy.autosave;
+                    toast(`Autosave ${copy.autosave ? 'Enabled' : 'Disabled'}`, {duration: 1000});
                     this.updateSavedData(copy);
                 }}>
                     <span className={['codicon', this.state.savedData.autosave ? 'codicon-sync' : 'codicon-sync-ignored'].join(' ')}/>
                 </a>
                 <a className='board-add-column' title='Add Column' onClick={() => {
                     const copy = {...this.state.savedData};
-                    const newCol: StrictColumnJSON = {title: `Column ${copy.cols.length + 1}`, tasks: [], id: randomString()};
+                    const newCol: StrictColumnJSON = {
+                        title: `Column ${copy.cols.length + 1}`,
+                        tasks: [{text: 'Every text field is editable, including column names.', id: randomString()}],
+                        id: randomString(),
+                        color: 'var(--vscode-editor-foreground)'
+                    };
                     copy.cols.push(newCol);
                     this.updateSavedData(copy);
                 }}>
@@ -146,10 +155,10 @@ class Board extends React.Component<{}, {savedData: StrictKanbanJSON}> {
     private static defaultData: StrictKanbanJSON = {
         title: 'Kanban',
         cols: [
-            {title: 'Bugs', tasks: [], id: randomString()},
-            {title: 'To-Do',tasks: [{text: '', id: randomString()}], id: randomString()},
-            {title: 'Doing', tasks: [], id: randomString()},
-            {title: 'Done',  tasks: [], id: randomString()}
+            {title: 'Bugs', tasks: [], id: randomString(), color: 'var(--vscode-editor-foreground)'},
+            {title: 'To-Do',tasks: [{text: '', id: randomString()}], id: randomString(), color: 'var(--vscode-editor-foreground)'},
+            {title: 'Doing', tasks: [], id: randomString(), color: 'var(--vscode-editor-foreground)'},
+            {title: 'Done',  tasks: [], id: randomString(), color: 'var(--vscode-editor-foreground)'}
         ],
         autosave: false
     };

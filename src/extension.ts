@@ -55,7 +55,7 @@ class Panel {
 		this.storage = new StorageManager(context.workspaceState);
 		this.webviewPanel = vscode.window.createWebviewPanel(
 			'kanban',
-			'React Panel',
+			'Kanban',
 			column,
 			{
 				enableScripts: true,

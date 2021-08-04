@@ -58,7 +58,8 @@ class VscodeHandler {
             return {
                 title: col.title,
                 tasks: col.tasks.map(task => sanitizeTaskJson(task)),
-                id: Math.random().toString(36)
+                id: Math.random().toString(36),
+                color: col.color ?? 'var(--vscode-editor-foreground)',
             };
         }
 

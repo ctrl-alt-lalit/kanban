@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/bin/node /usr/bin/yarn add @types/react-simple-snackbar --dev
+  /usr/bin/node /usr/bin/yarn run build
 
 PATH: 
   /home/lalit/.rbenv/shims:/home/lalit/.rbenv/shims:/usr/local/sbin:/usr/local/bin:/usr/bin:/var/lib/flatpak/exports/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/var/lib/snapd/snap/bin:/home/lalit/Android/Sdk/emulator:/home/lalit/Android/Sdk/tools:/home/lalit/Android/Sdk/tools/bin:/home/lalit/Android/Sdk/platform-tools:/usr/lib/jvm/default/bin:/home/lalit/Android/Sdk/emulator:/home/lalit/Android/Sdk/tools:/home/lalit/Android/Sdk/tools/bin:/home/lalit/Android/Sdk/platform-tools
@@ -14,17 +14,12 @@ Platform:
   linux x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@types%2freact-simple-snackbar: Not found
-      at Request.params.callback [as _callback] (/usr/lib/node_modules/yarn/lib/cli.js:66992:18)
-      at Request.self.callback (/usr/lib/node_modules/yarn/lib/cli.js:140763:22)
-      at Request.emit (node:events:394:28)
-      at Request.<anonymous> (/usr/lib/node_modules/yarn/lib/cli.js:141735:10)
-      at Request.emit (node:events:394:28)
-      at IncomingMessage.<anonymous> (/usr/lib/node_modules/yarn/lib/cli.js:141657:12)
-      at Object.onceWrapper (node:events:513:28)
-      at IncomingMessage.emit (node:events:406:35)
-      at endReadableNT (node:internal/streams/readable:1331:12)
-      at processTicksAndRejections (node:internal/process/task_queues:83:21)
+  SyntaxError: /home/lalit/Documents/Personal/kanban/package.json: Unexpected token } in JSON at position 2242
+      at JSON.parse (<anonymous>)
+      at /usr/lib/node_modules/yarn/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/usr/lib/node_modules/yarn/lib/cli.js:310:30)
+      at /usr/lib/node_modules/yarn/lib/cli.js:321:13
 
 npm manifest: 
   {
@@ -63,7 +58,7 @@ npm manifest:
           "kanban.showViewButton": {
             "type": "boolean",
             "default": true,
-            "description": "Show the button on the top right that lets you view your Kanban board. You can still view the board in the Command Pallete with 'Kanban Board: View'"
+            "description": "Add a button to the bottom left of your status bar to view the kanban board. You can still view the board in the Command Pallete with 'Kanban: View'"
           }
         }
       },
@@ -89,7 +84,6 @@ npm manifest:
       "@types/react": "^17.0.15",
       "@types/react-beautiful-dnd": "^13.1.1",
       "@types/react-dom": "^17.0.9",
-      "@types/showdown": "^1.9.4",
       "@types/vscode": "^1.53.0",
       "@typescript-eslint/eslint-plugin": "^4.14.1",
       "@typescript-eslint/parser": "^4.14.1",
@@ -108,12 +102,11 @@ npm manifest:
       "@vscode/codicons": "^0.0.21",
       "react": "^17.0.2",
       "react-beautiful-dnd": "^13.1.0",
+      "react-colorful": "^5.3.0",
       "react-dom": "^17.0.2",
+      "react-hot-toast": "^2.1.0",
       "react-markdown": "^6.0.3",
-      "react-mde": "^11.5.0",
-      "react-simple-snackbar": "^1.1.11",
       "react-textarea-autosize": "^8.3.3",
-      "vscode-codicons": "^0.0.17"
     },
     "browserslist": {
       "production": [
@@ -1292,7 +1285,7 @@ Lockfile:
     dependencies:
       regenerator-runtime "^0.13.4"
   
-  "@babel/runtime@^7.10.2", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.1", "@babel/runtime@^7.13.10", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
+  "@babel/runtime@^7.10.2", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.1", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.8.4", "@babel/runtime@^7.9.2":
     version "7.14.8"
     resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.14.8.tgz#7119a56f421018852694290b9f9148097391b446"
     integrity sha512-twj3L8Og5SaCRCErB4x4ajbvBIVV77CGeFglHpeg5WC5FF8TZzBWXtTJ4MqaD9QszLYTtr+IsaAL2rEUevb+eg==
@@ -2012,11 +2005,6 @@ Lockfile:
     version "0.16.2"
     resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.2.tgz#1a62f89525723dde24ba1b01b092bf5df8ad4d39"
     integrity sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==
-  
-  "@types/showdown@^1.9.4":
-    version "1.9.4"
-    resolved "https://registry.yarnpkg.com/@types/showdown/-/showdown-1.9.4.tgz#5385adf34143abad9309561661fa6c781d2ab962"
-    integrity sha512-50ehC3IAijfkvoNqmQ+VL73S7orOxmAK8ljQAFBv8o7G66lAZyxQj1L3BAv2dD86myLXI+sgKP1kcxAaxW356w==
   
   "@types/source-list-map@*":
     version "0.1.2"
@@ -4671,14 +4659,6 @@ Lockfile:
     dependencies:
       utila "~0.4"
   
-  dom-helpers@^5.0.1:
-    version "5.2.1"
-    resolved "https://registry.yarnpkg.com/dom-helpers/-/dom-helpers-5.2.1.tgz#d9400536b2bf8225ad98fe052e029451ac40e902"
-    integrity sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==
-    dependencies:
-      "@babel/runtime" "^7.8.7"
-      csstype "^3.0.2"
-  
   dom-serializer@0:
     version "0.2.2"
     resolved "https://registry.yarnpkg.com/dom-serializer/-/dom-serializer-0.2.2.tgz#1afb81f533717175d478655debc5e332d9f9bb51"
@@ -6191,6 +6171,11 @@ Lockfile:
     integrity sha512-5mwUoSuBk44Y4EshyiqcH95ZntbDdTQqA3QYSrxmzj28Ai0vXBGMH1ApSANH14j2sIRtqCEyg6PfsuP7ElOEDA==
     dependencies:
       sparkles "^1.0.0"
+  
+  goober@^2.0.35:
+    version "2.0.39"
+    resolved "https://registry.yarnpkg.com/goober/-/goober-2.0.39.tgz#0a52bf78ee9562270669e7603f0250f014f37cb1"
+    integrity sha512-ryw0VaZaehKmnjL4ZEJaiUVQc+XFa5dXIAbf2QC3F+WVKRbzaSuJyq7w28bdlwqYctiZ0Ok5QL/Pap5M2pCHQg==
   
   graceful-fs@^4.0.0, graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.2, graceful-fs@^4.2.4:
     version "4.2.6"
@@ -10166,7 +10151,7 @@ Lockfile:
       kleur "^3.0.3"
       sisteransi "^1.0.5"
   
-  prop-types@^15.6.2, prop-types@^15.7.2:
+  prop-types@^15.7.2:
     version "15.7.2"
     resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
     integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -10362,6 +10347,11 @@ Lockfile:
       redux "^4.0.4"
       use-memo-one "^1.1.1"
   
+  react-colorful@^5.3.0:
+    version "5.3.0"
+    resolved "https://registry.yarnpkg.com/react-colorful/-/react-colorful-5.3.0.tgz#bcbae49c1affa9ab9a3c8063398c5948419296bd"
+    integrity sha512-zWE5E88zmjPXFhv6mGnRZqKin9s5vip1O3IIGynY9EhZxN8MATUxZkT3e/9OwTEm4DjQBXc6PFWP6AetY+Px+A==
+  
   react-dev-utils@^11.0.3:
     version "11.0.4"
     resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-11.0.4.tgz#a7ccb60257a1ca2e0efe7a83e38e6700d17aa37a"
@@ -10406,6 +10396,13 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.9.tgz#3c743010c9359608c375ecd6bc76f35d93995b0a"
     integrity sha512-nQTTcUu+ATDbrSD1BZHr5kgSD4oF8OFjxun8uAaL8RwPBacGBNPf/yAuVVdx17N8XNzRDMrZ9XcKZHCjPW+9ew==
   
+  react-hot-toast@^2.1.0:
+    version "2.1.0"
+    resolved "https://registry.yarnpkg.com/react-hot-toast/-/react-hot-toast-2.1.0.tgz#f4fe3107a3ccd1d7e76ad3d3282967fbf2fccf2c"
+    integrity sha512-/wUoUVUC/qCYmkJvMzl/oXBIJe47vYqtwOpA76Pz8SrklrF8RBUTLG2eS+ivznzQzY8YlsyODIV7Qk3vOnFf1g==
+    dependencies:
+      goober "^2.0.35"
+  
   react-is@^16.13.1, react-is@^16.7.0, react-is@^16.8.1:
     version "16.13.1"
     resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
@@ -10434,11 +10431,6 @@ Lockfile:
       unified "^9.0.0"
       unist-util-visit "^2.0.0"
       vfile "^4.0.0"
-  
-  react-mde@^11.5.0:
-    version "11.5.0"
-    resolved "https://registry.yarnpkg.com/react-mde/-/react-mde-11.5.0.tgz#3e81a505071aa80287fb23a1c0ce5e8b34c82055"
-    integrity sha512-CH/VK6d+tpVjJ8rTXfh1dDt6GWedTgCU0668p8toqhAc3vy0Lu872O2RKYDSpkUrlbHI08fjUPTl++nExp6gag==
   
   react-redux@^7.2.0:
     version "7.2.4"
@@ -10523,14 +10515,6 @@ Lockfile:
     optionalDependencies:
       fsevents "^2.1.3"
   
-  react-simple-snackbar@^1.1.11:
-    version "1.1.11"
-    resolved "https://registry.yarnpkg.com/react-simple-snackbar/-/react-simple-snackbar-1.1.11.tgz#e1470f49d04f8e1e941e62f459cca27d1b2167a1"
-    integrity sha512-l+RMkIoqnOXBQaQbirk4yGaEH5Jeynup/AQBGaq7hCPIIraOQi2RFVthZIM4Ms6sFtdSYxQ8emN4/jI30l7gXw==
-    dependencies:
-      "@babel/runtime" "^7.13.10"
-      react-transition-group "^4.4.1"
-  
   react-textarea-autosize@^8.3.3:
     version "8.3.3"
     resolved "https://registry.yarnpkg.com/react-textarea-autosize/-/react-textarea-autosize-8.3.3.tgz#f70913945369da453fd554c168f6baacd1fa04d8"
@@ -10539,16 +10523,6 @@ Lockfile:
       "@babel/runtime" "^7.10.2"
       use-composed-ref "^1.0.0"
       use-latest "^1.0.0"
-  
-  react-transition-group@^4.4.1:
-    version "4.4.2"
-    resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-4.4.2.tgz#8b59a56f09ced7b55cbd53c36768b922890d5470"
-    integrity sha512-/RNYfRAMlZwDSr6z4zNKV6xu53/e2BuaBbGhbyYIXTrmgu/bGHzmqOs7mJSJBHy9Ud+ApHx3QjrkKSp1pxvlFg==
-    dependencies:
-      "@babel/runtime" "^7.5.5"
-      dom-helpers "^5.0.1"
-      loose-envify "^1.4.0"
-      prop-types "^15.6.2"
   
   react@^17.0.2:
     version "17.0.2"
@@ -12645,6 +12619,11 @@ Lockfile:
     dependencies:
       ts-essentials "^2.0.3"
   
+  use-debouncy@^4.2.0:
+    version "4.2.0"
+    resolved "https://registry.yarnpkg.com/use-debouncy/-/use-debouncy-4.2.0.tgz#d85a593a9ec7fd1310e79246132389f04bcc5e3a"
+    integrity sha512-v8X/yyi+IDiBiJ1pVNJBluxlhN3s2jsj6X7oeHWwMUliYfiPhbkUKoWefr8tG0/a1o9+J2klv+lHsjGz4U/C8A==
+  
   use-isomorphic-layout-effect@^1.0.0:
     version "1.1.1"
     resolved "https://registry.yarnpkg.com/use-isomorphic-layout-effect/-/use-isomorphic-layout-effect-1.1.1.tgz#7bb6589170cd2987a152042f9084f9effb75c225"
@@ -12838,11 +12817,6 @@ Lockfile:
     version "1.1.2"
     resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
     integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
-  
-  vscode-codicons@^0.0.17:
-    version "0.0.17"
-    resolved "https://registry.yarnpkg.com/vscode-codicons/-/vscode-codicons-0.0.17.tgz#5ab4f2015641adaa1a73136195ba916aebf8764d"
-    integrity sha512-Hzclzhz9ouj5sfjDbXE78fciSGwDrlOMimkRIxFNy0pmHoexzLH1+OKTbrlR+Gz17C9ZCfX7Mlpq21jGsyhgSg==
   
   vscode-test@^1.5.0:
     version "1.6.1"
