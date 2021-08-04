@@ -1,35 +1,16 @@
 import React from 'react';
 import TextAreaAutosize from 'react-textarea-autosize';
 import ReactMarkdown from 'react-markdown';
-import { Draggable, DraggableProvided, DraggableStateSnapshot, DraggingStyle, NotDraggingStyle } from 'react-beautiful-dnd';
+import { Draggable } from 'react-beautiful-dnd';
 
-
-function simpleHash(str: string, salt: number): string {
-    let hash = Math.round(salt);
-    for (let i = 0; i < str.length; ++i) {
-        const ch = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + ch;
-        hash = hash & hash;
-    }
-    return hash.toString(36);
-}
-
-
-function Task ({text, index, id, callback}:{text: string, index: number, id: string, callback: (text: string | null)=>void}) {
+function Task ({data, index, callback}:{data: {text: string, id: string}, index: number, callback: (text: string | null)=>void}) {
 
     const [editing, setEditing] = React.useState(false);
 
-
-    const CloseButton = (): JSX.Element => (
-        <div className='task-close' onClick={() => callback(null)}>
-            <span className='codicon codicon-close'/>
-        </div>
-    );
-
     return (
         <Draggable
-            key={id}
-            draggableId={id}
+            key={data.id}
+            draggableId={data.id}
             index={index}
         >
             {(provided, snapshot) => (
@@ -43,11 +24,13 @@ function Task ({text, index, id, callback}:{text: string, index: number, id: str
                         {...provided.dragHandleProps}
                         onMouseDown={() => setEditing(false)}
                     >
-                        <CloseButton/>
+                        <a className='task-delete' title='Delete Task' onClick={() => callback(null)}>
+                            <span className='codicon codicon-close'/>
+                        </a>
                     </div>
                     <TextAreaAutosize
                         className='task-edit task-section'
-                        value={text}
+                        value={data.text}
                         onChange={(event) => callback(event.target.value)}
                         onBlur={() => setEditing(false)}
                         style={{display: editing ? 'block' : 'none'}}
@@ -58,7 +41,7 @@ function Task ({text, index, id, callback}:{text: string, index: number, id: str
                         style={{display: editing ? 'none' : 'block'}}
                     >
                         <ReactMarkdown>
-                            {text || '_enter markdown here_'}
+                            {data.text || '_enter text or markdown here_'}
                         </ReactMarkdown>
                     </div>
                 </div>
@@ -67,5 +50,4 @@ function Task ({text, index, id, callback}:{text: string, index: number, id: str
     );
 }
 
-//TODO: get save button to retrieve data from all items
 export default Task;

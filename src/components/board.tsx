@@ -2,7 +2,11 @@ import React from 'react';
 import vscodeHandler from '../util/vscode-handler';
 import Column from './column';
 import {DragDropContext, DropResult} from 'react-beautiful-dnd';
-import {Toaster} from 'react-hot-toast';
+import toast from 'react-hot-toast';
+
+function randomString() {
+    return Math.random().toString(36);
+}
 
 class Board extends React.Component<{}, {savedData: StrictKanbanJSON}> {
 
@@ -12,7 +16,7 @@ class Board extends React.Component<{}, {savedData: StrictKanbanJSON}> {
             savedData: Board.defaultData
         };
 
-        vscodeHandler.addLoadListener(data => this.setState({savedData: data}));
+        vscodeHandler.addLoadListener(data => this.updateSavedData(data));
         vscodeHandler.load();
     }
 
@@ -22,13 +26,11 @@ class Board extends React.Component<{}, {savedData: StrictKanbanJSON}> {
                 <this.Titlebar/>
                 <div className='board-content'>
                     <DragDropContext onDragEnd={(result) => this.dragEnd(result)}>
-                        {this.state.savedData.cols.map((col, index) => {
-                            const id = this.state.savedData.columnIds[index];
-                            return <Column data={col} id={id} callback={(data) => this.columnCallback(data, id)}/>;
+                        {this.state.savedData.cols.map(col => {
+                            return <Column data={col} callback={data => this.columnCallback(data)}/>;
                         })}
                     </DragDropContext>
                 </div>
-                <Toaster/>
             </div>
         );
     }
@@ -37,30 +39,19 @@ class Board extends React.Component<{}, {savedData: StrictKanbanJSON}> {
         const {source, destination} = result;
 
         const getColumn = (id: string): StrictColumnJSON => {
-            const index = this.state.savedData.columnIds.indexOf(id);
-            return {...this.state.savedData.cols[index]};
+            return this.state.savedData.cols.find(col => col.id === id)!;
         };
 
-        const removeFromColumn = (column: StrictColumnJSON, index: number) => {
-            const [text] = column.tasks.splice(index, 1);
-            const [id] = column.taskIds.splice(index, 1);
-            return [text, id];
-        };
-
-        const addToColumn = (column: StrictColumnJSON, index: number, text: string, id: string) => {
-            column.tasks.splice(index, 0, text);
-            column.taskIds.splice(index, 0, id);
-        };
-
-        const updateBoard = (column: StrictColumnJSON, columnId: string, column2?: StrictColumnJSON, columnId2?: string) => {
+        const updateBoard = (column: StrictColumnJSON, column2?: StrictColumnJSON) => {
             const copy = {...this.state.savedData};
-            const index = copy.columnIds.indexOf(columnId);
+            copy.cols = [...this.state.savedData.cols];
+            const index = copy.cols.findIndex(col => col.id === column.id);
             copy.cols[index] = column;
-            if (column2 && columnId2) {
-                const index2 = copy.columnIds.indexOf(columnId2);
+            if (column2) {
+                const index2 = copy.cols.findIndex(col => col.id === column2.id);
                 copy.cols[index2] = column2;
             }
-            this.setState({savedData: copy});
+            this.updateSavedData(copy);
         };
 
         if (!destination) {
@@ -73,52 +64,102 @@ class Board extends React.Component<{}, {savedData: StrictKanbanJSON}> {
             }
 
             const column = getColumn(source.droppableId);
-            const [removedText, removedId] = removeFromColumn(column, source.index);
-            addToColumn(column, destination.index, removedText, removedId);
+            const [removedTask] = column.tasks.splice(source.index, 1);
+            column.tasks.splice(destination.index, 0, removedTask);
 
-            updateBoard(column, source.droppableId);
+            updateBoard(column);
         } else {
             const sourceCol = getColumn(source.droppableId);
             const destCol = getColumn(destination.droppableId);
 
-            const [removedText, removedId] = removeFromColumn(sourceCol, source.index);
-            addToColumn(destCol, destination.index, removedText, removedId);
+            const [removedTask] = sourceCol.tasks.splice(source.index, 1);
+            destCol.tasks.splice(destination.index, 0, removedTask);
 
-            updateBoard(sourceCol, source.droppableId, destCol, destination.droppableId);
+            updateBoard(sourceCol, destCol);
         }
     }
 
-    private columnCallback(data: StrictColumnJSON, id: string) {
-        const index = this.state.savedData.columnIds.indexOf(id);
+    private columnCallback(data: StrictColumnJSON | string) {
+
         const copy = {...this.state.savedData};
-        copy.cols[index] = data;
-        this.setState({savedData: copy});
+        copy.cols = [...this.state.savedData.cols];
+
+        if (typeof data === 'string') {
+            const oldData = {...this.state.savedData};
+            oldData.cols = [...this.state.savedData.cols];
+            toast(t => (
+                <div style={{
+                    display: 'inline-flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                }}>
+                    <p>Column Deleted &emsp;</p>
+                    <a  style={{cursor: 'pointer'}} onClick={() => {
+                        this.updateSavedData(oldData);
+                        toast.dismiss(t.id);
+                    }}>
+                        Undo 
+                    </a>
+                </div>
+            ));
+
+            const index = copy.cols.findIndex(col => col.id === data);
+            copy.cols.splice(index, 1);
+            this.updateSavedData(copy);
+        } else {
+            const index = copy.cols.findIndex(col => col.id === data.id);
+            copy.cols[index] = data;
+            this.updateSavedData(copy);
+        }
     }
 
     private Titlebar = (): JSX.Element => {
         return (
             <div className='board-titlebar'>
-                <h1> Kanban </h1>
-                <button onClick={() => vscodeHandler.save(this.state.savedData)}> Save </button>
+                <input className='board-title' maxLength={18} value={this.state.savedData.title} onChange={event => {
+                    const copy = {...this.state.savedData};
+                    copy.title = event.target.value;
+                    this.updateSavedData(copy);
+                }}/>
+                <a className='board-save' title='Save' onClick={() => vscodeHandler.save(this.state.savedData)}>
+                    <span className='codicon codicon-save'/>
+                </a>
+                <a className='board-autosave' title='Toggle Autosave' onClick={() => {
+                    const copy = {...this.state.savedData};
+                    copy.autosave = !copy.autosave;
+                    this.updateSavedData(copy);
+                }}>
+                    <span className={['codicon', this.state.savedData.autosave ? 'codicon-sync' : 'codicon-sync-ignored'].join(' ')}/>
+                </a>
+                <a className='board-add-column' title='Add Column' onClick={() => {
+                    const copy = {...this.state.savedData};
+                    const newCol: StrictColumnJSON = {title: `Column ${copy.cols.length + 1}`, tasks: [], id: randomString()};
+                    copy.cols.push(newCol);
+                    this.updateSavedData(copy);
+                }}>
+                    <span className='codicon codicon-add'/>
+                </a>
             </div>
         );
     };
 
     private static defaultData: StrictKanbanJSON = {
+        title: 'Kanban',
         cols: [
-            {title: 'Bugs', tasks: [], taskIds: []},
-            {title: 'To-Do',tasks: [''], taskIds: [Math.random().toString(36)]},
-            {title: 'Doing', tasks: [], taskIds: []},
-            {title: 'Done',  tasks: [], taskIds: []}
+            {title: 'Bugs', tasks: [], id: randomString()},
+            {title: 'To-Do',tasks: [{text: '', id: randomString()}], id: randomString()},
+            {title: 'Doing', tasks: [], id: randomString()},
+            {title: 'Done',  tasks: [], id: randomString()}
         ],
-        columnIds: [
-            Math.random().toString(36),
-            Math.random().toString(36),
-            Math.random().toString(36),
-            Math.random().toString(36)
-        ],
-        settings: {autosave: false}
+        autosave: false
     };
+
+    private updateSavedData(data: StrictKanbanJSON) {
+        if (data.autosave) {
+            vscodeHandler.save(data);
+        }
+        this.setState({savedData: data});
+    }
 }
 
 export default Board;

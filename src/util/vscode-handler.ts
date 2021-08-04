@@ -45,26 +45,34 @@ class VscodeHandler {
     }
 
     private sanitizeKanbanJson(data: KanbanJSON): StrictKanbanJSON {
-        function makeRandomArray(size: number): string[] {
-            let arr = new Array(size).fill('0');
-            for (let i = 0; i < size; ++i) {
-                arr[i] = Math.random().toString(36);
-            }
-            return arr;
-        }
 
         function sanitizeColumnJson(col: ColumnJSON): StrictColumnJSON {
+            function sanitizeTaskJson(task: string | TaskJSON) {
+                if (typeof task === 'string') {
+                    return {text: task, id: Math.random().toString(36)};
+                } else {
+                    return task;
+                }
+            }
+
             return {
                 title: col.title,
-                tasks: col.tasks,
-                taskIds: col.taskIds ?? makeRandomArray(col.tasks.length)
+                tasks: col.tasks.map(task => sanitizeTaskJson(task)),
+                id: Math.random().toString(36)
             };
         }
 
+        let autosave = false;
+        if (data.autosave !== undefined) {
+            autosave = data.autosave;
+        } else if (data.settings?.autosave !== undefined) {
+            autosave = data.settings.autosave;
+        }
+
         return {
+            title: data.title ?? 'Kanban',
             cols: data.cols.map(col => sanitizeColumnJson(col)),
-            columnIds: data.columnIds ?? makeRandomArray(data.cols.length),
-            settings: data.settings ?? {autosave: false}
+            autosave: autosave
         };
     }
 

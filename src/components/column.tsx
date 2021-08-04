@@ -3,35 +3,32 @@ import { Droppable } from 'react-beautiful-dnd';
 import toast from 'react-hot-toast';
 import Task from './task';
 
-type ColumnTask = {text: string, id: string};
-
-function Column({data, id, callback}: {data: StrictColumnJSON, id: string, callback: (data: StrictColumnJSON) => void}) {
+function Column({data,callback}: {data: StrictColumnJSON, callback: (data: StrictColumnJSON | string) => void}) {
 
     function taskCallback(text: string | null, index: number) {
         let copy = {...data};
         if (text !== null) {
-            copy.tasks[index] = text;
+            copy.tasks[index].text = text;
         } else {
-            const oldData: StrictColumnJSON = {
-                title: copy.title,
-                tasks: [...copy.tasks],
-                taskIds: [...copy.taskIds]
-            };
+            const oldData = {...data};
+            oldData.tasks = [...data.tasks];
+            toast(t => (
+                <div style={{
+                    display: 'inline-flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                }}>
+                    <p>Task Deleted &emsp;</p>
+                    <a  style={{cursor: 'pointer'}} onClick={() => {
+                        callback(oldData);
+                        toast.dismiss(t.id);
+                    }}>
+                        Undo 
+                    </a>
+                </div>
+            ));
 
             copy.tasks.splice(index, 1);
-            toast(t => (
-                    <div style={{display: 'inline-flex', flexDirection: 'row'}}>
-                        <p>Task Deleted</p>
-                        <a onClick={() => {
-                            callback(oldData);
-                            toast.dismiss(t.id);
-                        }}>
-                            Undo 
-                        </a>
-                    </div>
-            ), {
-                className:'toast'
-            });
         }
         
         callback(copy);  
@@ -39,31 +36,32 @@ function Column({data, id, callback}: {data: StrictColumnJSON, id: string, callb
 
     return (
         <div className='column'>
-            <div className='col-toolbar'>
-                <h2>{data.title}</h2>
-                <button onClick={() => {
+            <div className='column-titlebar'>
+                <input value={data.title} maxLength={12} className='column-title' onChange={event => {
                     let copy = {...data};
-                    copy.tasks.push('');
-                    copy.taskIds.push(Math.random().toString(36));
+                    copy.title = event.target.value;
+                    callback(copy);
+                }}/>
+                <a className='column-add-task' title='Add Task' onClick={() => {
+                    let copy = {...data};
+                    copy.tasks.push({text: '', id: Math.random().toString(36)});
                     callback(copy);
                 }}>
-                    Add task
-                </button>
+                    <span className='codicon codicon-empty-window'/>
+                </a>
+                <a className='column-delete' title='Delete Column' onClick={() => callback(data.id)}>
+                    <span className='codicon codicon-remove'/>
+                </a>
             </div>
-            <Droppable droppableId={id} key={id}>
+            <Droppable droppableId={data.id} key={data.id}>
                 {(provided, snapshot) => (
                     <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                         className= {['column-tasks', snapshot.isDraggingOver ? 'drag-over' : ''].join(' ')}
                     >
-                        {data.tasks.map((text, index) => (
-                            <Task
-                                text={text}
-                                index={index}
-                                id={data.taskIds[index]}
-                                callback={(str: string | null) => taskCallback(str, index)}
-                            />
+                        {data.tasks.map((task, index) => (
+                            <Task data={task} index={index} callback={(str: string | null) => taskCallback(str, index)}/>
                         ))}
                         {provided.placeholder}
                     </div>

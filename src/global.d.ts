@@ -1,25 +1,31 @@
 type ColumnJSON = {
     title: string,
     ntasks?: number,
-    tasks: string[],
-    taskIds?: string[],
+    id?: string,
+    tasks: string[] | TaskJSON[],
 };
 
 type StrictColumnJSON = {
     title: string,
-    tasks: string[],
-    taskIds: string[],
+    id: string,
+    tasks: TaskJSON[],
 };
 
 type KanbanJSON = {
+    title?: string,
     ncols?: number,
     cols: ColumnJSON[],
-    columnIds?: string[],
-    settings?: {autosave: boolean}
+    settings?: {autosave: boolean},
+    autosave?: boolean
 };
 
 type StrictKanbanJSON = {
+    title: string,
     cols: StrictColumnJSON[],
-    columnIds: string[],
-    settings: {autosave: boolean}
+    autosave: boolean
+};
+
+type TaskJSON = {
+    text: string,
+    id: string
 };
