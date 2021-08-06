@@ -59,7 +59,8 @@ class Panel {
 			column,
 			{
 				enableScripts: true,
-				localResourceRoots: [vscode.Uri.file(this.extensionPath)]
+				localResourceRoots: [vscode.Uri.file(this.extensionPath)],
+				retainContextWhenHidden: true
 			}
 		);
 		
@@ -117,7 +118,6 @@ class Panel {
 
 	private receiveMessage(message: {command: string, data: any}): void {
 		const {command, data} = message;
-		console.log(message);
 		if (command === 'save') {
 			this.storage.store('columns', data);
 		} else if (command === 'load') {

@@ -15,6 +15,10 @@ body {
     justify-content: center;
 }
 
+/******************************
+  BOARD 
+******************************/
+
 .board {
     width: 95%;
     height: 95%;
@@ -29,6 +33,8 @@ body {
     flex-grow: 0;
     display: inline-flex;
     flex-direction: row;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
 }
 
 .board-title {
@@ -38,6 +44,10 @@ body {
     margin: 0;
     font-weight: bold;
     border-width: 0;
+}
+
+.board-title:focus {
+    outline-color: var(--vscode-editor-foreground);
 }
 
 .board-titlebar a {
@@ -72,6 +82,10 @@ body {
     overflow-y: scroll;
 }
 
+/*****************************
+  COLUMN
+*****************************/
+
 .column {
     flex-basis: 0;
     flex-grow: 1;
@@ -87,6 +101,7 @@ body {
     flex-grow: 0;
     display: inline-flex;
     flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .column-title {
@@ -179,7 +194,6 @@ body {
 
 .column-color-picker input:focus {
     outline: none;
-    border-color: var(--vscode-editor-foreground);
 }
 
 .column-color-picker .input-tag {
@@ -196,6 +210,10 @@ body {
     margin-bottom: 1rem;
     overflow-y: scroll;
 }
+
+/**************************
+  TASK
+**************************/
 
 .task {
     margin-top: 0.5rem;
@@ -214,7 +232,7 @@ body {
 .task-delete  {
     transition: background-color 0.3s;
     color: var(--vscode-activityBar-foreground);
-    cursor: pointer
+    cursor: pointer;
 }
 
 .task-delete:hover, .task-delete:focus, .task-delete:active {
@@ -236,6 +254,10 @@ body {
 .task-edit {
     padding: 0;
     border-width: 0;
+}
+
+.task-edit:focus {
+    outline: none;
 }
 
 .task-display * {

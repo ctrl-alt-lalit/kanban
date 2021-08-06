@@ -3,7 +3,16 @@ import TextAreaAutosize from 'react-textarea-autosize';
 import ReactMarkdown from 'react-markdown';
 import { Draggable } from 'react-beautiful-dnd';
 
-function Task ({data, index, callback}:{data: {text: string, id: string}, index: number, callback: (text: string | null)=>void}) {
+
+/**
+ * React component showing editable text that is rendered in markdown. This component can be dragged to different Columns.
+ * 
+ * @prop data - TaskJSON this Task will represent
+ * @prop index - position of this Task in a list of Tasks
+ * @prop callback - (string | null) => void -- notifies parent Column whenever Task state is updated.
+ * A string will be the new text this Task displays. null means this Task should be deleted.
+ */
+function Task ({data, index, callback}:{data: TaskJSON, index: number, callback: (text: string | null)=>void}): JSX.Element {
 
     const [editing, setEditing] = React.useState(false);
 
@@ -14,11 +23,13 @@ function Task ({data, index, callback}:{data: {text: string, id: string}, index:
             index={index}
         >
             {(provided, snapshot) => (
+                //draggable container for the task (see react-beautiful-dnd)
                 <div
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     className={['task', snapshot.isDragging ? 'drag' : ''].join(' ')}
                 >
+                    {/* 'Handle' user must click on to move the whole Task (react-beautiful-dnd) */}
                     <div
                         className='task-handle'
                         {...provided.dragHandleProps}
@@ -28,6 +39,8 @@ function Task ({data, index, callback}:{data: {text: string, id: string}, index:
                             <span className='codicon codicon-close'/>
                         </a>
                     </div>
+
+                    {/* Main content. Autosizing textbox or text rendered as markdown */}
                     <TextAreaAutosize
                         className='task-edit task-section'
                         value={data.text}

@@ -3,11 +3,28 @@ import {Droppable} from 'react-beautiful-dnd';
 import toast from 'react-hot-toast';
 import Task from './task';
 import {HexColorInput} from 'react-colorful';
+import { createTaskJson } from '../util/kanban-type-functions';
 
+/**
+ * React component showing a vertical list of Tasks. Tasks from other Columns can be dropped into this list and vice-versa.
+ * 
+ * @prop data - StrictColumnJSON this Component Represents
+ * @prop numCols - number of Columns in the parent Board
+ * @prop callback - (StrictColumnJSON | string) => void -- notifies parent Board whenever Column state is updated.
+ * A StrictColumnJSON passed in will update the data prop of this Column to the parameter. If this Columns' id (a string)
+ * is given, then this Column will be deleted
+ */
 function Column({data,callback, numCols}: {data: StrictColumnJSON, callback: (data: StrictColumnJSON | string) => void, numCols: number}) {
 
     const [colorSwitcherActive, setColorSwitcherActive] = React.useState(false);
 
+    /**
+     * Updates this Column's data prop to reflect a change in a child Task's state.
+     * Note: Should be passed in as a Task prop, not called directly.
+     * 
+     * @param {string | null} text string to replace a Task's text, or null to delete the task
+     * @param {number} index position of the Task in this Column's list 
+     */
     function taskCallback(text: string | null, index: number) {
         if (text !== null) {
             data.tasks[index].text = text;
@@ -37,6 +54,9 @@ function Column({data,callback, numCols}: {data: StrictColumnJSON, callback: (da
     }
 
 
+    /**
+     * React component used to change the color of this Column.
+     */
     function ColorChanger(): JSX.Element {
         function changeColor(color: string) {
             if (color.length < 6) {
@@ -81,13 +101,14 @@ function Column({data,callback, numCols}: {data: StrictColumnJSON, callback: (da
             style={{color: data.color, borderColor: data.color, width: `${100/numCols}%`}}
             onBlur={() => setColorSwitcherActive(false)}
         >
+            {/* Contains the column's title this column's buttons (add task, delete column, show/hide color picker) */}
             <div className='column-titlebar'>
-                <input value={data.title} maxLength={12} className='column-title' style={{color: data.color}} onChange={event => {
+                <input value={data.title} maxLength={12} className='column-title' style={{color: data.color, outlineColor: data.color}} onChange={event => {
                     data.title = event.target.value;
                     callback(data);
                 }}/>
                 <a className='column-add-task' title='Add Task' {...anchorProps} onClick={() => {
-                    data.tasks.push({text: '', id: Math.random().toString(36)});
+                    data.tasks.push(createTaskJson());
                     callback(data);
                 }}>
                     <span className='codicon codicon-empty-window'/>
@@ -96,10 +117,12 @@ function Column({data,callback, numCols}: {data: StrictColumnJSON, callback: (da
                     <span className='codicon codicon-symbol-color'/>
                 </a>
                 <a className='column-delete' title='Delete Column' {...anchorProps} onClick={() => callback(data.id)}>
-                    <span className='codicon codicon-remove'/>
+                    <span className='codicon codicon-trash'/>
                 </a>
             </div>
             <ColorChanger/>
+
+            {/* Main content. The Task list. Droppables are where Draggables can be moved to (react-beautiful-dnd) */}
             <Droppable droppableId={data.id} key={data.id}>
                 {(provided, snapshot) => (
                     <div
@@ -108,7 +131,12 @@ function Column({data,callback, numCols}: {data: StrictColumnJSON, callback: (da
                         className= {['column-tasks', snapshot.isDraggingOver ? 'drag-over' : ''].join(' ')}
                     >
                         {data.tasks.map((task, index) => (
-                            <Task data={task} index={index} callback={(str: string | null) => taskCallback(str, index)}/>
+                            <Task
+                                data={task}
+                                index={index} 
+                                callback={(str: string | null) => taskCallback(str, index)}
+                                key={task.id}
+                            />
                         ))}
                         {provided.placeholder}
                     </div>

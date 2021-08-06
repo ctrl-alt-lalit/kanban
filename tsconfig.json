@@ -22,15 +22,12 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
   },
-  "files": [
-    "src/extension.ts"
-  ],
   "include": [
     "src"
   ],
   "exclude": [
-    "src/extension.ts"
+    "src/extension.ts",
   ]
 }

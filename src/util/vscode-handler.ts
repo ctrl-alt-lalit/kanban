@@ -1,93 +1,74 @@
-declare var acquireVsCodeApi: () => VsCodeApi;
-interface VsCodeApi {
-    getState: () => any;
-    setState: (newState: any) => any;
-    postMessage: (message: any) => void;
-}
+import {createStrictKanbanJson, toStrictKanbanJson} from './kanban-type-functions';
 
 
 
-class VscodeHandler {
+/**
+ * Simpler interface for interacting the VSCode's Extension Host.
+ */
+class VsCodeHandler {
+    /**
+     * Tells the Extension Host to send previously saved data.
+     */
     load() {
-        this.send('load', null);
+        this.vscode.postMessage({message: 'load', data: null});
     }
 
-    save(data: StrictKanbanJSON) {
-        this.send('save', data);
+    /**
+     * Tells the Extension Host to save `data`.
+     * @param {StrictKanbanJSON} kanban Kanban Board state to be saved
+     */
+    save(kanban: StrictKanbanJSON) {
+        this.vscode.postMessage({message: 'save', data: kanban});
     }
 
-    addLoadListener(callback: (data: StrictKanbanJSON) => void) {
+    /**
+     * Makes it so `callback` will be run immediately after
+     * receiving a 'load' command from the Extension Host.
+     * 
+     * @param {(data: StrictKanbanJSON) => void} callback function to run after loading data
+     */
+    addLoadListener(callback: (kanban: StrictKanbanJSON) => void) {
         this.loadCallbacks.push(callback);
     }
 
-    removeLoadListener(callback: (data: StrictKanbanJSON) => void) {
+    /**
+     * If 'addLoadListener(`callback`)' was called,
+     * removes `callback` from the list of load callbacks.
+     * 
+     * @param {(data: StrictKanbanJSON) => void} callback function to remove
+     */
+    removeLoadListener(callback: (kanban: StrictKanbanJSON) => void) {
         this.loadCallbacks = this.loadCallbacks.filter(cb => cb !== callback);
     }
 
-    constructor() {
+    /**
+     * Only call the constructor once in the lifetime of the extension.
+     * Using multiple VscodeHandlers has not been tested and is unsupported.
+     */
+    constructor(vscode: VsCodeApi) {
+        this.vscode = vscode;
+
         window.addEventListener('message', event => {
             let {command, data} = event.data as {command: string, data: any};
             
             if (command === 'load') {
-                const defaultData = {
-                    cols: [
-                        {title: 'Bugs', tasks: []},
-                        {title: 'To-Do', tasks: ['']},
-                        {title: 'Doing', tasks: []},
-                        {title: 'Done', tasks: []}
-                    ]
-                };
-                data ??= defaultData;
-                const sanitized = this.sanitizeKanbanJson(data as KanbanJSON);
-                this.loadCallbacks.forEach(cb => cb(sanitized));
+                data ??= createStrictKanbanJson();
+                const kanban = toStrictKanbanJson(data as KanbanJSON);
+                this.loadCallbacks.forEach(cb => cb(kanban));
             }
         });
     }
 
-    private sanitizeKanbanJson(data: KanbanJSON): StrictKanbanJSON {
-
-        function sanitizeColumnJson(col: ColumnJSON): StrictColumnJSON {
-            function sanitizeTaskJson(task: string | TaskJSON) {
-                if (typeof task === 'string') {
-                    return {text: task, id: Math.random().toString(36)};
-                } else {
-                    return task;
-                }
-            }
-
-            return {
-                title: col.title,
-                tasks: col.tasks.map(task => sanitizeTaskJson(task)),
-                id: Math.random().toString(36),
-                color: col.color ?? 'var(--vscode-editor-foreground)',
-            };
-        }
-
-        let autosave = false;
-        if (data.autosave !== undefined) {
-            autosave = data.autosave;
-        } else if (data.settings?.autosave !== undefined) {
-            autosave = data.settings.autosave;
-        }
-
-        return {
-            title: data.title ?? 'Kanban',
-            cols: data.cols.map(col => sanitizeColumnJson(col)),
-            autosave: autosave
-        };
-    }
-
-
-    private static vscode =  acquireVsCodeApi();
+    /**
+     * Connects the webview to the Extension Host.
+     */
+    private vscode: VsCodeApi;
     
-    private loadCallbacks: ((data: StrictKanbanJSON) => void)[] = [];
-
-    private send(command: string, data: any) {
-        VscodeHandler.vscode.postMessage({
-            command: command,
-            data: data
-        });
-    }
+    /**
+     * List of callbacks to run after receiving
+     * the 'load' message from the Extension Host.
+     */
+    private loadCallbacks: Array<(kanban: StrictKanbanJSON) => void> = [];
 }
 
-export default new VscodeHandler();
+export default VsCodeHandler;
