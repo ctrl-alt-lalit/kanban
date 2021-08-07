@@ -1,5 +1,7 @@
 .vscode/
+
 images/
+!images/icon.png
 
 node_modules/
 !node_modules/@vscode/codicons/dist/
