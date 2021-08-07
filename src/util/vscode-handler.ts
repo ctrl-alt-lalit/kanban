@@ -10,7 +10,7 @@ class VsCodeHandler {
      * Tells the Extension Host to send previously saved data.
      */
     load() {
-        this.vscode.postMessage({message: 'load', data: null});
+        this.vscode.postMessage({command: 'load', data: null});
     }
 
     /**
@@ -18,7 +18,7 @@ class VsCodeHandler {
      * @param {StrictKanbanJSON} kanban Kanban Board state to be saved
      */
     save(kanban: StrictKanbanJSON) {
-        this.vscode.postMessage({message: 'save', data: kanban});
+        this.vscode.postMessage({command: 'save', data: kanban});
     }
 
     /**

@@ -1,17 +1,5 @@
 import * as vscode from 'vscode'; //contains the VS Code extensibility API
-
-type ColumnJSON = {
-    title: string,
-    ntasks: number,
-    tasks: string[]
-};
-
-
-type KanbanJSON = {
-    ncols: number,
-    cols: ColumnJSON[],
-    settings?: any
-};
+import * as path from 'path';
 
 //extension is activated the very first time a command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -68,8 +56,6 @@ class Panel {
 		this.webviewPanel.onDidDispose(() => this.dispose(), null, this.disposables);
 		this.webviewPanel.webview.onDidReceiveMessage(
 			message => this.receiveMessage(message),
-			null,
-			this.disposables
 		);
 	}
 
@@ -86,12 +72,16 @@ class Panel {
 	}
 
 	private makeHtml(): string {
-		const manifest = require(this.extensionPath + '/build/asset-manifest.json');
-
+		const manifest = require(path.join(this.extensionPath, 'build', 'asset-manifest.json'));
 		const csp = this.webviewPanel.webview.cspSource;
-		const scriptSource = vscode.Uri.file(this.extensionPath + '/build' + manifest.files['main.js']).with({scheme: 'vscode-resource'});
-		const stylesheet = vscode.Uri.file(this.extensionPath + '/build/index.css').with({scheme: 'vscode-resource'});
-		const codicons = vscode.Uri.file(this.extensionPath + '/node_modules/@vscode/codicons/dist/codicon.css').with({scheme: 'vscode-resource'});
+		const scriptSource = vscode.Uri.file(
+			path.join(this.extensionPath, 'build', manifest.files['main.js'])).with({scheme: 'vscode-resource'}
+		);
+		const stylesheet = vscode.Uri.file(path.join(this.extensionPath, 'build', 'index.css')).with({scheme: 'vscode-resource'});
+		const codicons = vscode.Uri.file(
+			path.join(this.extensionPath, 'node_modules', '@vscode', 'codicons', 'dist', 'codicon.css')).with({scheme: 'vscode-resource'}
+		);
+
 		return (
 			`
 			<!DOCTYPE html>
@@ -142,3 +132,5 @@ class StorageManager {
 
 	private memento: vscode.Memento;
 }
+
+export function deactivate() {}

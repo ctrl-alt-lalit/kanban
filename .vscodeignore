@@ -1,0 +1,17 @@
+.vscode/
+images/
+
+node_modules/
+!node_modules/@vscode/codicons/dist/
+
+public/
+src/
+
+.eslintrc.json
+.gitignore
+.yarnrc
+jest.config.js
+tsconfig.extension.json
+tsconfig.json
+yarn-error.log
+yarn.lock

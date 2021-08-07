@@ -1,9 +1,6 @@
-.vscodeignore
-node_modules
-build
-src/coverage
-CHANGELOG.md
+node_modules/
+build/
+src/coverage/
 *.vsix
-out
 yarn.lock
 yarn-error.log

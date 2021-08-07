@@ -2,7 +2,7 @@
 
 Visual way to keep track of your progress and boost productivity for your projects.
 
-![Kanban Animation](https://i.giphy.com/media/1yDS3RXAonwdg5Cy9J/giphy.webp)
+![Kanban Demo](https://raw.githubusercontent.com/lbauskar/kanban/main/images/demo.gif)
 
 ## Using Kanban
 
@@ -13,6 +13,14 @@ Kanban automatically creates a kanban board for each workspace you use. To view 
  - `kanban.showViewButton`: Display the ```Kanban``` button on the bottom right that lets you view your board.
 
 ## Release Notes
+
+### 1.2.0
+ - Rewrote the entire project in React
+ - Redesigned board to look more sleek and minimal
+ - The title of the board is now editable, but it will no longer use your workspace name by default
+ - Drag and drop has been improved
+ - You can change a column's color
+ - Tasks now render their text as markdown, so you can format them
 
 #### 1.1.2
  - Fixed bug where icon font wouldn't load
