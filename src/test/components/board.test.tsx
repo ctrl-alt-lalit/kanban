@@ -250,25 +250,19 @@ describe('<Board>, <Column>, and <Task>', () => {
         await wait(5);
 
         //color picker is initially closed
-        let column = board.querySelector('div.column') as HTMLDivElement;
-        let colorPicker = column.querySelector('div.column-color-picker') as HTMLDivElement;
-        expect(colorPicker.clientHeight).not.toContain('visible');
+        const column = board.querySelector('div.column') as HTMLDivElement;
+        const colorPicker = column.querySelector('div.column-color-picker') as HTMLDivElement;
+        expect(colorPicker.style.maxHeight).toBe('0');
 
         //clicking the toggle opens picker
         const toggle = column.querySelector('a.column-color') as HTMLAnchorElement;
         userEvent.click(toggle);
-        colorPicker = column.querySelector('div.column-color-picker') as HTMLDivElement; //call again since its been updated
-        expect(colorPicker.classList).toContain('visible');
+        expect(colorPicker.style.maxHeight).not.toBe('0');
 
         //clicking a swatch changes the color
         const swatch = column.querySelector('button.column-color-picker__swatch') as HTMLButtonElement;
         userEvent.click(swatch);
         expect(column.style.color).toBe(swatch.style.backgroundColor);
-
-        //clicking toggle again closes picker
-        userEvent.click(toggle);
-        colorPicker = column.querySelector('div.column-color-picker') as HTMLDivElement;
-        expect(colorPicker.classList).not.toContain('visible');
         wrapper.unmount();
     });
 });

@@ -16,7 +16,7 @@ import { createTaskJson } from '../util/kanban-type-functions';
  */
 function Column({data,callback, numCols}: {data: StrictColumnJSON, callback: (data: StrictColumnJSON | string) => void, numCols: number}) {
 
-    const [colorSwitcherActive, setColorSwitcherActive] = React.useState(false);
+    const [colorPickerOpen, setColorPickerOpen] = React.useState(false);
 
     /**
      * Updates this Column's data prop to reflect a change in a child Task's state.
@@ -53,46 +53,30 @@ function Column({data,callback, numCols}: {data: StrictColumnJSON, callback: (da
         callback(data);  
     }
 
-
-    /**
-     * React component used to change the color of this Column.
-     */
-    function ColorChanger(): JSX.Element {
-        function changeColor(color: string) {
-            if (color.length < 6) {
-                return;
-            }
-            data.color = color;
-            callback(data);
+    const changeColor = (color: string) => {
+        if (color.length < 6) {
+            return;
         }
+        data.color = color;
+        callback(data);
+    };
 
-        const darkSwatches = [
-            '#dd302a', '#cf4d19', '#ec9c25', '#7ac41a', '#416a0b',
-            '#338c84', '#344fa2', '#d741e3', '#9900ef', '#6a6a6a'
-        ];
-        const lightSwatches = [
-            '#ff6900', '#fcb900', '#7bdcb5', '#00d084', '#8ed1fc',
-            '#0693e3', '#abb8c3', '#eb144c', '#f78da7', '#9900ef'
-        ];
-        const swatches = document.querySelector('body.vscode-dark') ? lightSwatches : darkSwatches;
+    const colorPickerStyle = {
+        maxHeight: colorPickerOpen ? '6rem' : 0,
+        pointerEvents: colorPickerOpen ? 'all' : 'none',
+        transition: 'max-height 0.4s linear'
+    } as const;
 
-        return (
-            <div className={['column-color-picker', colorSwitcherActive ? 'visible' : ''].join(' ')}>
-                {swatches.map(swatch => (
-                    <button
-                        key={swatch}
-                        className='column-color-picker__swatch'
-                        style={{backgroundColor: swatch}}
-                        onClick={() => changeColor(swatch)}
-                    />
-                ))}
-                <div className='text-picker'>
-                    <div className='input-tag'> # </div>
-                    <HexColorInput color={data.color} onChange={changeColor}/>
-                </div>
-            </div>
-        );
-    }
+    const darkSwatches = [
+        '#dd302a', '#cf4d19', '#ec9c25', '#7ac41a', '#416a0b',
+        '#338c84', '#344fa2', '#d741e3', '#9900ef', '#6a6a6a'
+    ];
+    const lightSwatches = [
+        '#ff6900', '#fcb900', '#7bdcb5', '#00d084', '#8ed1fc',
+        '#0693e3', '#abb8c3', '#eb144c', '#f78da7', '#9900ef'
+    ];
+    const swatches = document.querySelector('body.vscode-dark') ? lightSwatches : darkSwatches;
+
 
     const anchorProps = {
         'style': {color: data.color},
@@ -104,7 +88,7 @@ function Column({data,callback, numCols}: {data: StrictColumnJSON, callback: (da
         <div
             className='column'
             style={{color: data.color, borderColor: data.color, width: `${100/numCols}%`}}
-            onBlur={() => setColorSwitcherActive(false)}
+            onBlur={() => setColorPickerOpen(false)}
         >
             {/* Contains the column's title this column's buttons (add task, delete column, show/hide color picker) */}
             <div className='column-titlebar'>
@@ -118,14 +102,29 @@ function Column({data,callback, numCols}: {data: StrictColumnJSON, callback: (da
                 }}>
                     <span className='codicon codicon-empty-window'/>
                 </a>
-                <a className='column-color' title='Change Color' {...anchorProps} onClick={() => setColorSwitcherActive(!colorSwitcherActive)}>
+                <a className='column-color' title='Change Color' {...anchorProps} onClick={() => setColorPickerOpen(!colorPickerOpen)}>
                     <span className='codicon codicon-symbol-color'/>
                 </a>
                 <a className='column-delete' title='Delete Column' {...anchorProps} onClick={() => callback(data.id)}>
                     <span className='codicon codicon-trash'/>
                 </a>
             </div>
-            <ColorChanger/>
+
+            {/* Color Picker */}
+            <div className='column-color-picker' style={colorPickerStyle}>
+                {swatches.map(swatch => (
+                    <button
+                        key={swatch}
+                        className='column-color-picker__swatch'
+                        style={{backgroundColor: swatch}}
+                        onClick={() => changeColor(swatch)}
+                    />
+                ))}
+                <div className='text-picker'>
+                    <div className='input-tag'> # </div>
+                    <HexColorInput color={data.color} onChange={changeColor}/>
+                </div>
+            </div>
 
             {/* Main content. The Task list. Droppables are where Draggables can be moved to (react-beautiful-dnd) */}
             <Droppable droppableId={data.id} key={data.id}>
