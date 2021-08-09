@@ -1,3 +1,4 @@
+.vscode/kanban.json
 node_modules/
 build/
 src/coverage/

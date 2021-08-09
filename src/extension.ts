@@ -107,12 +107,12 @@ class Panel {
 		);
 	}
 
-	private receiveMessage(message: {command: string, data: any}): void {
+	private async receiveMessage(message: {command: string, data: any}): Promise<void> {
 		const {command, data} = message;
 		if (command === 'save') {
 			this.storage.saveKanban(data);
 		} else if (command === 'load') {
-			const savedData = this.storage.loadKanban();
+			const savedData = await this.storage.loadKanban();
 			this.webviewPanel.webview.postMessage({command: 'load', data: savedData});
 		}
 	}
@@ -128,8 +128,29 @@ class Storage {
 		}
 	}
 
-	public loadKanban<T>() : T {
-		return this.memento.get<T>(Storage.kanbanKey, null as any);
+	public async loadKanban<T>() : Promise<T> {
+		const mementoData = this.memento.get<T>(Storage.kanbanKey, null as any) as any;
+		if (!this.saveUri) {
+			return mementoData;
+		}
+
+		let fileData = null;
+		try {
+			const buffer = await vscode.workspace.fs.readFile(this.saveUri);
+			fileData = JSON.parse(buffer.toString());
+		} catch {
+			//file not found
+		}
+
+		if (!mementoData) {
+			return fileData;
+		} else if (!fileData) {
+			return mementoData;
+		}
+
+		const mementoTime = mementoData?.timestamp ?? -1;
+		const fileTime = fileData?.timestamp ?? -1;
+		return (fileTime >= mementoTime) ? fileData : mementoData;
 	}
 
 	public saveKanban<T>(data: T) {
@@ -140,7 +161,7 @@ class Storage {
 		}
 
 		try {
-			const buffer: Uint8Array = Buffer.from(JSON.stringify(kanban));
+			const buffer: Uint8Array = Buffer.from(JSON.stringify(kanban, null, 4));
 			vscode.workspace.fs.writeFile(this.saveUri, buffer);
 		} catch {
 			console.error('Could not save to file. Writing to metadata instead.');
