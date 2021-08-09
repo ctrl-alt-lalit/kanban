@@ -73,6 +73,20 @@ body {
     background-color: var(--vscode-editor-foreground);
 }
 
+.board-settings-toggle {
+    margin-right: 3rem;
+}
+
+.board-settings {
+    display: inline-flex;
+}
+
+.board-settings p {
+    margin-left: 0.2rem;
+    margin-right: 0.8rem;
+    font-size: 1rem;
+}
+
 .board-content {
     width: 100%;
     flex-basis: 0;

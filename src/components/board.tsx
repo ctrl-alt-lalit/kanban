@@ -150,8 +150,17 @@ class Board extends React.Component<{vscode: VsCodeHandler}, {data: StrictKanban
      * React component containing the title of this Board and all its buttons (save, toggle autosave, add column)
      */
     private Titlebar = (): JSX.Element => {
+        const [settingsVisible, setSettingsVisible] = React.useState(false);
+
+        const settingsStyle = {
+            opacity: settingsVisible ? 1 : 0,
+            pointerEvents: settingsVisible ? 'all' : 'none',
+            transition: 'opacity 0.3s'
+        } as const;
+
         return (
             <div className='board-titlebar'>
+                {/*Title and Buttons*/}
                 <input className='board-title' maxLength={18} value={this.state.data.title} onChange={event => {
                     const copy = {...this.state.data};
                     copy.title = event.target.value;
@@ -163,14 +172,6 @@ class Board extends React.Component<{vscode: VsCodeHandler}, {data: StrictKanban
                 }}>
                     <span className='codicon codicon-save'/>
                 </a>
-                <a className='board-autosave' title='Toggle Autosave' onClick={() => {
-                    const copy = {...this.state.data};
-                    copy.autosave = !copy.autosave;
-                    toast(`Autosave ${copy.autosave ? 'Enabled' : 'Disabled'}`, {duration: 1000});
-                    this.updateSavedData(copy);
-                }}>
-                    <span className={['codicon', this.state.data.autosave ? 'codicon-sync' : 'codicon-sync-ignored'].join(' ')}/>
-                </a>
                 <a className='board-add-column' title='Add Column' onClick={() => {
                     const copy = {...this.state.data};
                     copy.cols.push(createStrictColumnJson(`Column ${copy.cols.length + 1}`));
@@ -178,6 +179,22 @@ class Board extends React.Component<{vscode: VsCodeHandler}, {data: StrictKanban
                 }}>
                     <span className='codicon codicon-add'/>
                 </a>
+                <a className='board-settings-toggle' title='Show/Hide Settings' onClick={() => setSettingsVisible(!settingsVisible)}>
+                    <span className='codicon codicon-gear'/>
+                </a>
+
+                {/*Settings Panel*/}
+                <div className='board-settings' style={settingsStyle}>
+                    <a className='board-autosave' onClick={() => {
+                        const copy = {...this.state.data};
+                        copy.autosave = !copy.autosave;
+                        toast(`Autosave ${copy.autosave ? 'Enabled' : 'Disabled'}`, {duration: 1000});
+                        this.updateSavedData(copy);
+                    }}>
+                        <span className={['codicon', this.state.data.autosave ? 'codicon-sync' : 'codicon-sync-ignored'].join(' ')}/>
+                    </a>
+                    <p style={{textDecoration: this.state.data.autosave ? 'none' : 'line-through'}}> Autosave </p>
+                </div>
             </div>
         );
     };

@@ -48,12 +48,10 @@
   "repository": "https://github.com/lbauskar/kanban.git",
   "homepage": "/",
   "scripts": {
-    "vscode:prepublish": "yarn run compile",
-    "start": "react-scripts start",
+    "vscode:prepublish": "yarn run build",
     "build": "node ./build-non-split.js && tsc -p tsconfig.extension.json",
-    "compile": "yarn run build",
-    "eject": "react-scripts eject",
-    "test": "jest --env=jsdom"
+    "test": "jest --env=jsdom",
+    "package": "yarn vsce package"
   },
   "devDependencies": {
     "@testing-library/dom": "^8.1.0",
