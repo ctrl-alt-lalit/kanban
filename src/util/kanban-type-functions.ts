@@ -56,7 +56,9 @@ export function toStrictKanbanJson(kanban: KanbanJSON): StrictKanbanJSON {
     return {
         title: kanban.title ?? 'Kanban',
         cols: kanban.cols.map(col => toStrictColumnJson(col)),
-        autosave: autosave
+        autosave: autosave,
+        saveToFile: kanban.saveToFile ?? false,
+        timestamp: kanban.timestamp ?? Date.now()
     };
 }
 
@@ -92,7 +94,7 @@ export function createStrictColumnJson(title?: string, tasks?: TaskJSON[], color
  * @param {boolean} [autosave=false] whether to save on every change
  * @returns {StrictKanbanJSON} StrictKanbanJSON with the given or default paremeters.
  */
-export function createStrictKanbanJson(title?: string, columns?: StrictColumnJSON[], autosave?: boolean): StrictKanbanJSON {
+export function createStrictKanbanJson(title?: string, columns?: StrictColumnJSON[], autosave?: boolean, saveToFile?: boolean): StrictKanbanJSON {
     if (!columns) {
         columns = [
             createStrictColumnJson('Bugs', [], '#eb144c'),
@@ -105,6 +107,8 @@ export function createStrictKanbanJson(title?: string, columns?: StrictColumnJSO
     return {
         title: title ?? 'Kanban',
         cols: columns,
-        autosave: autosave ?? false
+        autosave: autosave ?? false,
+        saveToFile: saveToFile ?? false,
+        timestamp: Date.now()
     };
 }

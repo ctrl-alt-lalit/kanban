@@ -19,12 +19,16 @@ type KanbanJSON = {
     cols: ColumnJSON[],
     settings?: {autosave: boolean},
     autosave?: boolean
+    saveToFile?: boolean,
+    timestamp?: number
 };
 
 type StrictKanbanJSON = {
     title: string,
     cols: StrictColumnJSON[],
-    autosave: boolean
+    autosave: boolean,
+    saveToFile: boolean,
+    timestamp: number
 };
 
 type TaskJSON = {

@@ -18,6 +18,7 @@ class VsCodeHandler {
      * @param {StrictKanbanJSON} kanban Kanban Board state to be saved
      */
     save(kanban: StrictKanbanJSON) {
+        kanban.timestamp = Date.now();
         this.vscode.postMessage({command: 'save', data: kanban});
     }
 

@@ -130,6 +130,25 @@ describe('<Board>, <Column>, and <Task>', () => {
     });
 
     const clickSave = (board: HTMLElement) => userEvent.click(board.querySelector('a.board-save')!);
+    const clickSettings = (board: HTMLElement) => userEvent.click(board.querySelector('a.board-settings-toggle')!);
+
+    it('can save to a file', async () => {
+        const vscode = makeVsCodeHandler();
+        let savedCalled = false;
+        vscode.save = (kanban) => savedCalled = kanban.saveToFile;
+
+        const wrapper = render(<Board vscode={vscode}/>);
+        const board = wrapper.container;
+        await wait(5);
+
+        clickSettings(board);
+        const saveFileToggle = board.querySelector('a.board-save-file') as HTMLAnchorElement;
+        userEvent.click(saveFileToggle);
+        clickSave(board);
+
+        expect(savedCalled).toBe(true);
+        wrapper.unmount();
+    });
 
     it('has editable text', async () => {
         const vscode = makeVsCodeHandler();

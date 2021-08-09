@@ -31,7 +31,7 @@ function App(): JSX.Element {
     return (
         <>
         <Board vscode={vsCodeHandler}/>
-        <Toaster toastOptions={{duration: 2000, style: {
+        <Toaster toastOptions={{duration: 2000, position: 'bottom-center', style: {
             borderRadius: '1.25rem',
             backgroundColor: 'var(--vscode-editor-background)',
             color: 'var(--vscode-editor-foreground)',

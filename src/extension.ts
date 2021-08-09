@@ -34,13 +34,14 @@ class Panel {
 
 	private static current: Panel | undefined = undefined;
 	private readonly webviewPanel: vscode.WebviewPanel;
-	private storage: StorageManager;
+	private storage: Storage;
 	private extensionPath: string;
 	private disposables: vscode.Disposable[] = [];
 
 	private constructor(context: vscode.ExtensionContext, column: vscode.ViewColumn) {
 		this.extensionPath = context.extensionPath;
-		this.storage = new StorageManager(context.workspaceState);
+		const workspaceFolders = vscode.workspace.workspaceFolders ?? [undefined];
+		this.storage = new Storage(context.workspaceState, workspaceFolders[0]?.uri.fsPath);
 		this.webviewPanel = vscode.window.createWebviewPanel(
 			'kanban',
 			'Kanban',
@@ -109,28 +110,47 @@ class Panel {
 	private receiveMessage(message: {command: string, data: any}): void {
 		const {command, data} = message;
 		if (command === 'save') {
-			this.storage.store('columns', data);
+			this.storage.saveKanban(data);
 		} else if (command === 'load') {
-			const savedData = this.storage.retrieve('columns');
+			const savedData = this.storage.loadKanban();
 			this.webviewPanel.webview.postMessage({command: 'load', data: savedData});
 		}
 	}
 }
 
-class StorageManager {
-	constructor(memento: vscode.Memento) {
+class Storage {
+	constructor(memento: vscode.Memento, workspacePath: string | undefined) {
 		this.memento = memento;
+		if (workspacePath) {
+			this.saveUri = vscode.Uri.file(
+				path.join(workspacePath, '.vscode', 'kanban.json')
+			);
+		}
 	}
 
-	public retrieve<T>(key: string) : T {
-		return this.memento.get<T>(key, null as any);
+	public loadKanban<T>() : T {
+		return this.memento.get<T>(Storage.kanbanKey, null as any);
 	}
 
-	public store<T>(key: string, value: T) {
-		this.memento.update(key, value);
+	public saveKanban<T>(data: T) {
+		const kanban = data as any;
+		if (!kanban?.saveToFile || !this.saveUri) {
+			this.memento.update(Storage.kanbanKey, kanban);
+			return;
+		}
+
+		try {
+			const buffer: Uint8Array = Buffer.from(JSON.stringify(kanban));
+			vscode.workspace.fs.writeFile(this.saveUri, buffer);
+		} catch {
+			console.error('Could not save to file. Writing to metadata instead.');
+			this.memento.update(Storage.kanbanKey, kanban);
+		}
 	}
 
 	private memento: vscode.Memento;
+	private static kanbanKey = 'columns';
+	private saveUri: vscode.Uri | undefined = undefined;
 }
 
 export function deactivate() {}

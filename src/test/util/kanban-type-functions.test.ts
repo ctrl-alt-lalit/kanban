@@ -59,7 +59,9 @@ describe('Kanban Type Handler', () => {
             const manuallyCreated: StrictKanbanJSON = {
                 title: 'title',
                 cols: [],
-                autosave: false
+                autosave: false,
+                saveToFile: false,
+                timestamp: 123
             };
             
 

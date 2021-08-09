@@ -203,6 +203,15 @@ class Board extends React.Component<{vscode: VsCodeHandler}, {data: StrictKanban
                         <span className={['codicon', this.state.data.autosave ? 'codicon-sync' : 'codicon-sync-ignored'].join(' ')}/>
                     </a>
                     <p style={{textDecoration: this.state.data.autosave ? 'none' : 'line-through'}}> Autosave </p>
+                    <a className='board-save-file' onClick={() => {
+                        const copy = {...this.state.data};
+                        copy.saveToFile = !copy.saveToFile;
+                        toast(`Will save to ${copy.saveToFile ? '.vscode/kanban.json' : 'workspace metadata'}.`, {duration: 2000});
+                        this.updateSavedData(copy);
+                    }}>
+                        <span className = {['codicon', this.state.data.saveToFile ? 'codicon-folder-active' : 'codicon-folder'].join(' ')}/>
+                    </a>
+                    <p style={{textDecoration: this.state.data.saveToFile ? 'none' : 'line-through'}}> Save to File </p>
                 </div>
             </div>
         );
