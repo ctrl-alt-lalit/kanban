@@ -26,12 +26,21 @@ class Board extends React.Component<{vscode: VsCodeHandler}, {data: StrictKanban
 
         window.addEventListener('keydown', this.shortcutKeydown);
         window.addEventListener('keyup', this.shortcutKeyup);
+        this.autosaveIntervalId = setInterval(() => {
+            if (this.state.data.autosave && this.stateHasChanged) {
+                this.stateHasChanged = false;
+                this.props.vscode.save(this.state.data);
+            }
+        }, 5000);
     }
 
     componentWillUnmount() {
         this.props.vscode.removeLoadListener(this.loadCallback);
         window.removeEventListener('keydown', this.shortcutKeydown);
         window.removeEventListener('keyup', this.shortcutKeyup);
+        if (this.autosaveIntervalId) {
+            clearInterval(this.autosaveIntervalId);
+        }
     }
 
     render(): JSX.Element {
@@ -206,9 +215,7 @@ class Board extends React.Component<{vscode: VsCodeHandler}, {data: StrictKanban
      * @param {StrictKanbanJSON} data new value of this.state.data 
      */
     private updateSavedData(data: StrictKanbanJSON) {
-        if (data.autosave) {
-            this.props.vscode.save(data);
-        }
+        this.stateHasChanged = true;
         this.setState({data: data});
     }
 
@@ -231,6 +238,9 @@ class Board extends React.Component<{vscode: VsCodeHandler}, {data: StrictKanban
             this.shortcutKeys[event.key] = false;
         }
     };
+
+    private stateHasChanged = false;
+    private autosaveIntervalId: NodeJS.Timeout | undefined = undefined;
 }
 
 export default Board;
