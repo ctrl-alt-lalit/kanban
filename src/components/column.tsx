@@ -66,10 +66,15 @@ function Column({data,callback, numCols}: {data: StrictColumnJSON, callback: (da
             callback(data);
         }
 
-        const swatches = [
+        const darkSwatches = [
+            '#dd302a', '#cf4d19', '#ec9c25', '#7ac41a', '#416a0b',
+            '#338c84', '#344fa2', '#d741e3', '#9900ef', '#6a6a6a'
+        ];
+        const lightSwatches = [
             '#ff6900', '#fcb900', '#7bdcb5', '#00d084', '#8ed1fc',
             '#0693e3', '#abb8c3', '#eb144c', '#f78da7', '#9900ef'
         ];
+        const swatches = document.querySelector('body.vscode-dark') ? lightSwatches : darkSwatches;
 
         return (
             <div className={['column-color-picker', colorSwitcherActive ? 'visible' : ''].join(' ')}>
