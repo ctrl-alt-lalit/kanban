@@ -4,7 +4,7 @@
   "displayName": "Kanban",
   "description": "Simple kanban board for VS Code. Visually organize your ideas!",
   "icon": "images/icon.png",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "engines": {
     "vscode": "^1.53.2"
   },
@@ -17,8 +17,11 @@
     "kanban",
     "board",
     "agile",
-    "scrum",
-    "sprint"
+    "project",
+    "management",
+    "sprint",
+    "productivity",
+    "scrum"
   ],
   "extensionKind": [
     "ui"
@@ -34,7 +37,7 @@
         "kanban.showViewButton": {
           "type": "boolean",
           "default": true,
-          "description": "Add a button to the bottom left of your status bar to view the kanban board. You can still view the board in the Command Pallete with 'Kanban: View'"
+          "description": "Add a button to the bottom left of your status bar to view the kanban board."
         }
       }
     },
