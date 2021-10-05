@@ -1,14 +1,14 @@
 import React from 'react';
 import Column from './column';
-import {DragDropContext, DropResult} from 'react-beautiful-dnd';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import toast from 'react-hot-toast';
-import {createStrictColumnJson, createStrictKanbanJson} from '../util/kanban-type-functions';
+import { createStrictColumnJson, createStrictKanbanJson } from '../util/kanban-type-functions';
 import VsCodeHandler from '../util/vscode-handler';
 
 /**
  * A kanban board containing multiple Columns and Tasks that can be dragged to each column.
  */
-class Board extends React.Component<{vscode: VsCodeHandler}, {data: StrictKanbanJSON}> {
+class Board extends React.Component<{ vscode: VsCodeHandler }, { data: StrictKanbanJSON }> {
 
     /**
      * Creates the Board and loads a StrictKanbanJSON from the Extension Host
@@ -46,16 +46,16 @@ class Board extends React.Component<{vscode: VsCodeHandler}, {data: StrictKanban
     render(): JSX.Element {
         return (
             <div className='board'>
-                <this.Titlebar/>
+                <this.Titlebar />
                 <div className='board-content'>
                     <DragDropContext onDragEnd={result => this.dragEnd(result)}>
                         {this.state.data.cols.map(col => (
-                                <Column
-                                    data={col}
-                                    callback={data => this.columnCallback(data)}
-                                    numCols={this.state.data.cols.length}
-                                    key={col.id}
-                                />
+                            <Column
+                                data={col}
+                                callback={data => this.columnCallback(data)}
+                                numCols={this.state.data.cols.length}
+                                key={col.id}
+                            />
                         ))}
                     </DragDropContext>
                 </div>
@@ -70,14 +70,14 @@ class Board extends React.Component<{vscode: VsCodeHandler}, {data: StrictKanban
      * @param {DropResult} result location Task was originally, and location Task should be moved to
      */
     private dragEnd(result: DropResult): void {
-        const {source, destination} = result;
+        const { source, destination } = result;
 
         const getColumn = (id: string): StrictColumnJSON => {
             return this.state.data.cols.find(col => col.id === id)!;
         };
 
         const updateBoard = (column: StrictColumnJSON, column2?: StrictColumnJSON) => {
-            const copy = {...this.state.data};
+            const copy = { ...this.state.data };
             copy.cols = [...this.state.data.cols];
             const index = copy.cols.findIndex(col => col.id === column.id);
             copy.cols[index] = column;
@@ -93,7 +93,7 @@ class Board extends React.Component<{vscode: VsCodeHandler}, {data: StrictKanban
         }
 
         //droppableId is column, index is position in column
-        if (source.droppableId  === destination.droppableId) {
+        if (source.droppableId === destination.droppableId) {
             if (source.index === destination.index) {
                 return;
             }
@@ -122,12 +122,12 @@ class Board extends React.Component<{vscode: VsCodeHandler}, {data: StrictKanban
      */
     private columnCallback(data: StrictColumnJSON | string) {
 
-        const copy = {...this.state.data};
+        const copy = { ...this.state.data };
         copy.cols = [...this.state.data.cols];
 
         if (typeof data === 'string') { //delete column
             //notify user that a column was deleted and give them a chance to undo
-            const oldData = {...this.state.data};
+            const oldData = { ...this.state.data };
             oldData.cols = [...this.state.data.cols];
             toast(t => (
                 <div style={{
@@ -136,11 +136,11 @@ class Board extends React.Component<{vscode: VsCodeHandler}, {data: StrictKanban
                     alignItems: 'center',
                 }}>
                     <p>Column Deleted &emsp;</p>
-                    <a  style={{cursor: 'pointer'}} onClick={() => {
+                    <a style={{ cursor: 'pointer' }} onClick={() => {
                         this.updateSavedData(oldData);
                         toast.dismiss(t.id);
                     }}>
-                        Undo 
+                        Undo
                     </a>
                 </div>
             ));
@@ -171,47 +171,47 @@ class Board extends React.Component<{vscode: VsCodeHandler}, {data: StrictKanban
             <div className='board-titlebar'>
                 {/*Title and Buttons*/}
                 <input className='board-title' maxLength={18} value={this.state.data.title} onChange={event => {
-                    const copy = {...this.state.data};
+                    const copy = { ...this.state.data };
                     copy.title = event.target.value;
                     this.updateSavedData(copy);
-                }}/>
+                }} />
                 <a className='board-save' title='Save' onClick={() => {
-                    toast('Board Saved', {duration: 1000});
+                    toast('Board Saved', { duration: 1000 });
                     this.props.vscode.save(this.state.data);
                 }}>
-                    <span className='codicon codicon-save'/>
+                    <span className='codicon codicon-save' />
                 </a>
                 <a className='board-add-column' title='Add Column' onClick={() => {
-                    const copy = {...this.state.data};
+                    const copy = { ...this.state.data };
                     copy.cols.push(createStrictColumnJson(`Column ${copy.cols.length + 1}`));
                     this.updateSavedData(copy);
                 }}>
-                    <span className='codicon codicon-add'/>
+                    <span className='codicon codicon-add' />
                 </a>
                 <a className='board-settings-toggle' title='Show/Hide Settings' onClick={() => setSettingsVisible(!settingsVisible)}>
-                    <span className='codicon codicon-gear'/>
+                    <span className='codicon codicon-gear' />
                 </a>
 
                 {/*Settings Panel*/}
                 <div className='board-settings' style={settingsStyle}>
                     <a className='board-autosave' onClick={() => {
-                        const copy = {...this.state.data};
+                        const copy = { ...this.state.data };
                         copy.autosave = !copy.autosave;
-                        toast(`Autosave ${copy.autosave ? 'Enabled' : 'Disabled'}`, {duration: 1000});
+                        toast(`Autosave ${copy.autosave ? 'Enabled' : 'Disabled'}`, { duration: 1000 });
                         this.updateSavedData(copy);
                     }}>
-                        <span className={['codicon', this.state.data.autosave ? 'codicon-sync' : 'codicon-sync-ignored'].join(' ')}/>
+                        <span className={['codicon', this.state.data.autosave ? 'codicon-sync' : 'codicon-sync-ignored'].join(' ')} />
                     </a>
-                    <p style={{textDecoration: this.state.data.autosave ? 'none' : 'line-through'}}> Autosave </p>
+                    <p style={{ textDecoration: this.state.data.autosave ? 'none' : 'line-through' }}> Autosave </p>
                     <a className='board-save-file' onClick={() => {
-                        const copy = {...this.state.data};
+                        const copy = { ...this.state.data };
                         copy.saveToFile = !copy.saveToFile;
-                        toast(`Will save to ${copy.saveToFile ? '.vscode/kanban.json' : 'workspace metadata'}.`, {duration: 2000});
+                        toast(`Will save to ${copy.saveToFile ? '.vscode/kanban.json' : 'workspace metadata'}.`, { duration: 2000 });
                         this.updateSavedData(copy);
                     }}>
-                        <span className = {['codicon', this.state.data.saveToFile ? 'codicon-folder-active' : 'codicon-folder'].join(' ')}/>
+                        <span className={['codicon', this.state.data.saveToFile ? 'codicon-folder-active' : 'codicon-folder'].join(' ')} />
                     </a>
-                    <p style={{textDecoration: this.state.data.saveToFile ? 'none' : 'line-through'}}> Save to File </p>
+                    <p style={{ textDecoration: this.state.data.saveToFile ? 'none' : 'line-through' }}> Save to File </p>
                 </div>
             </div>
         );
@@ -225,12 +225,12 @@ class Board extends React.Component<{vscode: VsCodeHandler}, {data: StrictKanban
      */
     private updateSavedData(data: StrictKanbanJSON) {
         this.stateHasChanged = true;
-        this.setState({data: data});
+        this.setState({ data: data });
     }
 
-    private loadCallback = (data: StrictKanbanJSON) => this.setState({data: data});
+    private loadCallback = (data: StrictKanbanJSON) => this.setState({ data: data });
 
-    private shortcutKeys = {'s': false, 'Control': false};
+    private shortcutKeys = { 's': false, 'Control': false };
 
     private shortcutKeydown = (event: KeyboardEvent) => {
         if (event.key === 'Control' || event.key === 's') {

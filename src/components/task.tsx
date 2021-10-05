@@ -12,7 +12,7 @@ import { Draggable } from 'react-beautiful-dnd';
  * @prop callback - (string | null) => void -- notifies parent Column whenever Task state is updated.
  * A string will be the new text this Task displays. null means this Task should be deleted.
  */
-function Task ({data, index, callback}:{data: TaskJSON, index: number, callback: (text: string | null)=>void}): JSX.Element {
+function Task({ data, index, callback }: { data: TaskJSON, index: number, callback: (text: string | null) => void }): JSX.Element {
 
     const [editing, setEditing] = React.useState(false);
 
@@ -36,7 +36,7 @@ function Task ({data, index, callback}:{data: TaskJSON, index: number, callback:
                         onMouseDown={() => setEditing(false)}
                     >
                         <a className='task-delete' title='Delete Task' onClick={() => callback(null)}>
-                            <span className='codicon codicon-close'/>
+                            <span className='codicon codicon-close' />
                         </a>
                     </div>
 
@@ -46,12 +46,12 @@ function Task ({data, index, callback}:{data: TaskJSON, index: number, callback:
                         value={data.text}
                         onChange={(event) => callback(event.target.value)}
                         onBlur={() => setEditing(false)}
-                        style={{display: editing ? 'block' : 'none'}}
+                        style={{ display: editing ? 'block' : 'none' }}
                     />
                     <div
                         className='task-display task-section'
                         onClick={() => setEditing(true)}
-                        style={{display: editing ? 'none' : 'block'}}
+                        style={{ display: editing ? 'none' : 'block' }}
                     >
                         <ReactMarkdown>
                             {data.text || '_enter text or markdown here_'}

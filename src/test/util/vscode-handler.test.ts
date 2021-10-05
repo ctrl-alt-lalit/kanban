@@ -1,7 +1,7 @@
 import { createStrictKanbanJson } from "../../util/kanban-type-functions";
 import VsCodeHandler from "../../util/vscode-handler";
 
-const VsCodeApiMock = function() {
+const VsCodeApiMock = () => {
     let setStateCalls = 0;
     let getStateCalls = 0;
     let postMessageCalls = 0;

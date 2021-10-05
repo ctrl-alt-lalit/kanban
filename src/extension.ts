@@ -1,18 +1,19 @@
-import * as vscode from 'vscode'; //contains the VS Code extensibility API
 import * as path from 'path';
+import * as vscode from 'vscode'; //contains the VS Code extensibility API
 
-//extension is activated the very first time a command is executed
+// extension is activated the very first time a command is executed
 export function activate(context: vscode.ExtensionContext) {
+	const viewCommand = 'kanban.view';
+	context.subscriptions.push(vscode.commands.registerCommand(
+		viewCommand, () => Panel.show(context)));
 
 	const config = vscode.workspace.getConfiguration('kanban');
 
-	const viewCommand = 'kanban.view';
-	context.subscriptions.push(
-		vscode.commands.registerCommand(viewCommand, () => Panel.show(context))
-	);
-
-	if (config.showViewButton) {
-		const viewButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+	if (config.statusAlignment !== 'None') { // valid values: Left, Right, None
+		const alignment = (config.statusAlignment === 'Left')
+			? vscode.StatusBarAlignment.Left
+			: vscode.StatusBarAlignment.Right;
+		const viewButton = vscode.window.createStatusBarItem(alignment, 100);
 		viewButton.command = viewCommand;
 		viewButton.text = '$(project) Kanban';
 		viewButton.show();
@@ -21,7 +22,6 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 class Panel {
-
 	static show(context: vscode.ExtensionContext) {
 		const column = vscode.window.activeTextEditor?.viewColumn;
 
@@ -38,23 +38,23 @@ class Panel {
 	private extensionPath: string;
 	private disposables: vscode.Disposable[] = [];
 
-	private constructor(context: vscode.ExtensionContext, column: vscode.ViewColumn) {
+	private constructor(context: vscode.ExtensionContext,
+		column: vscode.ViewColumn) {
 		this.extensionPath = context.extensionPath;
-		const workspaceFolders = vscode.workspace.workspaceFolders ?? [undefined];
-		this.storage = new Storage(context.workspaceState, workspaceFolders[0]?.uri.fsPath);
-		this.webviewPanel = vscode.window.createWebviewPanel(
-			'kanban',
-			'Kanban',
-			column,
-			{
+		const workspaceFolders =
+			vscode.workspace.workspaceFolders ?? [undefined];
+		this.storage = new Storage(context.workspaceState,
+			workspaceFolders[0]?.uri.fsPath);
+		this.webviewPanel =
+			vscode.window.createWebviewPanel('kanban', 'Kanban', column, {
 				enableScripts: true,
 				localResourceRoots: [vscode.Uri.file(this.extensionPath)],
 				retainContextWhenHidden: true
-			}
-		);
-		
+			});
+
 		this.webviewPanel.webview.html = this.makeHtml();
-		this.webviewPanel.onDidDispose(() => this.dispose(), null, this.disposables);
+		this.webviewPanel.onDidDispose(() => this.dispose(), null,
+			this.disposables);
 		this.webviewPanel.webview.onDidReceiveMessage(
 			message => this.receiveMessage(message),
 		);
@@ -73,18 +73,23 @@ class Panel {
 	}
 
 	private makeHtml(): string {
-		const manifest = require(path.join(this.extensionPath, 'build', 'asset-manifest.json'));
+		const manifest = require(
+			path.join(this.extensionPath, 'build', 'asset-manifest.json'));
 		const csp = this.webviewPanel.webview.cspSource;
-		const scriptSource = vscode.Uri.file(
-			path.join(this.extensionPath, 'build', manifest.files['main.js'])).with({scheme: 'vscode-resource'}
-		);
-		const stylesheet = vscode.Uri.file(path.join(this.extensionPath, 'build', 'index.css')).with({scheme: 'vscode-resource'});
-		const codicons = vscode.Uri.file(
-			path.join(this.extensionPath, 'node_modules', '@vscode', 'codicons', 'dist', 'codicon.css')).with({scheme: 'vscode-resource'}
-		);
+		const scriptSource = vscode.Uri
+			.file(path.join(this.extensionPath, 'build',
+				manifest.files['main.js']))
+			.with({ scheme: 'vscode-resource' });
+		const stylesheet =
+			vscode.Uri.file(path.join(this.extensionPath, 'build', 'index.css'))
+				.with({ scheme: 'vscode-resource' });
+		const codicons =
+			vscode.Uri
+				.file(path.join(this.extensionPath, 'node_modules', '@vscode',
+					'codicons', 'dist', 'codicon.css'))
+				.with({ scheme: 'vscode-resource' });
 
-		return (
-			`
+		return (`
 			<!DOCTYPE html>
 			<html lang="en-US">
 			<head>
@@ -103,17 +108,18 @@ class Panel {
 				<script src="${scriptSource}"></script>
 			</body>
 			</html>
-			`
-		);
+			`);
 	}
 
-	private async receiveMessage(message: {command: string, data: any}): Promise<void> {
-		const {command, data} = message;
+	private async receiveMessage(message: { command: string, data: any }):
+		Promise<void> {
+		const { command, data } = message;
 		if (command === 'save') {
 			this.storage.saveKanban(data);
 		} else if (command === 'load') {
 			const savedData = await this.storage.loadKanban();
-			this.webviewPanel.webview.postMessage({command: 'load', data: savedData});
+			this.webviewPanel.webview.postMessage(
+				{ command: 'load', data: savedData });
 		}
 	}
 }
@@ -123,13 +129,13 @@ class Storage {
 		this.memento = memento;
 		if (workspacePath) {
 			this.saveUri = vscode.Uri.file(
-				path.join(workspacePath, '.vscode', 'kanban.json')
-			);
+				path.join(workspacePath, '.vscode', 'kanban.json'));
 		}
 	}
 
-	public async loadKanban<T>() : Promise<T> {
-		const mementoData = this.memento.get<T>(Storage.kanbanKey, null as any) as any;
+	public async loadKanban<T>(): Promise<T> {
+		const mementoData =
+			this.memento.get<T>(Storage.kanbanKey, null as any) as any;
 		if (!this.saveUri) {
 			return mementoData;
 		}
@@ -139,7 +145,7 @@ class Storage {
 			const buffer = await vscode.workspace.fs.readFile(this.saveUri);
 			fileData = JSON.parse(buffer.toString());
 		} catch {
-			//file not found
+			// file not found
 		}
 
 		if (!mementoData) {
@@ -161,10 +167,12 @@ class Storage {
 		}
 
 		try {
-			const buffer: Uint8Array = Buffer.from(JSON.stringify(kanban, null, 4));
+			const buffer: Uint8Array =
+				Buffer.from(JSON.stringify(kanban, null, 4));
 			vscode.workspace.fs.writeFile(this.saveUri, buffer);
 		} catch {
-			console.error('Could not save to file. Writing to metadata instead.');
+			console.error(
+				'Could not save to file. Writing to metadata instead.');
 			this.memento.update(Storage.kanbanKey, kanban);
 		}
 	}
@@ -174,4 +182,4 @@ class Storage {
 	private saveUri: vscode.Uri | undefined = undefined;
 }
 
-export function deactivate() {}
+export function deactivate() { }

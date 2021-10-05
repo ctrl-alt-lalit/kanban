@@ -4,7 +4,7 @@
   "displayName": "Kanban",
   "description": "Simple kanban board for VS Code. Visually organize your ideas!",
   "icon": "images/icon.png",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "engines": {
     "vscode": "^1.53.2"
   },
@@ -34,10 +34,15 @@
     "configuration": {
       "title": "Kanban",
       "properties": {
-        "kanban.showViewButton": {
-          "type": "boolean",
-          "default": true,
-          "description": "Add a button to the bottom left of your status bar to view the kanban board."
+        "kanban.statusAlignment": {
+          "type": "string",
+          "default": "Left",
+          "enum": [
+            "Left",
+            "Right",
+            "None"
+          ],
+          "description": "Show the Kanban button on the left or right side of your status bar, or nowhere."
         }
       }
     },

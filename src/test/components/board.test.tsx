@@ -1,11 +1,11 @@
-import {render} from '@testing-library/react';
+import { render } from '@testing-library/react';
 import Board from '../../components/board';
 import { createStrictColumnJson, createStrictKanbanJson, createTaskJson } from '../../util/kanban-type-functions';
 import VsCodeHandler from '../../util/vscode-handler';
 import userEvent from '@testing-library/user-event';
 
 jest.mock('../../util/vscode-handler', () => {
-    return function() {
+    return function () {
         let savedData = createStrictKanbanJson();
         let callbacks: Array<(data: StrictKanbanJSON) => void> = [];
 
@@ -21,9 +21,9 @@ jest.mock('../../util/vscode-handler', () => {
 
 function makeVsCodeHandler() {
     const api: VsCodeApi = {
-        getState: () => {return;},
-        setState: () => {return;},
-        postMessage: () => {return;}
+        getState: () => { return; },
+        setState: () => { return; },
+        postMessage: () => { return; }
     };
     return new VsCodeHandler(api);
 }
@@ -44,7 +44,7 @@ function wait(ms: number) {
 
 describe('<Board>, <Column>, and <Task>', () => {
 
-    it ('renders data in a StrictKanbanJSON', async () => {
+    it('renders data in a StrictKanbanJSON', async () => {
         const data = createStrictKanbanJson(
             randomString(),
             [
@@ -74,7 +74,7 @@ describe('<Board>, <Column>, and <Task>', () => {
         //initialize board and wait for data to load
         const vscode = makeVsCodeHandler();
         vscode.save(data);
-        const wrapper = render(<Board vscode={vscode}/>);
+        const wrapper = render(<Board vscode={vscode} />);
         const board = wrapper.container;
         await wait(5);
 
@@ -114,7 +114,7 @@ describe('<Board>, <Column>, and <Task>', () => {
         let savedCalled = false;
         vscode.save = () => savedCalled = true;
 
-        const wrapper = render(<Board vscode={vscode}/>);
+        const wrapper = render(<Board vscode={vscode} />);
         const board = wrapper.container;
         await wait(5);
 
@@ -137,7 +137,7 @@ describe('<Board>, <Column>, and <Task>', () => {
         let savedCalled = false;
         vscode.save = (kanban) => savedCalled = kanban.saveToFile;
 
-        const wrapper = render(<Board vscode={vscode}/>);
+        const wrapper = render(<Board vscode={vscode} />);
         const board = wrapper.container;
         await wait(5);
 
@@ -153,8 +153,8 @@ describe('<Board>, <Column>, and <Task>', () => {
     it('has editable text', async () => {
         const vscode = makeVsCodeHandler();
         //save kanban board with 1 column and 1 task
-        vscode.save(createStrictKanbanJson('', [createStrictColumnJson('', [createTaskJson()])])); 
-        const wrapper = render(<Board vscode={vscode}/>);
+        vscode.save(createStrictKanbanJson('', [createStrictColumnJson('', [createTaskJson()])]));
+        const wrapper = render(<Board vscode={vscode} />);
         const board = wrapper.container;
         await wait(5);
 
@@ -196,14 +196,14 @@ describe('<Board>, <Column>, and <Task>', () => {
 
     /* Autosave test is skipped since autosaving runs in intervals of 5 sec (which is too long for testing) */
 
-    it ('can add and delete columns', async () => {
+    it('can add and delete columns', async () => {
         const vscode = makeVsCodeHandler();
         let numCols = 0;
         vscode.addLoadListener(data => numCols = data.cols.length);
         vscode.save(createStrictKanbanJson('', []));
         await wait(5);
 
-        const wrapper = render(<Board vscode={vscode}/>);
+        const wrapper = render(<Board vscode={vscode} />);
         const board = wrapper.container;
         await wait(5);
 
@@ -235,7 +235,7 @@ describe('<Board>, <Column>, and <Task>', () => {
         vscode.save(createStrictKanbanJson('', [createStrictColumnJson('', [])])); //1 column, 0 tasks
         await wait(5);
 
-        const wrapper = render(<Board vscode={vscode}/>);
+        const wrapper = render(<Board vscode={vscode} />);
         const board = wrapper.container;
         await wait(5);
 
@@ -264,7 +264,7 @@ describe('<Board>, <Column>, and <Task>', () => {
         vscode.save(createStrictKanbanJson('', [createStrictColumnJson('', [])])); //1 column, 0 tasks
         await wait(5);
 
-        const wrapper = render(<Board vscode={vscode}/>);
+        const wrapper = render(<Board vscode={vscode} />);
         const board = wrapper.container;
         await wait(5);
 
