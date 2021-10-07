@@ -9,7 +9,7 @@ function randomBoolean() {
 }
 
 describe('Kanban Type Handler', () => {
-    describe('createTaskJson()', () => {
+    describe('createStrictTaskJson()', () => {
         it('Should return a TaskJson', () => {
             const manuallyCreated: TaskJSON = { text: 'any string', id: '12345' };
             const task = KT.createTaskJson();
@@ -26,7 +26,7 @@ describe('Kanban Type Handler', () => {
         });
     });
 
-    describe('createColumnJson()', () => {
+    describe('createStrictColumnJson()', () => {
         it('Should return a StrictColumnJSON', () => {
             const manuallyCreated: StrictColumnJSON = {
                 title: 'title',
@@ -54,14 +54,14 @@ describe('Kanban Type Handler', () => {
         });
     });
 
-    describe('createKanbanJSON()', () => {
+    describe('createStrictKanbanJSON()', () => {
         it('Should return a StrictKanbanJSON', () => {
             const manuallyCreated: StrictKanbanJSON = {
                 title: 'title',
                 cols: [],
                 autosave: false,
                 saveToFile: false,
-                timestamp: 123
+                timestamp: 123,
             };
 
 
@@ -75,7 +75,8 @@ describe('Kanban Type Handler', () => {
             const title = randomString();
             const cols = [KT.createStrictColumnJson(), KT.createStrictColumnJson(), KT.createStrictColumnJson()];
             const autosave = randomBoolean();
-            const kanban = KT.createStrictKanbanJson(title, cols, autosave);
+            const saveToFile = randomBoolean();
+            const kanban = KT.createStrictKanbanJson(title, cols, autosave, saveToFile);
 
             expect(kanban.title).toBe(title);
             expect(kanban.cols).toStrictEqual(cols);

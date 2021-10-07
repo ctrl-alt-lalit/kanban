@@ -1,4 +1,4 @@
-import {createStrictKanbanJson, toStrictKanbanJson} from './kanban-type-functions';
+import { createStrictKanbanJson, toStrictKanbanJson } from './kanban-type-functions';
 
 
 
@@ -10,7 +10,7 @@ class VsCodeHandler {
      * Tells the Extension Host to send previously saved data.
      */
     load() {
-        this.vscode.postMessage({command: 'load', data: null});
+        this.vscode.postMessage({ command: 'load', data: null });
     }
 
     /**
@@ -19,7 +19,7 @@ class VsCodeHandler {
      */
     save(kanban: StrictKanbanJSON) {
         kanban.timestamp = Date.now();
-        this.vscode.postMessage({command: 'save', data: kanban});
+        this.vscode.postMessage({ command: 'save', data: kanban });
     }
 
     /**
@@ -50,8 +50,8 @@ class VsCodeHandler {
         this.vscode = vscode;
 
         window.addEventListener('message', event => {
-            let {command, data} = event.data as {command: string, data: any};
-            
+            let { command, data } = event.data as { command: string, data: any };
+
             if (command === 'load') {
                 data ??= createStrictKanbanJson();
                 const kanban = toStrictKanbanJson(data as KanbanJSON);
@@ -64,7 +64,7 @@ class VsCodeHandler {
      * Connects the webview to the Extension Host.
      */
     private vscode: VsCodeApi;
-    
+
     /**
      * List of callbacks to run after receiving
      * the 'load' message from the Extension Host.
