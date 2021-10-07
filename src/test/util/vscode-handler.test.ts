@@ -18,7 +18,7 @@ const VsCodeApiMock = () => {
 
 describe('VsCodeHandler', () => {
     it('sends messages to the Extension Host', () => {
-        const api = VsCodeApiMock()
+        const api = VsCodeApiMock();
         const vscode = new VsCodeHandler(api);
 
         vscode.save(createStrictKanbanJson());

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as vscode from 'vscode'; //contains the VS Code extensibility API
+import * as vscode from 'vscode'; //contains the VS Code extension API
 
 // extension is activated the very first time a command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -7,18 +7,45 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand(
 		viewCommand, () => Panel.show(context)));
 
-	const config = vscode.workspace.getConfiguration('kanban');
+	let config = vscode.workspace.getConfiguration('kanban');
 
-	if (config.statusAlignment !== 'None') { // valid values: Left, Right, None
-		const alignment = (config.statusAlignment === 'Left')
-			? vscode.StatusBarAlignment.Left
-			: vscode.StatusBarAlignment.Right;
-		const viewButton = vscode.window.createStatusBarItem(alignment, 100);
-		viewButton.command = viewCommand;
-		viewButton.text = '$(project) Kanban';
+	const createViewButton = (alignment: 'None' | 'Left' | 'Right', priority: number) => {
+		if (alignment !== 'None') {
+			const buttonAlignment = (alignment === 'Left')
+				? vscode.StatusBarAlignment.Left
+				: vscode.StatusBarAlignment.Right;
+
+			const viewButton = vscode.window.createStatusBarItem(buttonAlignment, priority);
+
+			viewButton.command = viewCommand;
+			viewButton.text = '$(project) Kanban';
+
+			return viewButton;
+		}
+
+		return null;
+	};
+
+	let viewButton = createViewButton(config.statusButton.alignment, config.statusButton.priority);
+	if (viewButton) {
 		viewButton.show();
 		context.subscriptions.push(viewButton);
 	}
+
+	vscode.workspace.onDidChangeConfiguration(event => {
+		if (event.affectsConfiguration('kanban.statusButton')) {
+			if (viewButton) {
+				viewButton.hide();
+			}
+
+			config = vscode.workspace.getConfiguration('kanban');
+			viewButton = createViewButton(config.statusButton.alignment, config.statusButton.priority);
+			if (viewButton) {
+				viewButton.show();
+				context.subscriptions.push(viewButton);
+			}
+		}
+	});
 }
 
 class Panel {
@@ -145,7 +172,13 @@ class Storage {
 			const buffer = await vscode.workspace.fs.readFile(this.saveUri);
 			fileData = JSON.parse(buffer.toString());
 		} catch {
-			// file not found
+			/*
+			 * File not found.
+			 *
+			 * This is not actually ~exceptional~ since you can save
+			 * to the workspace rather than a discrete file. However, vscode's
+			 * filesystem api doesn't have a "check if the file exists" function.
+			 */
 		}
 
 		if (!mementoData) {

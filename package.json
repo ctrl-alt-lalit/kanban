@@ -34,7 +34,7 @@
     "configuration": {
       "title": "Kanban",
       "properties": {
-        "kanban.statusAlignment": {
+        "kanban.statusButton.alignment": {
           "type": "string",
           "default": "Left",
           "enum": [
@@ -43,6 +43,11 @@
             "None"
           ],
           "description": "Show the Kanban button on the left or right side of your status bar, or nowhere."
+        },
+        "kanban.statusButton.priority": {
+          "type": "number",
+          "default": 100,
+          "description": "Where the Kanban button should be in relation to other buttons. A higher value means further left."
         }
       }
     },
