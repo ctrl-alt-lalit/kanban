@@ -96,6 +96,54 @@ body {
     overflow-y: scroll;
 }
 
+.board-add-column {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    opacity: 0.3;
+    cursor: pointer;
+    color: var(--vscode-editor-foreground) !important;
+    transition: opacity 0.2s;
+    text-align: center;
+}
+
+.board-add-column:hover, .board-add-column:focus, .board-add-column:active {
+    opacity: 1;
+}
+
+.board-add-column .vertical-line {
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.board-add-column .vertical-line::before {
+    content: "";
+    display: block;
+    background: none;
+    border-right: 0.08rem solid var(--vscode-editor-foreground);
+    width: 50%;
+}
+
+.board-add-column .vertical-line::after {
+    content: "";
+    display: block;
+    background: none;
+    border-left: 0.08rem solid var(--vscode-editor-foreground);
+    width: 50%;
+}
+
+.board-add-column .codicon {
+    font-size: 1.5rem !important;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    padding-left: 0.1rem; /* codicon is not perfectly centered */
+}
+
+
+
+
 /*****************************
   COLUMN
 *****************************/

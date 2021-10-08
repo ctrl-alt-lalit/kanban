@@ -4,6 +4,7 @@ import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import toast from 'react-hot-toast';
 import { createStrictColumnJson, createStrictKanbanJson } from '../util/kanban-type-functions';
 import VsCodeHandler from '../util/vscode-handler';
+import { runInThisContext } from 'vm';
 
 /**
  * A kanban board containing multiple Columns and Tasks that can be dragged to each column.
@@ -58,6 +59,7 @@ class Board extends React.Component<{ vscode: VsCodeHandler }, { data: StrictKan
                             />
                         ))}
                     </DragDropContext>
+                    <this.AddColumnButton />
                 </div>
             </div>
         );
@@ -156,7 +158,7 @@ class Board extends React.Component<{ vscode: VsCodeHandler }, { data: StrictKan
     }
 
     /**
-     * React component containing the title of this Board and all its buttons (save, toggle autosave, add column)
+     * React component containing the title of this Board and all its buttons (save, toggle autosave, settings)
      */
     private Titlebar = (): JSX.Element => {
         const [settingsVisible, setSettingsVisible] = React.useState(false);
@@ -180,13 +182,6 @@ class Board extends React.Component<{ vscode: VsCodeHandler }, { data: StrictKan
                     this.props.vscode.save(this.state.data);
                 }}>
                     <span className='codicon codicon-save' />
-                </a>
-                <a className='board-add-column' title='Add Column' onClick={() => {
-                    const copy = { ...this.state.data };
-                    copy.cols.push(createStrictColumnJson(`Column ${copy.cols.length + 1}`));
-                    this.updateSavedData(copy);
-                }}>
-                    <span className='codicon codicon-add' />
                 </a>
                 <a className='board-settings-toggle' title='Show/Hide Settings' onClick={() => setSettingsVisible(!settingsVisible)}>
                     <span className='codicon codicon-gear' />
@@ -216,6 +211,21 @@ class Board extends React.Component<{ vscode: VsCodeHandler }, { data: StrictKan
             </div>
         );
     };
+
+    /**
+     * Vertical bar on that adds a column to the board when clicked.
+     */
+    private AddColumnButton = (): JSX.Element => (
+        <a className='board-add-column' title='Add Column' onClick={() => {
+            const copy = { ...this.state.data };
+            copy.cols.push(createStrictColumnJson(`Column ${copy.cols.length + 1}`));
+            this.updateSavedData(copy);
+        }}>
+            <div className="vertical-line"></div>
+            <span className='codicon codicon-add'></span>
+            <div className="vertical-line"></div>
+        </a>
+    );
 
 
     /**
