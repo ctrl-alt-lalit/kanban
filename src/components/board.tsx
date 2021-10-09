@@ -2,14 +2,13 @@ import React from 'react';
 import Column from './column';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import toast from 'react-hot-toast';
-import { createStrictColumnJson, createStrictKanbanJson } from '../util/kanban-type-functions';
-import VsCodeHandler from '../util/vscode-handler';
-import { runInThisContext } from 'vm';
+import { createStrictKanbanJson } from '../util/kanban-type-functions';
+import boardState from '../util/board-state';
 
 /**
  * A kanban board containing multiple Columns and Tasks that can be dragged to each column.
  */
-class Board extends React.Component<{ vscode: VsCodeHandler }, { data: StrictKanbanJSON }> {
+class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
 
     /**
      * Creates the Board and loads a StrictKanbanJSON from the Extension Host
@@ -22,26 +21,17 @@ class Board extends React.Component<{ vscode: VsCodeHandler }, { data: StrictKan
     }
 
     componentDidMount() {
-        this.props.vscode.addLoadListener(this.loadCallback);
-        this.props.vscode.load();
+        boardState.addChangeListener(this.loadCallback);
+        boardState.refresh();
 
         window.addEventListener('keydown', this.shortcutKeydown);
         window.addEventListener('keyup', this.shortcutKeyup);
-        this.autosaveIntervalId = setInterval(() => {
-            if (this.state.data.autosave && this.stateHasChanged) {
-                this.stateHasChanged = false;
-                this.props.vscode.save(this.state.data);
-            }
-        }, 5000);
     }
 
     componentWillUnmount() {
-        this.props.vscode.removeLoadListener(this.loadCallback);
+        boardState.removeChangeListener(this.loadCallback);
         window.removeEventListener('keydown', this.shortcutKeydown);
         window.removeEventListener('keyup', this.shortcutKeyup);
-        if (this.autosaveIntervalId) {
-            clearInterval(this.autosaveIntervalId);
-        }
     }
 
     render(): JSX.Element {
@@ -53,7 +43,6 @@ class Board extends React.Component<{ vscode: VsCodeHandler }, { data: StrictKan
                         {this.state.data.cols.map(col => (
                             <Column
                                 data={col}
-                                callback={data => this.columnCallback(data)}
                                 numCols={this.state.data.cols.length}
                                 key={col.id}
                             />
@@ -74,87 +63,11 @@ class Board extends React.Component<{ vscode: VsCodeHandler }, { data: StrictKan
     private dragEnd(result: DropResult): void {
         const { source, destination } = result;
 
-        const getColumn = (id: string): StrictColumnJSON => {
-            return this.state.data.cols.find(col => col.id === id)!;
-        };
-
-        const updateBoard = (column: StrictColumnJSON, column2?: StrictColumnJSON) => {
-            const copy = { ...this.state.data };
-            copy.cols = [...this.state.data.cols];
-            const index = copy.cols.findIndex(col => col.id === column.id);
-            copy.cols[index] = column;
-            if (column2) {
-                const index2 = copy.cols.findIndex(col => col.id === column2.id);
-                copy.cols[index2] = column2;
-            }
-            this.updateSavedData(copy);
-        };
-
         if (!destination) {
             return;
         }
 
-        //droppableId is column, index is position in column
-        if (source.droppableId === destination.droppableId) {
-            if (source.index === destination.index) {
-                return;
-            }
-
-            const column = getColumn(source.droppableId);
-            const [removedTask] = column.tasks.splice(source.index, 1);
-            column.tasks.splice(destination.index, 0, removedTask);
-
-            updateBoard(column);
-        } else {
-            const sourceCol = getColumn(source.droppableId);
-            const destCol = getColumn(destination.droppableId);
-
-            const [removedTask] = sourceCol.tasks.splice(source.index, 1);
-            destCol.tasks.splice(destination.index, 0, removedTask);
-
-            updateBoard(sourceCol, destCol);
-        }
-    }
-
-    /**
-     * Updates the state of a Column with `data` or deletes a Column.
-     * This method should be passed as callback to a Column, it should not be called on its own.
-     * 
-     * @param {StringColumnJSON | string} data updated state of a Column or the id of a Column to delete 
-     */
-    private columnCallback(data: StrictColumnJSON | string) {
-
-        const copy = { ...this.state.data };
-        copy.cols = [...this.state.data.cols];
-
-        if (typeof data === 'string') { //delete column
-            //notify user that a column was deleted and give them a chance to undo
-            const oldData = { ...this.state.data };
-            oldData.cols = [...this.state.data.cols];
-            toast(t => (
-                <div style={{
-                    display: 'inline-flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                }}>
-                    <p>Column Deleted &emsp;</p>
-                    <a style={{ cursor: 'pointer' }} onClick={() => {
-                        this.updateSavedData(oldData);
-                        toast.dismiss(t.id);
-                    }}>
-                        Undo
-                    </a>
-                </div>
-            ));
-
-            const index = copy.cols.findIndex(col => col.id === data);
-            copy.cols.splice(index, 1);
-            this.updateSavedData(copy);
-        } else { //update column
-            const index = copy.cols.findIndex(col => col.id === data.id);
-            copy.cols[index] = data;
-            this.updateSavedData(copy);
-        }
+        boardState.moveTask(source.droppableId, destination.droppableId, source.index, destination.index);
     }
 
     /**
@@ -173,13 +86,12 @@ class Board extends React.Component<{ vscode: VsCodeHandler }, { data: StrictKan
             <div className='board-titlebar'>
                 {/*Title and Buttons*/}
                 <input className='board-title' maxLength={18} value={this.state.data.title} onChange={event => {
-                    const copy = { ...this.state.data };
-                    copy.title = event.target.value;
-                    this.updateSavedData(copy);
+                    const title = event.target.value;
+                    boardState.changeBoardTitle(title);
                 }} />
                 <a className='board-save' title='Save' onClick={() => {
                     toast('Board Saved', { duration: 1000 });
-                    this.props.vscode.save(this.state.data);
+                    boardState.save();
                 }}>
                     <span className='codicon codicon-save' />
                 </a>
@@ -190,19 +102,17 @@ class Board extends React.Component<{ vscode: VsCodeHandler }, { data: StrictKan
                 {/*Settings Panel*/}
                 <div className='board-settings' style={settingsStyle}>
                     <a className='board-autosave' onClick={() => {
-                        const copy = { ...this.state.data };
-                        copy.autosave = !copy.autosave;
-                        toast(`Autosave ${copy.autosave ? 'Enabled' : 'Disabled'}`, { duration: 1000 });
-                        this.updateSavedData(copy);
+                        const autosave = !this.state.data.autosave;
+                        toast(`Autosave ${autosave ? 'Enabled' : 'Disabled'}`, { duration: 1000 });
+                        boardState.changeAutosave(autosave);
                     }}>
                         <span className={['codicon', this.state.data.autosave ? 'codicon-sync' : 'codicon-sync-ignored'].join(' ')} />
                     </a>
                     <p style={{ textDecoration: this.state.data.autosave ? 'none' : 'line-through' }}> Autosave </p>
                     <a className='board-save-file' onClick={() => {
-                        const copy = { ...this.state.data };
-                        copy.saveToFile = !copy.saveToFile;
-                        toast(`Will save to ${copy.saveToFile ? '.vscode/kanban.json' : 'workspace metadata'}.`, { duration: 2000 });
-                        this.updateSavedData(copy);
+                        const saveToFile = !this.state.data.saveToFile;
+                        toast(`Will save to ${saveToFile ? '.vscode/kanban.json' : 'workspace metadata'}.`, { duration: 2000 });
+                        boardState.changeSaveToFile(saveToFile);
                     }}>
                         <span className={['codicon', this.state.data.saveToFile ? 'codicon-folder-active' : 'codicon-folder'].join(' ')} />
                     </a>
@@ -216,27 +126,12 @@ class Board extends React.Component<{ vscode: VsCodeHandler }, { data: StrictKan
      * Vertical bar on that adds a column to the board when clicked.
      */
     private AddColumnButton = (): JSX.Element => (
-        <a className='board-add-column' title='Add Column' onClick={() => {
-            const copy = { ...this.state.data };
-            copy.cols.push(createStrictColumnJson(`Column ${copy.cols.length + 1}`));
-            this.updateSavedData(copy);
-        }}>
+        <a className='board-add-column' title='Add Column' onClick={() => boardState.addColumn()}>
             <div className="vertical-line"></div>
             <span className='codicon codicon-add'></span>
             <div className="vertical-line"></div>
         </a>
     );
-
-
-    /**
-     * Update this Board's state, and save this state if autosave is on.
-     * 
-     * @param {StrictKanbanJSON} data new value of this.state.data 
-     */
-    private updateSavedData(data: StrictKanbanJSON) {
-        this.stateHasChanged = true;
-        this.setState({ data: data });
-    }
 
     private loadCallback = (data: StrictKanbanJSON) => this.setState({ data: data });
 
@@ -248,7 +143,7 @@ class Board extends React.Component<{ vscode: VsCodeHandler }, { data: StrictKan
         }
 
         if (this.shortcutKeys['Control'] && this.shortcutKeys['s']) {
-            this.props.vscode.save(this.state.data);
+            boardState.save();
         }
     };
 
@@ -257,9 +152,6 @@ class Board extends React.Component<{ vscode: VsCodeHandler }, { data: StrictKan
             this.shortcutKeys[event.key] = false;
         }
     };
-
-    private stateHasChanged = false;
-    private autosaveIntervalId: NodeJS.Timeout | undefined = undefined;
 }
 
 export default Board;

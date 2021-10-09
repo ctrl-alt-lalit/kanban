@@ -1,5 +1,6 @@
-import { createStrictColumnJson, createStrictKanbanJson, createTaskJson } from "./kanban-type-functions";
+import { createStrictColumnJson, createStrictKanbanJson, createTaskJson, toStrictKanbanJson } from "./kanban-type-functions";
 import VsCodeHandler from "./vscode-handler";
+declare var acquireVsCodeApi: () => VsCodeApi;
 
 enum StateChanges {
     AUTOSAVE,
@@ -18,8 +19,17 @@ enum StateChanges {
 }
 
 class BoardState {
-    constructor(vscodeHandler: VsCodeHandler) {
-        this.vscodeHandler = vscodeHandler;
+    constructor() {
+        let vscodeApi: VsCodeApi | null = null;
+        if (typeof acquireVsCodeApi === 'undefined') {
+            vscodeApi = {
+                postMessage: () => { return; }
+            };
+        } else {
+            vscodeApi = acquireVsCodeApi();
+        }
+
+        this.vscodeHandler = new VsCodeHandler(vscodeApi);
         this.vscodeHandler.addLoadListener(this.loadFromVscode);
         this.vscodeHandler.load();
     }
@@ -28,7 +38,7 @@ class BoardState {
         this.changeListeners.push(listener);
     }
 
-    public removeChangeListenr(listener: (kanban: StrictKanbanJSON) => void) {
+    public removeChangeListener(listener: (kanban: StrictKanbanJSON) => void) {
         this.changeListeners = this.changeListeners.filter(l => l !== listener);
     }
 
@@ -86,7 +96,8 @@ class BoardState {
     }
 
     public addColumn(): void {
-        const column = createStrictColumnJson();
+        const columnName = `Column ${this.currentKanban.cols.length}`;
+        const column = createStrictColumnJson(columnName);
 
         const change = {
             type: StateChanges.COLUMN_ADDED,
@@ -232,7 +243,8 @@ class BoardState {
 
         const numSourceTasks = this.currentKanban.cols[sourceColIdx].tasks.length;
         const numDestTasks = this.currentKanban.cols[destColIdx].tasks.length;
-        if (sourceIndex < 0 || sourceIndex >= numSourceTasks || destIndex < 0 || destIndex >= numDestTasks) {
+        if (sourceIndex < 0 || sourceIndex >= numSourceTasks || destIndex < 0 || destIndex > numDestTasks) {
+            //using > instead of >= for numDestTasks since task could be appended to end of array
             return;
         }
 
@@ -253,6 +265,7 @@ class BoardState {
 
         const [task] = this.currentKanban.cols[sourceColIdx].tasks.splice(sourceIndex, 1);
         this.currentKanban.cols[destColIdx].tasks.splice(destIndex, 0, task);
+        this.endChange();
     }
 
     public changeTaskText(columnId: string, taskId: string, newText: string) {
@@ -266,12 +279,17 @@ class BoardState {
             return;
         }
 
+        const oldText = this.currentKanban.cols[columnIdx].tasks[taskIdx].text;
+        if (newText === oldText) {
+            return;
+        }
+
         const change = {
             type: StateChanges.TASK_TEXT,
             from: {
                 columnId: columnId,
                 taskId: taskId,
-                text: this.currentKanban.cols[columnIdx].tasks[taskIdx].text
+                text: oldText
             },
             to: {
                 columnId: columnId,
@@ -285,6 +303,18 @@ class BoardState {
         this.endChange();
     }
 
+    public save(kanban: StrictKanbanJSON | null = null) {
+        if (kanban) {
+            this.currentKanban = kanban;
+        }
+
+        this.vscodeHandler.save(this.currentKanban);
+    }
+
+    public getCurrentState(): StrictKanbanJSON {
+        return toStrictKanbanJson(this.currentKanban);
+    }
+
     private vscodeHandler;
     private currentKanban = createStrictKanbanJson();
     private changeListeners: Array<(kanban: StrictKanbanJSON) => void> = [];
@@ -293,6 +323,7 @@ class BoardState {
 
     private loadFromVscode = (kanban: StrictKanbanJSON) => {
         this.currentKanban = kanban;
+        this.refresh();
     };
 
     private getColumnIndex(columnId: string): number {
@@ -308,4 +339,4 @@ class BoardState {
     }
 }
 
-export default BoardState;
+export default new BoardState();

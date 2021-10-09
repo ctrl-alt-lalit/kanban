@@ -1,34 +1,9 @@
 import { render } from '@testing-library/react';
 import Board from '../../components/board';
 import { createStrictColumnJson, createStrictKanbanJson, createTaskJson } from '../../util/kanban-type-functions';
-import VsCodeHandler from '../../util/vscode-handler';
 import userEvent from '@testing-library/user-event';
+import boardState from '../../util/board-state';
 
-jest.mock('../../util/vscode-handler', () => {
-    return function () {
-        let savedData = createStrictKanbanJson();
-        let callbacks: Array<(data: StrictKanbanJSON) => void> = [];
-
-        return {
-            save: (data: StrictKanbanJSON) => savedData = data,
-            load: () => callbacks.forEach(cb => cb(savedData)),
-
-            addLoadListener: (callback: (data: StrictKanbanJSON) => void) => callbacks.push(callback),
-            removeLoadListener: (callback: (data: StrictKanbanJSON) => void) => callbacks = callbacks.filter(cb => cb !== callback),
-        };
-    };
-});
-
-function makeVsCodeHandler() {
-    const api: VsCodeApi = {
-        getState: () => { return; },
-        setState: () => { return; },
-        postMessage: () => { return; }
-    };
-    return new VsCodeHandler(api);
-}
-
-//TODO: mock toast to keep track of that
 //TODO: test undo delete feature
 //TODO: test drag and drop feature
 
@@ -42,7 +17,7 @@ function wait(ms: number) {
     });
 }
 
-describe('<Board>, <Column>, and <Task>', () => {
+describe('Board, Column, and Task', () => {
 
     it('renders data in a StrictKanbanJSON', async () => {
         const data = createStrictKanbanJson(
@@ -72,9 +47,8 @@ describe('<Board>, <Column>, and <Task>', () => {
         );
 
         //initialize board and wait for data to load
-        const vscode = makeVsCodeHandler();
-        vscode.save(data);
-        const wrapper = render(<Board vscode={vscode} />);
+        boardState.save(data);
+        const wrapper = render(<Board />);
         const board = wrapper.container;
         await wait(5);
 
@@ -109,52 +83,63 @@ describe('<Board>, <Column>, and <Task>', () => {
         wrapper.unmount();
     });
 
-    it('can save its state', async () => {
-        const vscode = makeVsCodeHandler();
-        let savedCalled = false;
-        vscode.save = () => savedCalled = true;
-
-        const wrapper = render(<Board vscode={vscode} />);
-        const board = wrapper.container;
-        await wait(5);
-
-        const saveButton = board.querySelector('a.board-save') as HTMLAnchorElement;
-        userEvent.click(saveButton);
-        expect(savedCalled).toBe(true);
-
-        savedCalled = false;
-        userEvent.type(board, '{ctrl}s');
-        expect(savedCalled).toBe(true);
-
-        wrapper.unmount();
-    });
-
     const clickSave = (board: HTMLElement) => userEvent.click(board.querySelector('a.board-save')!);
     const clickSettings = (board: HTMLElement) => userEvent.click(board.querySelector('a.board-settings-toggle')!);
 
-    it('can save to a file', async () => {
-        const vscode = makeVsCodeHandler();
-        let savedCalled = false;
-        vscode.save = (kanban) => savedCalled = kanban.saveToFile;
-
-        const wrapper = render(<Board vscode={vscode} />);
+    it('can save its state', async () => {
+        const wrapper = render(<Board />);
         const board = wrapper.container;
         await wait(5);
 
-        clickSettings(board);
-        const saveFileToggle = board.querySelector('a.board-save-file') as HTMLAnchorElement;
-        userEvent.click(saveFileToggle);
-        clickSave(board);
+        const time1 = boardState.getCurrentState().timestamp;
 
-        expect(savedCalled).toBe(true);
+        clickSave(board);
+        const time2 = boardState.getCurrentState().timestamp;
+        expect(time2).toBeGreaterThan(time1);
+
+        userEvent.type(board, '{ctrl}s');
+        const time3 = boardState.getCurrentState().timestamp;
+        expect(time3).toBeGreaterThan(time2);
+
         wrapper.unmount();
     });
 
+    it('can autosave', async () => {
+        const wrapper = render(<Board />);
+        const board = wrapper.container;
+        await wait(5);
+
+        boardState.save(createStrictKanbanJson());
+        expect(boardState.getCurrentState().autosave).toBe(false);
+
+        clickSettings(board);
+        const autosaveButton = board.querySelector('a.board-autosave')!;
+        userEvent.click(autosaveButton);
+
+        expect(boardState.getCurrentState().autosave).toBe(true);
+
+        wrapper.unmount();
+    });
+
+    it('can save to a file', async () => {
+        const wrapper = render(<Board />);
+        const board = wrapper.container;
+        await wait(5);
+
+        boardState.save(createStrictKanbanJson());
+        expect(boardState.getCurrentState().saveToFile).toBe(false);
+
+        clickSettings(board);
+        const saveFileButton = board.querySelector('a.board-save-file')!;
+        userEvent.click(saveFileButton);
+
+        expect(boardState.getCurrentState().saveToFile).toBe(true);
+    });
+
     it('has editable text', async () => {
-        const vscode = makeVsCodeHandler();
         //save kanban board with 1 column and 1 task
-        vscode.save(createStrictKanbanJson('', [createStrictColumnJson('', [createTaskJson()])]));
-        const wrapper = render(<Board vscode={vscode} />);
+        boardState.save(createStrictKanbanJson('', [createStrictColumnJson('', [createTaskJson()])]));
+        const wrapper = render(<Board />);
         const board = wrapper.container;
         await wait(5);
 
@@ -183,88 +168,85 @@ describe('<Board>, <Column>, and <Task>', () => {
         clickSave(board);
         await wait(5);
         let boardData = createStrictKanbanJson();
-        vscode.addLoadListener(data => boardData = data);
-        vscode.load();
+        const listener: (kanban: StrictKanbanJSON) => void = kanban => boardData = kanban;
+        boardState.addChangeListener(listener);
+        boardState.refresh();
         await wait(5);
+
 
         expect(boardData.title).toBe(boardString);
         expect(boardData.cols[0].title).toBe(columnString);
         expect(boardData.cols[0].tasks[0].text).toBe(taskString);
 
+        boardState.removeChangeListener(listener);
         wrapper.unmount();
     });
 
     /* Autosave test is skipped since autosaving runs in intervals of 5 sec (which is too long for testing) */
 
     it('can add and delete columns', async () => {
-        const vscode = makeVsCodeHandler();
         let numCols = 0;
-        vscode.addLoadListener(data => numCols = data.cols.length);
-        vscode.save(createStrictKanbanJson('', []));
+        const listener: (kanban: StrictKanbanJSON) => void = kanban => numCols = kanban.cols.length;
+
+        boardState.addChangeListener(listener);
+        boardState.save(createStrictKanbanJson('', []));
         await wait(5);
 
-        const wrapper = render(<Board vscode={vscode} />);
+        const wrapper = render(<Board />);
         const board = wrapper.container;
         await wait(5);
 
         //click add column button and save changes
         const addColumnButton = board.querySelector('a.board-add-column') as HTMLAnchorElement;
         userEvent.click(addColumnButton);
-        clickSave(board);
-        await wait(5);
-        vscode.load();
         await wait(5);
         expect(numCols).toBe(1);
 
         //click remove column button and save changes
         const deleteColumnButton = board.querySelector('a.column-delete') as HTMLAnchorElement;
         userEvent.click(deleteColumnButton);
-        clickSave(board);
         await wait(5);
-        vscode.load();
         await wait(5);
         expect(numCols).toBe(0);
+
+        boardState.removeChangeListener(listener);
         wrapper.unmount();
     });
 
 
     it('can add and delete tasks', async () => {
-        const vscode = makeVsCodeHandler();
         let numTasks = 0;
-        vscode.addLoadListener(data => numTasks = data.cols[0].tasks.length);
-        vscode.save(createStrictKanbanJson('', [createStrictColumnJson('', [])])); //1 column, 0 tasks
+        const listener: (kanban: StrictKanbanJSON) => void = kanban => numTasks = kanban.cols[0].tasks.length;
+
+        boardState.addChangeListener(listener);
+        boardState.save(createStrictKanbanJson('', [createStrictColumnJson('', [])])); //1 column, 0 tasks
         await wait(5);
 
-        const wrapper = render(<Board vscode={vscode} />);
+        const wrapper = render(<Board />);
         const board = wrapper.container;
         await wait(5);
 
         //click add task and save changes
         const addTaskButton = board.querySelector('a.column-add-task') as HTMLAnchorElement;
         userEvent.click(addTaskButton);
-        clickSave(board);
-        await wait(5);
-        vscode.load();
         await wait(5);
         expect(numTasks).toBe(1);
 
         //click delete task and save changes
         const deleteTaskButton = board.querySelector('a.task-delete') as HTMLAnchorElement;
         userEvent.click(deleteTaskButton);
-        clickSave(board);
-        await wait(5);
-        vscode.load();
         await wait(5);
         expect(numTasks).toBe(0);
+
+        boardState.removeChangeListener(listener);
         wrapper.unmount();
     });
 
     it("can change a column's color with a color picker", async () => {
-        const vscode = makeVsCodeHandler();
-        vscode.save(createStrictKanbanJson('', [createStrictColumnJson('', [])])); //1 column, 0 tasks
+        boardState.save(createStrictKanbanJson('', [createStrictColumnJson('', [])])); //1 column, 0 tasks
         await wait(5);
 
-        const wrapper = render(<Board vscode={vscode} />);
+        const wrapper = render(<Board />);
         const board = wrapper.container;
         await wait(5);
 

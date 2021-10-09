@@ -35,7 +35,7 @@ type TaskJSON = {
 };
 
 interface VsCodeApi {
-    getState: () => any;
-    setState: (newState: any) => any;
+    // getState: () => any;
+    // setState: (newState: any) => any;
     postMessage: (message: any) => void;
 }

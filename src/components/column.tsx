@@ -1,9 +1,8 @@
 import React from 'react';
 import { Droppable } from 'react-beautiful-dnd';
-import toast from 'react-hot-toast';
 import Task from './task';
 import { HexColorInput } from 'react-colorful';
-import { createTaskJson } from '../util/kanban-type-functions';
+import boardState from '../util/board-state';
 
 /**
  * React component showing a vertical list of Tasks. Tasks from other Columns can be dropped into this list and vice-versa.
@@ -14,51 +13,15 @@ import { createTaskJson } from '../util/kanban-type-functions';
  * A StrictColumnJSON passed in will update the data prop of this Column to the parameter. If this Columns' id (a string)
  * is given, then this Column will be deleted
  */
-function Column({ data, callback, numCols }: { data: StrictColumnJSON, callback: (data: StrictColumnJSON | string) => void, numCols: number }) {
+function Column({ data, numCols }: { data: StrictColumnJSON, numCols: number }) {
 
     const [colorPickerOpen, setColorPickerOpen] = React.useState(false);
-
-    /**
-     * Updates this Column's data prop to reflect a change in a child Task's state.
-     * Note: Should be passed in as a Task prop, not called directly.
-     * 
-     * @param {string | null} text string to replace a Task's text, or null to delete the task
-     * @param {number} index position of the Task in this Column's list 
-     */
-    function taskCallback(text: string | null, index: number) {
-        if (text !== null) {
-            data.tasks[index].text = text;
-        } else {
-            const oldData = { ...data };
-            oldData.tasks = [...data.tasks];
-            toast(t => (
-                <div style={{
-                    display: 'inline-flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                }}>
-                    <p>Task Deleted &emsp;</p>
-                    <a style={{ cursor: 'pointer' }} onClick={() => {
-                        callback(oldData);
-                        toast.dismiss(t.id);
-                    }}>
-                        Undo
-                    </a>
-                </div>
-            ));
-
-            data.tasks.splice(index, 1);
-        }
-
-        callback(data);
-    }
 
     const changeColor = (color: string) => {
         if (color.length < 6) {
             return;
         }
-        data.color = color;
-        callback(data);
+        boardState.changeColumnColor(data.id, color);
     };
 
     const colorPickerStyle = {
@@ -88,24 +51,20 @@ function Column({ data, callback, numCols }: { data: StrictColumnJSON, callback:
         <div
             className='column'
             style={{ color: data.color, borderColor: data.color, width: `${100 / numCols}%` }}
-            onBlur={() => setColorPickerOpen(false)}
         >
             {/* Contains the column's title this column's buttons (add task, delete column, show/hide color picker) */}
             <div className='column-titlebar'>
                 <input value={data.title} maxLength={12} className='column-title' style={{ color: data.color, outlineColor: data.color }} onChange={event => {
-                    data.title = event.target.value;
-                    callback(data);
+                    const title = event.target.value;
+                    boardState.changeColumnTitle(data.id, title);
                 }} />
-                <a className='column-add-task' title='Add Task' {...anchorProps} onClick={() => {
-                    data.tasks.push(createTaskJson());
-                    callback(data);
-                }}>
+                <a className='column-add-task' title='Add Task' {...anchorProps} onClick={() => boardState.addTask(data.id)}>
                     <span className='codicon codicon-empty-window' />
                 </a>
                 <a className='column-color' title='Change Color' {...anchorProps} onClick={() => setColorPickerOpen(!colorPickerOpen)}>
                     <span className='codicon codicon-symbol-color' />
                 </a>
-                <a className='column-delete' title='Delete Column' {...anchorProps} onClick={() => callback(data.id)}>
+                <a className='column-delete' title='Delete Column' {...anchorProps} onClick={() => boardState.removeColumn(data.id)}>
                     <span className='codicon codicon-trash' />
                 </a>
             </div>
@@ -138,8 +97,8 @@ function Column({ data, callback, numCols }: { data: StrictColumnJSON, callback:
                             <Task
                                 data={task}
                                 index={index}
-                                callback={(str: string | null) => taskCallback(str, index)}
                                 key={task.id}
+                                columnId={data.id}
                             />
                         ))}
                         {provided.placeholder}

@@ -2,21 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import toast, { Toaster, useToasterStore } from 'react-hot-toast';
 import Board from './components/board';
-import VsCodeHandler from './util/vscode-handler';
-
-declare var acquireVsCodeApi: () => VsCodeApi;
-let vscode: VsCodeApi | null = null;
-if (typeof acquireVsCodeApi === 'undefined') {
-    console.error("Could not acquire VSCode API for Extension Host. Saving and loading won't work.");
-    vscode = {
-        getState: () => { return; },
-        setState: () => { return; },
-        postMessage: () => { return; }
-    };
-} else {
-    vscode = acquireVsCodeApi();
-}
-const vsCodeHandler = new VsCodeHandler(vscode);
+import boardState from './util/board-state';
 
 function App(): JSX.Element {
     const { toasts } = useToasterStore();
@@ -30,7 +16,7 @@ function App(): JSX.Element {
 
     return (
         <>
-            <Board vscode={vsCodeHandler} />
+            <Board />
             <Toaster toastOptions={{
                 duration: 2000, position: 'bottom-center', style: {
                     borderRadius: '1.25rem',
