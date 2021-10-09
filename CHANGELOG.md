@@ -7,6 +7,7 @@
  - Added `kanban.statusButton.alignment` and `kanban.statusButton.priority` settings
    - alignment setting lets you choose where the ```Kanban``` button is on the status bar
    - priority settings lets you modify where the ```Kanban``` button is in relation to other buttons
+ - Changed how to add task button looks
 
 ## 1.3.0
  - You can now save and load from a file in addition to the workspace

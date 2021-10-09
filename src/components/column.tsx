@@ -58,9 +58,6 @@ function Column({ data, numCols }: { data: StrictColumnJSON, numCols: number }) 
                     const title = event.target.value;
                     boardState.changeColumnTitle(data.id, title);
                 }} />
-                <a className='column-add-task' title='Add Task' {...anchorProps} onClick={() => boardState.addTask(data.id)}>
-                    <span className='codicon codicon-empty-window' />
-                </a>
                 <a className='column-color' title='Change Color' {...anchorProps} onClick={() => setColorPickerOpen(!colorPickerOpen)}>
                     <span className='codicon codicon-symbol-color' />
                 </a>
@@ -84,6 +81,10 @@ function Column({ data, numCols }: { data: StrictColumnJSON, numCols: number }) 
                     <HexColorInput color={data.color} onChange={changeColor} />
                 </div>
             </div>
+
+            <a className='column-add-task' title='Add Task' style={{ color: data.color, borderColor: data.color }} onClick={() => boardState.addTask(data.id)}>
+                <span className='codicon codicon-add'></span>
+            </a>
 
             {/* Main content. The Task list. Droppables are where Draggables can be moved to (react-beautiful-dnd) */}
             <Droppable droppableId={data.id} key={data.id}>

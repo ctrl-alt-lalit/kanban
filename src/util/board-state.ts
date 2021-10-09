@@ -96,7 +96,7 @@ class BoardState {
     }
 
     public addColumn(): void {
-        const columnName = `Column ${this.currentKanban.cols.length}`;
+        const columnName = `Column ${this.currentKanban.cols.length + 1}`;
         const column = createStrictColumnJson(columnName);
 
         const change = {
@@ -204,7 +204,7 @@ class BoardState {
         };
         this.history.push(change);
 
-        this.currentKanban.cols[columnIdx].tasks.push(task);
+        this.currentKanban.cols[columnIdx].tasks.splice(0, 0, task);
         this.endChange();
     }
 

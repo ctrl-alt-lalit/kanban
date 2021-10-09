@@ -267,6 +267,35 @@ body {
     overflow-y: scroll;
 }
 
+.column-add-task {
+    padding-top: 0.2rem;
+    display: flex;
+    flex-direction: row;
+    width: 95%;
+    align-self: center;
+    opacity: 0.3;
+    transition: opacity 0.2s;
+    cursor: pointer;
+}
+
+.column-add-task:hover, .column-add-task:focus, .column-add-task:active {
+    opacity: 1;
+}
+
+.column-add-task::before, .column-add-task::after {
+    content: "";
+    border-bottom: 0.1rem solid;
+    height: calc(50% - 0.1rem);
+    flex-grow: 1;
+    align-self: flex-start;
+}
+
+.column-add-task .codicon {
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
+}
+
+
 /**************************
   TASK
 **************************/
