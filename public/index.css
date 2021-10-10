@@ -354,8 +354,8 @@ body {
 *****************************/
 
 .history {
-    background-color: blue;
-    color: white;
+    background-color: var(--vscode-activityBar-background);
+    color: var(--vscode-activityBar-foreground);
     width: 25%;
     height: 100%;
     display: flex;
@@ -374,8 +374,18 @@ body {
 }
 
 .history-item {
-    background-color: darkslategray;
+    background-color: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+    border: 1px solid var(--vscode-editor-foreground);
     width: 90%;
     margin-top: 0.5rem;
+    padding-left: 0.5rem;
     cursor: pointer;
+    transition: 0.2s;
+}
+
+.history-item:hover, .history-item:focus, .history-item:active {
+    color: var(--vscode-editor-background);
+    border-color: var(--vscode-editor-background);
+    background-color: var(--vscode-editor-foreground);
 }

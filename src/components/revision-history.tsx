@@ -25,7 +25,8 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[] }> 
                 <div className='history-scroller'>
                     {this.state.history.map((histObj, index) => (
                         <a className='history-item' onClick={() => boardState.reverseHistory(index)}>
-                            <p> {this.stateChangeName(histObj.change)} </p>
+                            <h3> {`${index + 1}.`} {this.stateChangeName(histObj.change)} </h3>
+                            <p> {histObj.details} </p>
                         </a>
                     )).reverse()}
                 </div>

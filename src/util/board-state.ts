@@ -1,4 +1,3 @@
-import DelayedUpdater from "./delayed-updater";
 import { createStrictColumnJson, createStrictKanbanJson, createTaskJson } from "./kanban-type-functions";
 import VsCodeHandler from "./vscode-handler";
 import clone from 'just-clone';
@@ -22,7 +21,26 @@ export enum StateChanges {
     HISTORY_REVERSED
 }
 
-export type HistoryObject = { change: StateChanges, data: StrictKanbanJSON };
+export type HistoryObject = { change: StateChanges, data: StrictKanbanJSON, details: string };
+
+class DelayedUpdater {
+    constructor(msDelay: number) {
+        this.delay = msDelay;
+    }
+
+    public tryUpdate(callback: () => void, timeoutKey: string) {
+        if (this.timeoutMap.has(timeoutKey)) {
+            const oldTimeout = this.timeoutMap.get(timeoutKey)!;
+            clearTimeout(oldTimeout);
+        }
+
+        const timeout = setTimeout(callback, this.delay);
+        this.timeoutMap.set(timeoutKey, timeout);
+    }
+
+    private delay: number;
+    private timeoutMap: Map<string, NodeJS.Timeout> = new Map();
+}
 
 class BoardState {
     constructor() {
@@ -98,7 +116,8 @@ class BoardState {
 
             this.history.push({
                 change: StateChanges.BOARD_TITLE,
-                data: copy
+                data: copy,
+                details: `From "${oldTitle}" to "${newTitle}"`
             });
 
             this.previousText.delete('board');
@@ -122,7 +141,11 @@ class BoardState {
             return;
         }
 
-        this.appendHistory(StateChanges.COLUMN_DELETED);
+        this.history.push({
+            change: StateChanges.COLUMN_DELETED,
+            data: clone(this.currentKanban),
+            details: `Deleted "${this.currentKanban.cols[columnIdx].title}"`
+        });
 
         this.currentKanban.cols.splice(columnIdx, 1);
         this.endChange(true);
@@ -151,7 +174,8 @@ class BoardState {
 
             this.history.push({
                 change: StateChanges.COLUMN_TITLE,
-                data: copy
+                data: copy,
+                details: `From "${oldTitle}" to "${newTitle}"`
             });
 
             this.previousText.delete(column.id);
@@ -173,7 +197,11 @@ class BoardState {
             return;
         }
 
-        this.appendHistory(StateChanges.COLUMN_COLOR);
+        this.history.push({
+            change: StateChanges.COLUMN_COLOR,
+            data: clone(this.currentKanban),
+            details: `"${column.title}" color changed`
+        });
 
         this.currentKanban.cols[columnIdx].color = newColor;
         this.endChange(true);
@@ -194,16 +222,25 @@ class BoardState {
         if (columnIdx === -1) {
             return;
         }
+        const column = this.currentKanban.cols[columnIdx];
 
-        const taskIdx = this.currentKanban.cols[columnIdx].tasks.findIndex(task => task.id === taskId);
+        const taskIdx = column.tasks.findIndex(t => t.id === taskId);
         if (taskIdx === -1) {
             return;
         }
+        const task = column.tasks[taskIdx];
+        const taskEmpty = (task.text === '');
 
-        this.appendHistory(StateChanges.TASK_DELETED);
+        if (!taskEmpty) {
+            this.history.push({
+                change: StateChanges.TASK_DELETED,
+                data: clone(this.currentKanban),
+                details: `"${task.text}" removed from "${column.title}"`
+            });
+        }
 
         this.currentKanban.cols[columnIdx].tasks.splice(taskIdx, 1);
-        this.endChange(true);
+        this.endChange(!taskEmpty);
     }
 
     public moveTask(sourceCol: string, destCol: string, sourceIndex: number, destIndex: number): void {
@@ -253,7 +290,8 @@ class BoardState {
 
             this.history.push({
                 change: StateChanges.TASK_TEXT,
-                data: copy
+                data: copy,
+                details: `"${oldText}" changed to "${newText}"`
             });
 
             this.previousText.delete(taskId);
@@ -270,7 +308,11 @@ class BoardState {
             return;
         }
 
-        this.appendHistory(StateChanges.HISTORY_REVERSED);
+        this.history.push({
+            change: StateChanges.HISTORY_REVERSED,
+            data: clone(this.currentKanban),
+            details: `Changes reversed to item ${index + 1}`
+        });
 
         const newKanban = clone(this.history[index].data);
         this.currentKanban = newKanban;
@@ -290,6 +332,10 @@ class BoardState {
     public getCurrentState() {
         return clone(this.currentKanban);
     }
+
+    /*******************
+     * Private Methods *
+     *******************/
 
     private vscodeHandler;
     private currentKanban = createStrictKanbanJson();
@@ -336,19 +382,6 @@ class BoardState {
     private columnTextUpdater = new DelayedUpdater(1000);
 
     private previousText: Map<string, string> = new Map();
-
-    private appendHistory(change: StateChanges) {
-        if (this.history.length >= 50) {
-            this.history.splice(0, 1);
-        }
-
-        this.history.push({
-            change: change,
-            data: clone(this.currentKanban)
-        });
-    }
-
-
 }
 
 export default new BoardState();
