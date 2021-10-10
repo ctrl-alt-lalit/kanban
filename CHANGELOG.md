@@ -8,6 +8,9 @@
    - alignment setting lets you choose where the ```Kanban``` button is on the status bar
    - priority settings lets you modify where the ```Kanban``` button is in relation to other buttons
  - Changed how to add task button looks
+ - Added revision history panel, which allows you to roll back changes you made
+   - Revision history is cleared when you close the board
+   - Removed toast notifications for deleting tasks and columns
 
 ## 1.3.0
  - You can now save and load from a file in addition to the workspace

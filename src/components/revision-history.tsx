@@ -24,8 +24,9 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[], op
     render(): JSX.Element {
 
         const style = {
-            width: this.state.open ? '25%' : 0,
-            display: this.state.open ? 'flex' : 'none'
+            maxWidth: this.state.open ? '25%' : 0,
+            transition: 'max-width 0.3s ease 0s',
+            pointerEvents: this.state.open ? 'all' : 'none'
         } as const;
 
         return (
