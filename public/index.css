@@ -356,11 +356,35 @@ body {
 .history {
     background-color: var(--vscode-activityBar-background);
     color: var(--vscode-activityBar-foreground);
-    width: 25%;
     height: 100%;
-    display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.history-titlebar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+}
+
+.history-titlebar a {
+    cursor: pointer;
+    color: var(--vscode-activityBar-foreground) !important;
+    font-size: 2rem !important;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.history-titlebar a .codicon {
+    margin-top: 0.5rem !important;
+    font-size: 2rem !important;
+    transition: color 0.2s, background-color 0.2s;
+}
+
+.history-titlebar a:hover .codicon, .history-titlebar a:focus .codicon, .history-titlebar a:active .codicon {
+    background-color: var(--vscode-activityBar-foreground) !important;
+    color: var(--vscode-activityBar-background) !important;
 }
 
 .history-scroller {

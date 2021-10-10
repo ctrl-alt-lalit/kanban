@@ -95,9 +95,13 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
                 }}>
                     <span className='codicon codicon-save' />
                 </a>
+                <a className='board-history-open' title='Show Revision History' onClick={() => window.dispatchEvent(new CustomEvent('open-history'))}>
+                    <span className='codicon codicon-discard'></span>
+                </a>
                 <a className='board-settings-toggle' title='Show/Hide Settings' onClick={() => setSettingsVisible(!settingsVisible)}>
                     <span className='codicon codicon-gear' />
                 </a>
+
 
                 {/*Settings Panel*/}
                 <div className='board-settings' style={settingsStyle}>

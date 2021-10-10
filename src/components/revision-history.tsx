@@ -1,13 +1,16 @@
 import React from 'react';
 import boardState, { HistoryObject, StateChanges } from '../util/board-state';
 
-class RevisionHistory extends React.Component<{}, { history: HistoryObject[] }> {
+class RevisionHistory extends React.Component<{}, { history: HistoryObject[], open: boolean }> {
     constructor(props: never) {
         super(props);
 
         this.state = {
-            history: boardState.getHistory()
+            history: boardState.getHistory(),
+            open: false
         };
+
+        window.addEventListener('open-history', () => this.setState({ open: true }));
     }
 
     componentDidMount() {
@@ -19,9 +22,20 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[] }> 
     }
 
     render(): JSX.Element {
+
+        const style = {
+            width: this.state.open ? '25%' : 0,
+            display: this.state.open ? 'flex' : 'none'
+        } as const;
+
         return (
-            <div className='history'>
-                <h1> Revision History </h1>
+            <div className='history' style={style}>
+                <div className='history-titlebar'>
+                    <a onClick={() => this.setState({ open: false })}>
+                        <span className='codicon codicon-chevron-right'></span>
+                    </a>
+                    <h1> Revision History </h1>
+                </div>
                 <div className='history-scroller'>
                     {this.state.history.map((histObj, index) => (
                         <a className='history-item' onClick={() => boardState.reverseHistory(index)}>
