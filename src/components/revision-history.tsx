@@ -10,7 +10,7 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[], op
             open: false
         };
 
-        window.addEventListener('open-history', () => this.setState({ open: true }));
+        window.addEventListener('open-history', this.openListener);
     }
 
     componentDidMount() {
@@ -18,6 +18,7 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[], op
     }
 
     componentWillUnmount() {
+        window.removeEventListener('open-history', this.openListener);
         boardState.removeHistoryUpdateListener(this.historyUpdater);
     }
 
@@ -32,14 +33,14 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[], op
         return (
             <div className='history' style={style}>
                 <div className='history-titlebar'>
-                    <a onClick={() => this.setState({ open: false })}>
+                    <a onClick={() => this.setState({ open: false })} title='Hide Revision History'>
                         <span className='codicon codicon-chevron-right'></span>
                     </a>
                     <h1> Revision History </h1>
                 </div>
                 <div className='history-scroller'>
                     {this.state.history.map((histObj, index) => (
-                        <a className='history-item' onClick={() => boardState.reverseHistory(index)}>
+                        <a className='history-item' onClick={() => boardState.reverseHistory(index)} key={index}>
                             <h3> {`${index + 1}.`} {this.stateChangeName(histObj.change)} </h3>
                             <p> {histObj.details} </p>
                         </a>
@@ -57,12 +58,8 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[], op
 
     private stateChangeName(change: StateChanges) {
         switch (change) {
-            case StateChanges.AUTOSAVE:
-                return 'Autosave toggled';
             case StateChanges.BOARD_TITLE:
                 return 'Board title changed';
-            case StateChanges.COLUMN_ADDED:
-                return 'Column added';
             case StateChanges.COLUMN_COLOR:
                 return 'Column color changed';
             case StateChanges.COLUMN_DELETED:
@@ -71,20 +68,18 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[], op
                 return 'Column title changed';
             case StateChanges.HISTORY_REVERSED:
                 return 'Undid changes';
-            case StateChanges.SAVE_TO_FILE:
-                return 'Save to File toggled';
-            case StateChanges.TASK_ADDED:
-                return 'Task added';
             case StateChanges.TASK_DELETED:
                 return 'Task Deleted';
-            case StateChanges.TASK_MOVED:
-                return 'Task moved';
             case StateChanges.TASK_TEXT:
                 return 'Task text changed';
+            case StateChanges.BOARD_LOADED:
+                return 'Board loaded';
             default:
                 return 'ERROR';
         }
     }
+
+    private openListener = () => this.setState({ open: true });
 }
 
 

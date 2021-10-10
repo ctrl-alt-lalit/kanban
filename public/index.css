@@ -369,6 +369,7 @@ body {
     flex-direction: row;
     align-items: center;
     width: 100%;
+    min-width: 15vw;
 }
 
 .history-titlebar a {
@@ -392,6 +393,7 @@ body {
 
 .history-scroller {
     width: 100%;
+    min-width: 15vw;
     flex-grow: 1;
     display: flex;
     flex-direction: column;

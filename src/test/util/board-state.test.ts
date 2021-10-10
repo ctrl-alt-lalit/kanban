@@ -67,6 +67,8 @@ describe('Board State', () => {
         boardState.changeTaskText(column.id, badId, "text");
         boardState.changeTaskText(column.id, task.id, task.text);
 
+        boardState.reverseHistory(-1);
+
         expect(boardState.getCurrentState()).toEqual(originalData);
     });
 

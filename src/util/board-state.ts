@@ -18,7 +18,8 @@ export enum StateChanges {
     TASK_MOVED,
     TASK_TEXT,
 
-    HISTORY_REVERSED
+    HISTORY_REVERSED,
+    BOARD_LOADED
 }
 
 export type HistoryObject = { change: StateChanges, data: StrictKanbanJSON, details: string };
@@ -322,7 +323,14 @@ class BoardState {
 
     public save(kanban: StrictKanbanJSON | undefined = undefined) {
         if (kanban) {
+            this.history.push({
+                change: StateChanges.BOARD_LOADED,
+                data: this.currentKanban,
+                details: ''
+            });
+
             this.currentKanban = kanban;
+            this.historyUpdateListeners.forEach(listener => listener(this.history[this.history.length - 1]));
             this.refresh();
         }
 

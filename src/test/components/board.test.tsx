@@ -3,42 +3,30 @@ import Board from '../../components/board';
 import { createStrictColumnJson, createStrictKanbanJson, createTaskJson } from '../../util/kanban-type-functions';
 import userEvent from '@testing-library/user-event';
 import boardState from '../../util/board-state';
-
-//TODO: test undo delete feature
-//TODO: test drag and drop feature
-
-function randomString() {
-    return Math.random().toString().slice(0, 10);
-}
-
-function wait(ms: number) {
-    return new Promise(resolve => {
-        setTimeout(() => resolve(true), ms);
-    });
-}
+import { randStr, wait } from '../helpers';
 
 describe('Board, Column, and Task', () => {
 
     it('renders data in a StrictKanbanJSON', async () => {
         const data = createStrictKanbanJson(
-            randomString(),
+            randStr(),
             [
                 createStrictColumnJson(
-                    randomString(),
+                    randStr(),
                     [
-                        createTaskJson(randomString()),
-                        createTaskJson(randomString()),
-                        createTaskJson(randomString())
+                        createTaskJson(randStr()),
+                        createTaskJson(randStr()),
+                        createTaskJson(randStr())
                     ],
                     '#000000' //variable color names don't work in test, but do work in production
                 ),
                 createStrictColumnJson(
-                    randomString(),
+                    randStr(),
                     [createTaskJson()],
                     '#ff00ff'
                 ),
                 createStrictColumnJson(
-                    randomString(),
+                    randStr(),
                     [],
                     '#f0f0f0'
                 )
@@ -149,19 +137,19 @@ describe('Board, Column, and Task', () => {
         userEvent.click(taskDisplay);
         const taskEdit = task.querySelector('textarea.task-edit') as HTMLTextAreaElement;
         userEvent.dblClick(taskEdit);
-        const taskString = randomString();
+        const taskString = randStr();
         userEvent.type(taskEdit, taskString);
 
         //edit column title
         const columnTitle = board.querySelector('input.column-title') as HTMLInputElement;
         userEvent.dblClick(columnTitle);
-        const columnString = randomString();
+        const columnString = randStr();
         userEvent.type(columnTitle, columnString);
 
         //edit board title
         const boardTitle = board.querySelector('input.board-title') as HTMLInputElement;
         userEvent.dblClick(boardTitle);
-        const boardString = randomString();
+        const boardString = randStr();
         userEvent.type(boardTitle, boardString);
 
         //save changes and get current board state
@@ -179,6 +167,24 @@ describe('Board, Column, and Task', () => {
         expect(boardData.cols[0].tasks[0].text).toBe(taskString);
 
         boardState.removeKanbanChangeListener(listener);
+        wrapper.unmount();
+    });
+
+    it('can open the Revision History panel', async () => {
+        const wrapper = render(<Board />);
+        const board = wrapper.container;
+        await wait(5);
+
+        const listener = jest.fn();
+        window.addEventListener('open-history', listener);
+
+        const historyToggle = board.querySelector('a.board-history-open')!;
+        userEvent.click(historyToggle);
+        await wait(5);
+
+        expect(listener).toHaveBeenCalled();
+        window.removeEventListener('open-history', listener);
+
         wrapper.unmount();
     });
 
