@@ -30,7 +30,7 @@ describe('Board, Column, and Task', () => {
                         createTaskJson(randomString()),
                         createTaskJson(randomString())
                     ],
-                    '#000000' //variable color names don't work in test, but do work in prod
+                    '#000000' //variable color names don't work in test, but do work in production
                 ),
                 createStrictColumnJson(
                     randomString(),
@@ -169,7 +169,7 @@ describe('Board, Column, and Task', () => {
         await wait(5);
         let boardData = createStrictKanbanJson();
         const listener: (kanban: StrictKanbanJSON) => void = kanban => boardData = kanban;
-        boardState.addChangeListener(listener);
+        boardState.addKanbanChangeListener(listener);
         boardState.refresh();
         await wait(5);
 
@@ -178,7 +178,7 @@ describe('Board, Column, and Task', () => {
         expect(boardData.cols[0].title).toBe(columnString);
         expect(boardData.cols[0].tasks[0].text).toBe(taskString);
 
-        boardState.removeChangeListener(listener);
+        boardState.removeKanbanChangeListener(listener);
         wrapper.unmount();
     });
 
@@ -188,7 +188,7 @@ describe('Board, Column, and Task', () => {
         let numCols = 0;
         const listener: (kanban: StrictKanbanJSON) => void = kanban => numCols = kanban.cols.length;
 
-        boardState.addChangeListener(listener);
+        boardState.addKanbanChangeListener(listener);
         boardState.save(createStrictKanbanJson('', []));
         await wait(5);
 
@@ -209,7 +209,7 @@ describe('Board, Column, and Task', () => {
         await wait(5);
         expect(numCols).toBe(0);
 
-        boardState.removeChangeListener(listener);
+        boardState.removeKanbanChangeListener(listener);
         wrapper.unmount();
     });
 
@@ -218,7 +218,7 @@ describe('Board, Column, and Task', () => {
         let numTasks = 0;
         const listener: (kanban: StrictKanbanJSON) => void = kanban => numTasks = kanban.cols[0].tasks.length;
 
-        boardState.addChangeListener(listener);
+        boardState.addKanbanChangeListener(listener);
         boardState.save(createStrictKanbanJson('', [createStrictColumnJson('', [])])); //1 column, 0 tasks
         await wait(5);
 
@@ -238,7 +238,7 @@ describe('Board, Column, and Task', () => {
         await wait(5);
         expect(numTasks).toBe(0);
 
-        boardState.removeChangeListener(listener);
+        boardState.removeKanbanChangeListener(listener);
         wrapper.unmount();
     });
 

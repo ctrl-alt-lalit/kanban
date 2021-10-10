@@ -3,6 +3,7 @@ import TextAreaAutosize from 'react-textarea-autosize';
 import ReactMarkdown from 'react-markdown';
 import { Draggable } from 'react-beautiful-dnd';
 import boardState from '../util/board-state';
+import DelayedUpdater from '../util/delayed-updater';
 
 
 /**

@@ -142,8 +142,6 @@ body {
 }
 
 
-
-
 /*****************************
   COLUMN
 *****************************/
@@ -351,3 +349,33 @@ body {
     overflow-wrap: break-word;
 }
 
+/*****************************
+  HISTORY
+*****************************/
+
+.history {
+    background-color: blue;
+    color: white;
+    width: 25%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.history-scroller {
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: scroll;
+}
+
+.history-item {
+    background-color: darkslategray;
+    width: 90%;
+    margin-top: 0.5rem;
+    cursor: pointer;
+}

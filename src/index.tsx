@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import toast, { Toaster, useToasterStore } from 'react-hot-toast';
 import Board from './components/board';
-import boardState from './util/board-state';
+import RevisionHistory from './components/revision-history';
 
 function App(): JSX.Element {
     const { toasts } = useToasterStore();
@@ -17,6 +17,7 @@ function App(): JSX.Element {
     return (
         <>
             <Board />
+            <RevisionHistory />
             <Toaster toastOptions={{
                 duration: 2000, position: 'bottom-center', style: {
                     borderRadius: '1.25rem',

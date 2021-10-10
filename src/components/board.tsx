@@ -21,7 +21,7 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
     }
 
     componentDidMount() {
-        boardState.addChangeListener(this.loadCallback);
+        boardState.addKanbanChangeListener(this.loadCallback);
         boardState.refresh();
 
         window.addEventListener('keydown', this.shortcutKeydown);
@@ -29,7 +29,7 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
     }
 
     componentWillUnmount() {
-        boardState.removeChangeListener(this.loadCallback);
+        boardState.removeKanbanChangeListener(this.loadCallback);
         window.removeEventListener('keydown', this.shortcutKeydown);
         window.removeEventListener('keyup', this.shortcutKeyup);
     }
