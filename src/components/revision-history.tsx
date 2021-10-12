@@ -27,7 +27,7 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[], op
         const style = {
             maxWidth: this.state.open ? '25%' : 0,
             transition: 'max-width 0.3s ease 0s',
-            pointerEvents: this.state.open ? 'all' : 'none'
+            pointerEvents: this.state.open ? 'all' : 'none',
         } as const;
 
         return (
@@ -39,12 +39,24 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[], op
                     <h1> Revision History </h1>
                 </div>
                 <div className='history-scroller'>
-                    {this.state.history.map((histObj, index) => (
-                        <a className='history-item' onClick={() => boardState.reverseHistory(index)} key={index}>
-                            <h3> {`${index + 1}.`} {this.stateChangeName(histObj.change)} </h3>
-                            <p> {histObj.details} </p>
-                        </a>
-                    )).reverse()}
+                    {this.state.history.map((histObj, index) => {
+
+                        const prevHist = (index > 0) ? this.state.history[index - 1] : null;
+                        const prevChange = prevHist ? prevHist.change : StateChanges.BOARD_LOADED;
+                        const prevDetail = prevHist ? prevHist.details : '';
+
+                        return (
+                            <a
+                                className='history-item'
+                                onClick={() => boardState.reverseHistory(index)} key={index}
+                                onMouseEnter={() => boardState.fakeRefresh(histObj.data)}
+                                onMouseLeave={() => boardState.refresh()}
+                            >
+                                <h3> {`${index + 1}.`} {this.stateChangeName(prevChange)} </h3>
+                                <p> {prevDetail} </p>
+                            </a>
+                        );
+                    }).reverse()}
                 </div>
             </div>
         );
@@ -59,21 +71,21 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[], op
     private stateChangeName(change: StateChanges) {
         switch (change) {
             case StateChanges.BOARD_TITLE:
-                return 'Board title changed';
+                return 'Changed board title';
             case StateChanges.COLUMN_COLOR:
-                return 'Column color changed';
+                return 'Changed column color';
             case StateChanges.COLUMN_DELETED:
-                return 'Column deleted';
+                return 'Deleted column';
             case StateChanges.COLUMN_TITLE:
-                return 'Column title changed';
+                return 'Changed column title';
             case StateChanges.HISTORY_REVERSED:
                 return 'Undid changes';
             case StateChanges.TASK_DELETED:
-                return 'Task Deleted';
+                return 'Deleted task';
             case StateChanges.TASK_TEXT:
-                return 'Task text changed';
+                return 'Changed task text';
             case StateChanges.BOARD_LOADED:
-                return 'Board loaded';
+                return 'Loaded Kanban';
             default:
                 return 'ERROR';
         }

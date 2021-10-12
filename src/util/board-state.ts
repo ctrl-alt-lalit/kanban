@@ -324,6 +324,10 @@ class BoardState {
         return clone(this.currentKanban);
     }
 
+    public fakeRefresh(kanban: StrictKanbanJSON) {
+        this.kanbanChangeListeners.forEach(listener => listener(kanban));
+    }
+
     /*******************
      * Private Methods *
      *******************/
