@@ -12,8 +12,9 @@ describe('Board State', () => {
 
     describe('moveTask()', () => {
 
+        beforeEach(() => boardState.save(originalData));
+
         it('moves a task from one position to another in the same column', () => {
-            boardState.save(originalData);
             const column = originalData.cols[0];
 
             const oldSecondId = column.tasks[1].id;
@@ -23,7 +24,6 @@ describe('Board State', () => {
         });
 
         it('moves a task from one column to another', () => {
-            boardState.save(originalData);
             const [sourceId, destId] = [originalData.cols[0].id, originalData.cols[1].id];
             const task = originalData.cols[0].tasks[0];
 
@@ -32,8 +32,6 @@ describe('Board State', () => {
         });
 
         it('checks for valid parameters', () => {
-            boardState.save(originalData);
-
             boardState.moveTask('bad', 'bad', 0, 1);
             const column = originalData.cols[0];
             boardState.moveTask(column.id, column.id, -1, 1000);

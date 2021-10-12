@@ -1,5 +1,6 @@
 import { createStrictColumnJson, createStrictKanbanJson, createTaskJson } from "./kanban-type-functions";
 import VsCodeHandler from "./vscode-handler";
+import DelayedUpdater from "./delayed-updater";
 import clone from 'just-clone';
 declare var acquireVsCodeApi: () => VsCodeApi;
 
@@ -24,24 +25,6 @@ export enum StateChanges {
 
 export type HistoryObject = { change: StateChanges, data: StrictKanbanJSON, details: string };
 
-class DelayedUpdater {
-    constructor(msDelay: number) {
-        this.delay = msDelay;
-    }
-
-    public tryUpdate(callback: () => void, timeoutKey: string) {
-        if (this.timeoutMap.has(timeoutKey)) {
-            const oldTimeout = this.timeoutMap.get(timeoutKey)!;
-            clearTimeout(oldTimeout);
-        }
-
-        const timeout = setTimeout(callback, this.delay);
-        this.timeoutMap.set(timeoutKey, timeout);
-    }
-
-    private delay: number;
-    private timeoutMap: Map<string, NodeJS.Timeout> = new Map();
-}
 
 class BoardState {
     constructor() {
@@ -385,7 +368,7 @@ class BoardState {
         this.refresh();
     }
 
-    private taskTextUpdater = new DelayedUpdater(1000);
+    private taskTextUpdater = new DelayedUpdater(3000);
     private boardTextUpdater = new DelayedUpdater(1000);
     private columnTextUpdater = new DelayedUpdater(1000);
 

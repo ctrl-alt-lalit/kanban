@@ -4,14 +4,34 @@ import userEvent from '@testing-library/user-event';
 import boardState from '../../util/board-state';
 import { createStrictColumnJson, createStrictKanbanJson } from '../../util/kanban-type-functions';
 import clone from 'just-clone';
-import { randStr, wait } from '../helpers';
+import { randStr } from '../helpers';
 
+jest.mock('../../util/delayed-updater');
+import DelayedUpdater from '../../util/delayed-updater';
+(DelayedUpdater as any).mockImplementation(() => {
+    return {
+        tryUpdate: (callback: () => void) => {
+            callback();
+        }
+    };
+});
+
+function* panelSetup() {
+    const wrapper = render(<RevisionHistory />);
+    const histPanel = wrapper.container.firstElementChild as HTMLDivElement;
+    yield histPanel;
+
+    const histScroller = histPanel.querySelector('.history-scroller') as HTMLDivElement;
+    yield histScroller;
+
+    wrapper.unmount();
+}
 
 describe('Revision History', () => {
 
     it('can open and close', () => {
-        const wrapper = render(<RevisionHistory />);
-        const histPanel = wrapper.container.firstElementChild as HTMLDivElement;
+        const it = panelSetup();
+        const histPanel = it.next().value!;
 
         expect(parseInt(histPanel.style.maxWidth)).toBe(0);
 
@@ -24,12 +44,12 @@ describe('Revision History', () => {
 
         expect(parseInt(histPanel.style.maxWidth)).toBe(0);
 
-        wrapper.unmount();
+        it.return();
     });
 
     it('keeps track of changes and allows you to roll them back', () => {
-        const wrapper = render(<RevisionHistory />);
-        const histPanel = wrapper.container.firstElementChild as HTMLDivElement;
+        const it = panelSetup();
+        it.next();
 
         const originalData = createStrictKanbanJson(
             'blah',
@@ -44,7 +64,7 @@ describe('Revision History', () => {
             boardState.reverseHistory(1);
         }
 
-        const histScroller = histPanel.querySelector('.history-scroller') as HTMLDivElement;
+        const histScroller = it.next().value!;
 
         const numHistItems = histScroller.childElementCount;
         expect(numHistItems).toBe(boardState.getHistory().length);
@@ -57,38 +77,38 @@ describe('Revision History', () => {
         originalData.timestamp = boardState.getCurrentState().timestamp; //timestamp equality is NOT expected
         expect(boardState.getCurrentState()).toEqual(originalData);
 
-        wrapper.unmount();
+        it.return();
     });
 
-    it('only keeps track of changes that would be difficult to reverse otherwise', async () => {
-        const wrapper = render(<RevisionHistory />);
-        const histPanel = wrapper.container.firstElementChild as HTMLDivElement;
+    it("keeps track of all changes in a board state's history", async () => {
+        const it = panelSetup();
+        it.next();
 
-        boardState.save(createStrictKanbanJson()); //1
+        boardState.save(createStrictKanbanJson());
         boardState.addColumn();
 
-        boardState.changeBoardTitle(randStr()); //2
+        boardState.changeBoardTitle(randStr());
 
         const colId = boardState.getCurrentState().cols[0].id;
-        boardState.changeColumnTitle(colId, randStr()); //3
-        boardState.changeColumnColor(colId, 'red'); //4
+        boardState.changeColumnTitle(colId, randStr());
+        boardState.changeColumnColor(colId, 'red');
         boardState.addTask(colId);
         boardState.removeTask(colId, boardState.getCurrentState().cols[0].tasks[0].id);
         boardState.addTask(colId);
 
         const taskId = boardState.getCurrentState().cols[0].tasks[0].id;
         boardState.changeTaskText(colId, taskId, randStr());
-        await wait(1000);
 
-        boardState.changeTaskText(colId, taskId, randStr()); //5
-        await wait(1000);
+        boardState.changeTaskText(colId, taskId, randStr());
 
-        boardState.removeTask(colId, taskId); //6
-        boardState.removeColumn(colId); //7
+        boardState.removeTask(colId, taskId);
+        boardState.removeColumn(colId);
 
         boardState.reverseHistory(0);
 
-        const histScroller = histPanel.querySelector('.history-scroller') as HTMLDivElement;
+        const histScroller = it.next().value!;
         expect(histScroller.childElementCount).toBe(boardState.getHistory().length);
+
+        it.return();
     });
 });

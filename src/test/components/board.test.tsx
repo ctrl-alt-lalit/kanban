@@ -3,7 +3,19 @@ import Board from '../../components/board';
 import { createStrictColumnJson, createStrictKanbanJson, createTaskJson } from '../../util/kanban-type-functions';
 import userEvent from '@testing-library/user-event';
 import boardState from '../../util/board-state';
-import { randStr, wait } from '../helpers';
+import { randStr } from '../helpers';
+
+
+function* boardSetup() {
+    const wrapper = render(<Board />);
+    const board = wrapper.container;
+    yield board;
+
+    wrapper.unmount();
+}
+
+const clickSave = (board: HTMLElement) => userEvent.click(board.querySelector('a.board-save')!);
+const clickSettings = (board: HTMLElement) => userEvent.click(board.querySelector('a.board-settings-toggle')!);
 
 describe('Board, Column, and Task', () => {
 
@@ -36,9 +48,9 @@ describe('Board, Column, and Task', () => {
 
         //initialize board and wait for data to load
         boardState.save(data);
-        const wrapper = render(<Board />);
-        const board = wrapper.container;
-        await wait(5);
+        const it = boardSetup();
+        const board = it.next().value!;
+
 
         //check board title and autosave match data
         const boardTitle = board.querySelector('input.board-title') as HTMLInputElement;
@@ -68,16 +80,13 @@ describe('Board, Column, and Task', () => {
             expect(taskTextArr).toStrictEqual(colData.tasks.map(task => task.text));
         }
 
-        wrapper.unmount();
+        it.return();
     });
 
-    const clickSave = (board: HTMLElement) => userEvent.click(board.querySelector('a.board-save')!);
-    const clickSettings = (board: HTMLElement) => userEvent.click(board.querySelector('a.board-settings-toggle')!);
-
     it('can save its state', async () => {
-        const wrapper = render(<Board />);
-        const board = wrapper.container;
-        await wait(5);
+        const it = boardSetup();
+        const board = it.next().value!;
+
 
         const time1 = boardState.getCurrentState().timestamp;
 
@@ -89,13 +98,13 @@ describe('Board, Column, and Task', () => {
         const time3 = boardState.getCurrentState().timestamp;
         expect(time3).toBeGreaterThan(time2);
 
-        wrapper.unmount();
+        it.return();
     });
 
     it('can autosave', async () => {
-        const wrapper = render(<Board />);
-        const board = wrapper.container;
-        await wait(5);
+        const it = boardSetup();
+        const board = it.next().value!;
+
 
         boardState.save(createStrictKanbanJson());
         expect(boardState.getCurrentState().autosave).toBe(false);
@@ -106,13 +115,13 @@ describe('Board, Column, and Task', () => {
 
         expect(boardState.getCurrentState().autosave).toBe(true);
 
-        wrapper.unmount();
+        it.return();
     });
 
     it('can save to a file', async () => {
-        const wrapper = render(<Board />);
-        const board = wrapper.container;
-        await wait(5);
+        const it = boardSetup();
+        const board = it.next().value!;
+
 
         boardState.save(createStrictKanbanJson());
         expect(boardState.getCurrentState().saveToFile).toBe(false);
@@ -127,9 +136,9 @@ describe('Board, Column, and Task', () => {
     it('has editable text', async () => {
         //save kanban board with 1 column and 1 task
         boardState.save(createStrictKanbanJson('', [createStrictColumnJson('', [createTaskJson()])]));
-        const wrapper = render(<Board />);
-        const board = wrapper.container;
-        await wait(5);
+        const it = boardSetup();
+        const board = it.next().value!;
+
 
         //edit task
         const task = board.querySelector('div.task') as HTMLDivElement;
@@ -154,12 +163,12 @@ describe('Board, Column, and Task', () => {
 
         //save changes and get current board state
         clickSave(board);
-        await wait(5);
+
         let boardData = createStrictKanbanJson();
         const listener: (kanban: StrictKanbanJSON) => void = kanban => boardData = kanban;
         boardState.addKanbanChangeListener(listener);
         boardState.refresh();
-        await wait(5);
+
 
 
         expect(boardData.title).toBe(boardString);
@@ -167,25 +176,25 @@ describe('Board, Column, and Task', () => {
         expect(boardData.cols[0].tasks[0].text).toBe(taskString);
 
         boardState.removeKanbanChangeListener(listener);
-        wrapper.unmount();
+        it.return();
     });
 
     it('can open the Revision History panel', async () => {
-        const wrapper = render(<Board />);
-        const board = wrapper.container;
-        await wait(5);
+        const it = boardSetup();
+        const board = it.next().value!;
+
 
         const listener = jest.fn();
         window.addEventListener('open-history', listener);
 
         const historyToggle = board.querySelector('a.board-history-open')!;
         userEvent.click(historyToggle);
-        await wait(5);
+
 
         expect(listener).toHaveBeenCalled();
         window.removeEventListener('open-history', listener);
 
-        wrapper.unmount();
+        it.return();
     });
 
     /* Autosave test is skipped since autosaving runs in intervals of 5 sec (which is too long for testing) */
@@ -196,27 +205,27 @@ describe('Board, Column, and Task', () => {
 
         boardState.addKanbanChangeListener(listener);
         boardState.save(createStrictKanbanJson('', []));
-        await wait(5);
 
-        const wrapper = render(<Board />);
-        const board = wrapper.container;
-        await wait(5);
+
+        const it = boardSetup();
+        const board = it.next().value!;
+
 
         //click add column button and save changes
         const addColumnButton = board.querySelector('a.board-add-column') as HTMLAnchorElement;
         userEvent.click(addColumnButton);
-        await wait(5);
+
         expect(numCols).toBe(1);
 
         //click remove column button and save changes
         const deleteColumnButton = board.querySelector('a.column-delete') as HTMLAnchorElement;
         userEvent.click(deleteColumnButton);
-        await wait(5);
-        await wait(5);
+
+
         expect(numCols).toBe(0);
 
         boardState.removeKanbanChangeListener(listener);
-        wrapper.unmount();
+        it.return();
     });
 
 
@@ -226,35 +235,35 @@ describe('Board, Column, and Task', () => {
 
         boardState.addKanbanChangeListener(listener);
         boardState.save(createStrictKanbanJson('', [createStrictColumnJson('', [])])); //1 column, 0 tasks
-        await wait(5);
 
-        const wrapper = render(<Board />);
-        const board = wrapper.container;
-        await wait(5);
+
+        const it = boardSetup();
+        const board = it.next().value!;
+
 
         //click add task and save changes
         const addTaskButton = board.querySelector('a.column-add-task') as HTMLAnchorElement;
         userEvent.click(addTaskButton);
-        await wait(5);
+
         expect(numTasks).toBe(1);
 
         //click delete task and save changes
         const deleteTaskButton = board.querySelector('a.task-delete') as HTMLAnchorElement;
         userEvent.click(deleteTaskButton);
-        await wait(5);
+
         expect(numTasks).toBe(0);
 
         boardState.removeKanbanChangeListener(listener);
-        wrapper.unmount();
+        it.return();
     });
 
     it("can change a column's color with a color picker", async () => {
         boardState.save(createStrictKanbanJson('', [createStrictColumnJson('', [])])); //1 column, 0 tasks
-        await wait(5);
 
-        const wrapper = render(<Board />);
-        const board = wrapper.container;
-        await wait(5);
+
+        const it = boardSetup();
+        const board = it.next().value!;
+
 
         //color picker is initially closed
         const column = board.querySelector('div.column') as HTMLDivElement;
@@ -270,6 +279,6 @@ describe('Board, Column, and Task', () => {
         const swatch = column.querySelector('button.column-color-picker__swatch') as HTMLButtonElement;
         userEvent.click(swatch);
         expect(column.style.color).toBe(swatch.style.backgroundColor);
-        wrapper.unmount();
+        it.return();
     });
 });

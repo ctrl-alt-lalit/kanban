@@ -5,12 +5,16 @@
  - Add column button has beet removed and replaced with an add column bar on the right
  - Removed `kanban.showViewButton` setting
  - Added `kanban.statusButton.alignment` and `kanban.statusButton.priority` settings
-   - alignment setting lets you choose where the ```Kanban``` button is on the status bar
-   - priority settings lets you modify where the ```Kanban``` button is in relation to other buttons
+   - `alignment` lets you choose where or if the ```Kanban``` button is on the status bar
+   - `priority` lets you modify where the ```Kanban``` button is in relation to other buttons
  - Changed how to add task button looks
- - Added revision history panel, which allows you to roll back changes you made
+ - Added a revision history panel, which allows you to roll back changes you made
    - Revision history is cleared when you close the board
-   - Removed toast notifications for deleting tasks and columns
+   - Removed delete notifications since their undo option has been superseded
+ - Changed how autosave works internally, making it more responsive
+   - it no longer uses an interval timer
+   - it saves button-click changes immediately
+   - it saves what you typed when you stop typing for a couple seconds
 
 ## 1.3.0
  - You can now save and load from a file in addition to the workspace
