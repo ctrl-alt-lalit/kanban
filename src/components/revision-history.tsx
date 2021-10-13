@@ -68,6 +68,7 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[], op
         this.setState({ history: copy });
     };
 
+    /* istanbul ignore next */
     private stateChangeName(change: StateChanges) {
         switch (change) {
             case StateChanges.BOARD_TITLE:

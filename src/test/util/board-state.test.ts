@@ -38,6 +38,19 @@ describe('Board State', () => {
         });
     });
 
+    describe('fakeRefresh()', () => {
+        it('makes change listeners load a specified kanban board', () => {
+            let result = originalData;
+            const listener = (kanban: StrictKanbanJSON) => result = kanban;
+            boardState.addKanbanChangeListener(listener);
+
+            const newData = createStrictKanbanJson();
+            boardState.fakeRefresh(newData);
+
+            expect(result).toEqual(newData);
+        });
+    });
+
     it('Does not change the kanban board if a function has bad parameters', () => {
         boardState.save(originalData);
 

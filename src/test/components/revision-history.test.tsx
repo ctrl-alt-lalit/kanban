@@ -27,6 +27,8 @@ function* panelSetup() {
     wrapper.unmount();
 }
 
+const openPanel = () => window.dispatchEvent(new CustomEvent('open-history'));
+
 describe('Revision History', () => {
 
     it('can open and close', () => {
@@ -35,7 +37,7 @@ describe('Revision History', () => {
 
         expect(parseInt(histPanel.style.maxWidth)).toBe(0);
 
-        window.dispatchEvent(new CustomEvent('open-history'));
+        openPanel();
 
         expect(parseInt(histPanel.style.maxWidth)).toBeGreaterThan(0);
 
@@ -80,7 +82,7 @@ describe('Revision History', () => {
         it.return();
     });
 
-    it("keeps track of all changes in a board state's history", async () => {
+    it("keeps track of all changes in a board state's history", () => {
         const it = panelSetup();
         it.next();
 
@@ -108,6 +110,28 @@ describe('Revision History', () => {
 
         const histScroller = it.next().value!;
         expect(histScroller.childElementCount).toBe(boardState.getHistory().length);
+
+        it.return();
+    });
+
+    it('previews a previous state on hover', () => {
+        const it = panelSetup();
+        it.next();
+        const histScroller = it.next().value!;
+        openPanel();
+
+        const fakeRefreshSpy = jest.spyOn(boardState, 'fakeRefresh');
+        const refreshSpy = jest.spyOn(boardState, 'refresh');
+
+        boardState.addColumn();
+        boardState.removeColumn(boardState.getCurrentState().cols[0].id);
+        const histItem = histScroller.querySelector('.history-item')!;
+
+        userEvent.hover(histItem);
+        expect(fakeRefreshSpy).toHaveBeenCalled();
+
+        userEvent.unhover(histItem);
+        expect(refreshSpy).toHaveBeenCalled();
 
         it.return();
     });

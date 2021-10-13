@@ -17,6 +17,11 @@ function* boardSetup() {
 const clickSave = (board: HTMLElement) => userEvent.click(board.querySelector('a.board-save')!);
 const clickSettings = (board: HTMLElement) => userEvent.click(board.querySelector('a.board-settings-toggle')!);
 
+const clickColumnSettings = (board: HTMLElement) => {
+    const columnSettings = board.querySelector('a.column-settings-toggle') as HTMLAnchorElement;
+    userEvent.click(columnSettings);
+};
+
 describe('Board, Column, and Task', () => {
 
     it('renders data in a StrictKanbanJSON', async () => {
@@ -210,7 +215,6 @@ describe('Board, Column, and Task', () => {
         const it = boardSetup();
         const board = it.next().value!;
 
-
         //click add column button and save changes
         const addColumnButton = board.querySelector('a.board-add-column') as HTMLAnchorElement;
         userEvent.click(addColumnButton);
@@ -218,6 +222,7 @@ describe('Board, Column, and Task', () => {
         expect(numCols).toBe(1);
 
         //click remove column button and save changes
+        clickColumnSettings(board);
         const deleteColumnButton = board.querySelector('a.column-delete') as HTMLAnchorElement;
         userEvent.click(deleteColumnButton);
 
@@ -264,6 +269,7 @@ describe('Board, Column, and Task', () => {
         const it = boardSetup();
         const board = it.next().value!;
 
+        clickColumnSettings(board);
 
         //color picker is initially closed
         const column = board.querySelector('div.column') as HTMLDivElement;
