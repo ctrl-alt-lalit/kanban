@@ -1,5 +1,7 @@
 # Kanban: A Kanban Board for VS Code
 
+![Build Status](https://github.com/lbauskar/kanban/actions/workflows/main.yml/badge.svg)
+
 A visual way to keep track of your progress and boost productivity for your projects.
 
 ![Kanban Demo](https://raw.githubusercontent.com/lbauskar/kanban/main/images/demo.gif)
