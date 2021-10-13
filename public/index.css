@@ -176,7 +176,7 @@ body {
     transition: color 0.3s;
 }
 
-.column-titlebar a {
+.column-titlebar a, .column-settings a {
     color: var(--vscode-editor-foreground);
     padding-left: 0.2rem;
     padding-right: 0.2rem;
@@ -184,25 +184,26 @@ body {
     cursor: pointer;
 }
 
-.column-titlebar a:hover, .column-titlebar a:focus, .column-titlebar a:active {
+.column-titlebar a:hover, .column-titlebar a:focus, .column-titlebar a:active,
+.column-settings a:hover, .column-settings a:focus, .column-settings a:active {
     color: var(--vscode-editor-background) !important;
 }
 
-.column-titlebar .codicon[class*="codicon-"] {
+.column-titlebar .codicon[class*="codicon-"], .column-settings .codicon[class*="codicon-"] {
     font-size: 1rem !important;
     margin-top: 0.25rem !important;
 }
 
-.column-titlebar .codicon {
+.column-titlebar .codicon, .column-settings .codicon {
     width: 1.25rem;
 }
 
-.column-delete {
+.column-delete, .column-settings-toggle {
     margin-left: auto;
     margin-right: 0.6rem;
 }
 
-.column-color-picker{
+.column-color-picker, .column-settings {
     overflow-y: hidden;
     display: inline-flex;
     flex-direction: row;
@@ -259,12 +260,6 @@ body {
     background-color: var(--vscode-activityBar-background);
 }
 
-.column-tasks {
-    flex-grow: 1;
-    margin-bottom: 1rem;
-    overflow-y: scroll;
-}
-
 .column-add-task {
     padding-top: 0.2rem;
     display: flex;
@@ -291,6 +286,12 @@ body {
 .column-add-task .codicon {
     padding-left: 0.2rem;
     padding-right: 0.2rem;
+}
+
+.column-tasks {
+    flex-grow: 1;
+    margin-bottom: 1rem;
+    overflow-y: scroll;
 }
 
 

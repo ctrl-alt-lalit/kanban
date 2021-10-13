@@ -16,6 +16,7 @@ import boardState from '../util/board-state';
 function Column({ data, numCols }: { data: StrictColumnJSON, numCols: number }) {
 
     const [colorPickerOpen, setColorPickerOpen] = React.useState(false);
+    const [settingsOpen, setSettingsOpen] = React.useState(false);
 
     const changeColor = (color: string) => {
         if (color.length < 6) {
@@ -28,6 +29,13 @@ function Column({ data, numCols }: { data: StrictColumnJSON, numCols: number }) 
         maxHeight: colorPickerOpen ? '6rem' : 0,
         pointerEvents: colorPickerOpen ? 'all' : 'none',
         transition: 'max-height 0.4s linear'
+    } as const;
+
+    const settingsStyle = {
+        maxHeight: settingsOpen ? '3rem' : 0,
+        pointerEvents: settingsOpen ? 'all' : 'none',
+        transition: 'max-height 0.4s linear',
+        paddingTop: '0.4rem'
     } as const;
 
     const darkSwatches = [
@@ -58,6 +66,13 @@ function Column({ data, numCols }: { data: StrictColumnJSON, numCols: number }) 
                     const title = event.target.value;
                     boardState.changeColumnTitle(data.id, title);
                 }} />
+                <a className='column-settings-toggle' {...anchorProps} onClick={() => setSettingsOpen(!settingsOpen)}>
+                    <span className='codicon codicon-gear'></span>
+                </a>
+            </div>
+
+            {/* Settings */}
+            <div className='column-settings' style={settingsStyle}>
                 <a className='column-color' title='Change Color' {...anchorProps} onClick={() => setColorPickerOpen(!colorPickerOpen)}>
                     <span className='codicon codicon-symbol-color' />
                 </a>
