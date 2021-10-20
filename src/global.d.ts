@@ -1,8 +1,7 @@
 type ColumnJSON = {
     title: string,
     ntasks?: number,
-    id?: string,
-    tasks: string[] | TaskJSON[],
+    id?: string, tasks: string[] | TaskJSON[],
     color?: string,
 };
 
@@ -15,10 +14,9 @@ type StrictColumnJSON = {
 
 type KanbanJSON = {
     title?: string,
-    ncols?: number,
-    cols: ColumnJSON[],
-    settings?: {autosave: boolean},
-    autosave?: boolean
+    ncols?: number, cols: ColumnJSON[],
+    settings?: { autosave: boolean },
+    autosave?: boolean,
     saveToFile?: boolean,
     timestamp?: number
 };
@@ -37,7 +35,7 @@ type TaskJSON = {
 };
 
 interface VsCodeApi {
-    getState: () => any;
-    setState: (newState: any) => any;
+    // getState: () => any;
+    // setState: (newState: any) => any;
     postMessage: (message: any) => void;
 }

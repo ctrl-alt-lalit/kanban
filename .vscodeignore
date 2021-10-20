@@ -6,6 +6,7 @@ images/
 node_modules/
 !node_modules/@vscode/codicons/dist/codicon.css
 !node_modules/@vscode/codicons/dist/codicon.ttf
+!node_modules/@szhsin/react-menu/dist/index.css
 
 public/
 src/

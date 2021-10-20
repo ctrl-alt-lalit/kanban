@@ -1,69 +1,49 @@
-import {render} from '@testing-library/react';
+import { render } from '@testing-library/react';
 import Board from '../../components/board';
 import { createStrictColumnJson, createStrictKanbanJson, createTaskJson } from '../../util/kanban-type-functions';
-import VsCodeHandler from '../../util/vscode-handler';
 import userEvent from '@testing-library/user-event';
+import boardState from '../../util/board-state';
+import { randStr } from '../helpers';
 
-jest.mock('../../util/vscode-handler', () => {
-    return function() {
-        let savedData = createStrictKanbanJson();
-        let callbacks: Array<(data: StrictKanbanJSON) => void> = [];
 
-        return {
-            save: (data: StrictKanbanJSON) => savedData = data,
-            load: () => callbacks.forEach(cb => cb(savedData)),
+function* boardSetup() {
+    const wrapper = render(<Board />);
+    const board = wrapper.container;
+    yield board;
 
-            addLoadListener: (callback: (data: StrictKanbanJSON) => void) => callbacks.push(callback),
-            removeLoadListener: (callback: (data: StrictKanbanJSON) => void) => callbacks = callbacks.filter(cb => cb !== callback),
-        };
-    };
-});
-
-function makeVsCodeHandler() {
-    const api: VsCodeApi = {
-        getState: () => {return;},
-        setState: () => {return;},
-        postMessage: () => {return;}
-    };
-    return new VsCodeHandler(api);
+    wrapper.unmount();
 }
 
-//TODO: mock toast to keep track of that
-//TODO: test undo delete feature
-//TODO: test drag and drop feature
+const clickSave = (board: HTMLElement) => userEvent.click(board.querySelector('a.board-save')!);
+const clickSettings = (board: HTMLElement) => userEvent.click(board.querySelector('a.board-settings-toggle')!);
 
-function randomString() {
-    return Math.random().toString().slice(0, 10);
-}
+const clickColumnSettings = (board: HTMLElement) => {
+    const columnSettings = board.querySelector('a.column-settings-toggle') as HTMLAnchorElement;
+    userEvent.click(columnSettings);
+};
 
-function wait(ms: number) {
-    return new Promise(resolve => {
-        setTimeout(() => resolve(true), ms);
-    });
-}
+describe('Board, Column, and Task', () => {
 
-describe('<Board>, <Column>, and <Task>', () => {
-
-    it ('renders data in a StrictKanbanJSON', async () => {
+    it('renders data in a StrictKanbanJSON', async () => {
         const data = createStrictKanbanJson(
-            randomString(),
+            randStr(),
             [
                 createStrictColumnJson(
-                    randomString(),
+                    randStr(),
                     [
-                        createTaskJson(randomString()),
-                        createTaskJson(randomString()),
-                        createTaskJson(randomString())
+                        createTaskJson(randStr()),
+                        createTaskJson(randStr()),
+                        createTaskJson(randStr())
                     ],
-                    '#000000' //variable color names don't work in test, but do work in prod
+                    '#000000' //variable color names don't work in test, but do work in production
                 ),
                 createStrictColumnJson(
-                    randomString(),
+                    randStr(),
                     [createTaskJson()],
                     '#ff00ff'
                 ),
                 createStrictColumnJson(
-                    randomString(),
+                    randStr(),
                     [],
                     '#f0f0f0'
                 )
@@ -72,11 +52,10 @@ describe('<Board>, <Column>, and <Task>', () => {
         );
 
         //initialize board and wait for data to load
-        const vscode = makeVsCodeHandler();
-        vscode.save(data);
-        const wrapper = render(<Board vscode={vscode}/>);
-        const board = wrapper.container;
-        await wait(5);
+        boardState.save(data);
+        const it = boardSetup();
+        const board = it.next().value!;
+
 
         //check board title and autosave match data
         const boardTitle = board.querySelector('input.board-title') as HTMLInputElement;
@@ -106,57 +85,65 @@ describe('<Board>, <Column>, and <Task>', () => {
             expect(taskTextArr).toStrictEqual(colData.tasks.map(task => task.text));
         }
 
-        wrapper.unmount();
+        it.return();
     });
 
     it('can save its state', async () => {
-        const vscode = makeVsCodeHandler();
-        let savedCalled = false;
-        vscode.save = () => savedCalled = true;
+        const it = boardSetup();
+        const board = it.next().value!;
 
-        const wrapper = render(<Board vscode={vscode}/>);
-        const board = wrapper.container;
-        await wait(5);
 
-        const saveButton = board.querySelector('a.board-save') as HTMLAnchorElement;
-        userEvent.click(saveButton);
-        expect(savedCalled).toBe(true);
+        const time1 = boardState.getCurrentState().timestamp;
 
-        savedCalled = false;
+        clickSave(board);
+        const time2 = boardState.getCurrentState().timestamp;
+        expect(time2).toBeGreaterThan(time1);
+
         userEvent.type(board, '{ctrl}s');
-        expect(savedCalled).toBe(true);
+        const time3 = boardState.getCurrentState().timestamp;
+        expect(time3).toBeGreaterThan(time2);
 
-        wrapper.unmount();
+        it.return();
     });
 
-    const clickSave = (board: HTMLElement) => userEvent.click(board.querySelector('a.board-save')!);
-    const clickSettings = (board: HTMLElement) => userEvent.click(board.querySelector('a.board-settings-toggle')!);
+    it('can autosave', async () => {
+        const it = boardSetup();
+        const board = it.next().value!;
 
-    it('can save to a file', async () => {
-        const vscode = makeVsCodeHandler();
-        let savedCalled = false;
-        vscode.save = (kanban) => savedCalled = kanban.saveToFile;
 
-        const wrapper = render(<Board vscode={vscode}/>);
-        const board = wrapper.container;
-        await wait(5);
+        boardState.save(createStrictKanbanJson());
+        expect(boardState.getCurrentState().autosave).toBe(false);
 
         clickSettings(board);
-        const saveFileToggle = board.querySelector('a.board-save-file') as HTMLAnchorElement;
-        userEvent.click(saveFileToggle);
-        clickSave(board);
+        const autosaveButton = board.querySelector('a.board-autosave')!;
+        userEvent.click(autosaveButton);
 
-        expect(savedCalled).toBe(true);
-        wrapper.unmount();
+        expect(boardState.getCurrentState().autosave).toBe(true);
+
+        it.return();
+    });
+
+    it('can save to a file', async () => {
+        const it = boardSetup();
+        const board = it.next().value!;
+
+
+        boardState.save(createStrictKanbanJson());
+        expect(boardState.getCurrentState().saveToFile).toBe(false);
+
+        clickSettings(board);
+        const saveFileButton = board.querySelector('a.board-save-file')!;
+        userEvent.click(saveFileButton);
+
+        expect(boardState.getCurrentState().saveToFile).toBe(true);
     });
 
     it('has editable text', async () => {
-        const vscode = makeVsCodeHandler();
         //save kanban board with 1 column and 1 task
-        vscode.save(createStrictKanbanJson('', [createStrictColumnJson('', [createTaskJson()])])); 
-        const wrapper = render(<Board vscode={vscode}/>);
-        const board = wrapper.container;
-        await wait(5);
+        boardState.save(createStrictKanbanJson('', [createStrictColumnJson('', [createTaskJson()])]));
+        const it = boardSetup();
+        const board = it.next().value!;
+
 
         //edit task
         const task = board.querySelector('div.task') as HTMLDivElement;
@@ -164,109 +151,125 @@ describe('<Board>, <Column>, and <Task>', () => {
         userEvent.click(taskDisplay);
         const taskEdit = task.querySelector('textarea.task-edit') as HTMLTextAreaElement;
         userEvent.dblClick(taskEdit);
-        const taskString = randomString();
+        const taskString = randStr();
         userEvent.type(taskEdit, taskString);
 
         //edit column title
         const columnTitle = board.querySelector('input.column-title') as HTMLInputElement;
         userEvent.dblClick(columnTitle);
-        const columnString = randomString();
+        const columnString = randStr();
         userEvent.type(columnTitle, columnString);
 
         //edit board title
         const boardTitle = board.querySelector('input.board-title') as HTMLInputElement;
         userEvent.dblClick(boardTitle);
-        const boardString = randomString();
+        const boardString = randStr();
         userEvent.type(boardTitle, boardString);
 
         //save changes and get current board state
         clickSave(board);
-        await wait(5);
+
         let boardData = createStrictKanbanJson();
-        vscode.addLoadListener(data => boardData = data);
-        vscode.load();
-        await wait(5);
+        const listener: (kanban: StrictKanbanJSON) => void = kanban => boardData = kanban;
+        boardState.addKanbanChangeListener(listener);
+        boardState.refresh();
+
+
 
         expect(boardData.title).toBe(boardString);
         expect(boardData.cols[0].title).toBe(columnString);
         expect(boardData.cols[0].tasks[0].text).toBe(taskString);
 
-        wrapper.unmount();
+        boardState.removeKanbanChangeListener(listener);
+        it.return();
+    });
+
+    it('can open the Revision History panel', async () => {
+        const it = boardSetup();
+        const board = it.next().value!;
+
+
+        const listener = jest.fn();
+        window.addEventListener('open-history', listener);
+
+        const historyToggle = board.querySelector('a.board-history-open')!;
+        userEvent.click(historyToggle);
+
+
+        expect(listener).toHaveBeenCalled();
+        window.removeEventListener('open-history', listener);
+
+        it.return();
     });
 
     /* Autosave test is skipped since autosaving runs in intervals of 5 sec (which is too long for testing) */
 
-    it ('can add and delete columns', async () => {
-        const vscode = makeVsCodeHandler();
+    it('can add and delete columns', async () => {
         let numCols = 0;
-        vscode.addLoadListener(data => numCols = data.cols.length);
-        vscode.save(createStrictKanbanJson('', []));
-        await wait(5);
+        const listener: (kanban: StrictKanbanJSON) => void = kanban => numCols = kanban.cols.length;
 
-        const wrapper = render(<Board vscode={vscode}/>);
-        const board = wrapper.container;
-        await wait(5);
+        boardState.addKanbanChangeListener(listener);
+        boardState.save(createStrictKanbanJson('', []));
+
+
+        const it = boardSetup();
+        const board = it.next().value!;
 
         //click add column button and save changes
         const addColumnButton = board.querySelector('a.board-add-column') as HTMLAnchorElement;
         userEvent.click(addColumnButton);
-        clickSave(board);
-        await wait(5);
-        vscode.load();
-        await wait(5);
+
         expect(numCols).toBe(1);
 
         //click remove column button and save changes
+        clickColumnSettings(board);
         const deleteColumnButton = board.querySelector('a.column-delete') as HTMLAnchorElement;
         userEvent.click(deleteColumnButton);
-        clickSave(board);
-        await wait(5);
-        vscode.load();
-        await wait(5);
+
+
         expect(numCols).toBe(0);
-        wrapper.unmount();
+
+        boardState.removeKanbanChangeListener(listener);
+        it.return();
     });
 
 
     it('can add and delete tasks', async () => {
-        const vscode = makeVsCodeHandler();
         let numTasks = 0;
-        vscode.addLoadListener(data => numTasks = data.cols[0].tasks.length);
-        vscode.save(createStrictKanbanJson('', [createStrictColumnJson('', [])])); //1 column, 0 tasks
-        await wait(5);
+        const listener: (kanban: StrictKanbanJSON) => void = kanban => numTasks = kanban.cols[0].tasks.length;
 
-        const wrapper = render(<Board vscode={vscode}/>);
-        const board = wrapper.container;
-        await wait(5);
+        boardState.addKanbanChangeListener(listener);
+        boardState.save(createStrictKanbanJson('', [createStrictColumnJson('', [])])); //1 column, 0 tasks
+
+
+        const it = boardSetup();
+        const board = it.next().value!;
+
 
         //click add task and save changes
         const addTaskButton = board.querySelector('a.column-add-task') as HTMLAnchorElement;
         userEvent.click(addTaskButton);
-        clickSave(board);
-        await wait(5);
-        vscode.load();
-        await wait(5);
+
         expect(numTasks).toBe(1);
 
         //click delete task and save changes
         const deleteTaskButton = board.querySelector('a.task-delete') as HTMLAnchorElement;
         userEvent.click(deleteTaskButton);
-        clickSave(board);
-        await wait(5);
-        vscode.load();
-        await wait(5);
+
         expect(numTasks).toBe(0);
-        wrapper.unmount();
+
+        boardState.removeKanbanChangeListener(listener);
+        it.return();
     });
 
-    it("can change a column's color with a color picker", async () => {
-        const vscode = makeVsCodeHandler();
-        vscode.save(createStrictKanbanJson('', [createStrictColumnJson('', [])])); //1 column, 0 tasks
-        await wait(5);
+    it("can change a column's color with a color picker", () => {
+        boardState.save(createStrictKanbanJson('', [createStrictColumnJson('', [])])); //1 column, 0 tasks
 
-        const wrapper = render(<Board vscode={vscode}/>);
-        const board = wrapper.container;
-        await wait(5);
+
+        const it = boardSetup();
+        const board = it.next().value!;
+
+        clickColumnSettings(board);
 
         //color picker is initially closed
         const column = board.querySelector('div.column') as HTMLDivElement;
@@ -282,6 +285,43 @@ describe('<Board>, <Column>, and <Task>', () => {
         const swatch = column.querySelector('button.column-color-picker__swatch') as HTMLButtonElement;
         userEvent.click(swatch);
         expect(column.style.color).toBe(swatch.style.backgroundColor);
-        wrapper.unmount();
+        it.return();
+    });
+
+    it('can open a context menu over a column', async () => {
+        boardState.save(createStrictKanbanJson('', [createStrictColumnJson('', [])]));
+
+        const it = boardSetup();
+        const board = it.next().value!;
+
+        const column = board.querySelector('div.column') as HTMLDivElement;
+        let menu = column.querySelector('.szh-menu');
+        expect(menu).toBeNull();
+
+        userEvent.click(column, { button: 2 }); //right click
+        menu = column.querySelector('.szh-menu');
+        expect(menu).not.toBeNull();
+    });
+
+    it("has functional buttons in a column's context menu", () => {
+        boardState.save(createStrictKanbanJson('', [createStrictColumnJson('', [])]));
+
+        const it = boardSetup();
+        const board = it.next().value!;
+
+        const column = board.querySelector('div.column') as HTMLDivElement;
+        userEvent.click(column, { button: 2 });
+        const menu = column.querySelector('.szh-menu') as HTMLUListElement;
+
+        const [addTask, deleteColumn] = Array.from(menu.children);
+
+        const addTaskSpy = jest.spyOn(boardState, 'addTask');
+        const removeColumnSpy = jest.spyOn(boardState, 'removeColumn');
+
+        userEvent.click(addTask);
+        expect(addTaskSpy).toHaveBeenCalled();
+
+        userEvent.click(deleteColumn);
+        expect(removeColumnSpy).toHaveBeenCalled();
     });
 });

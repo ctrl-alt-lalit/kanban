@@ -1,9 +1,9 @@
 import React from 'react';
-import {Droppable} from 'react-beautiful-dnd';
-import toast from 'react-hot-toast';
+import { Droppable } from 'react-beautiful-dnd';
 import Task from './task';
-import {HexColorInput} from 'react-colorful';
-import { createTaskJson } from '../util/kanban-type-functions';
+import { HexColorInput } from 'react-colorful';
+import boardState from '../util/board-state';
+import { ControlledMenu, MenuDivider, MenuItem, useMenuState } from '@szhsin/react-menu';
 
 /**
  * React component showing a vertical list of Tasks. Tasks from other Columns can be dropped into this list and vice-versa.
@@ -14,57 +14,32 @@ import { createTaskJson } from '../util/kanban-type-functions';
  * A StrictColumnJSON passed in will update the data prop of this Column to the parameter. If this Columns' id (a string)
  * is given, then this Column will be deleted
  */
-function Column({data,callback, numCols}: {data: StrictColumnJSON, callback: (data: StrictColumnJSON | string) => void, numCols: number}) {
+function Column({ data, numCols, index }: { data: StrictColumnJSON, numCols: number, index: number }) {
 
     const [colorPickerOpen, setColorPickerOpen] = React.useState(false);
+    const [settingsOpen, setSettingsOpen] = React.useState(false);
 
-    /**
-     * Updates this Column's data prop to reflect a change in a child Task's state.
-     * Note: Should be passed in as a Task prop, not called directly.
-     * 
-     * @param {string | null} text string to replace a Task's text, or null to delete the task
-     * @param {number} index position of the Task in this Column's list 
-     */
-    function taskCallback(text: string | null, index: number) {
-        if (text !== null) {
-            data.tasks[index].text = text;
-        } else {
-            const oldData = {...data};
-            oldData.tasks = [...data.tasks];
-            toast(t => (
-                <div style={{
-                    display: 'inline-flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                }}>
-                    <p>Task Deleted &emsp;</p>
-                    <a  style={{cursor: 'pointer'}} onClick={() => {
-                        callback(oldData);
-                        toast.dismiss(t.id);
-                    }}>
-                        Undo 
-                    </a>
-                </div>
-            ));
-
-            data.tasks.splice(index, 1);
-        }
-        
-        callback(data);  
-    }
+    const { toggleMenu, ...menuProps } = useMenuState();
+    const [menuAnchorPoint, setMenuAnchorPoint] = React.useState({ x: 0, y: 0 });
 
     const changeColor = (color: string) => {
         if (color.length < 6) {
             return;
         }
-        data.color = color;
-        callback(data);
+        boardState.changeColumnColor(data.id, color);
     };
 
     const colorPickerStyle = {
         maxHeight: colorPickerOpen ? '6rem' : 0,
         pointerEvents: colorPickerOpen ? 'all' : 'none',
         transition: 'max-height 0.4s linear'
+    } as const;
+
+    const settingsStyle = {
+        maxHeight: settingsOpen ? '3rem' : 0,
+        pointerEvents: settingsOpen ? 'all' : 'none',
+        transition: 'max-height 0.4s linear',
+        paddingTop: '0.4rem'
     } as const;
 
     const darkSwatches = [
@@ -79,7 +54,7 @@ function Column({data,callback, numCols}: {data: StrictColumnJSON, callback: (da
 
 
     const anchorProps = {
-        'style': {color: data.color},
+        'style': { color: data.color },
         'onMouseEnter': (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => event.currentTarget.style.backgroundColor = data.color,
         'onMouseLeave': (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => event.currentTarget.style.backgroundColor = 'inherit',
     } as const;
@@ -87,26 +62,67 @@ function Column({data,callback, numCols}: {data: StrictColumnJSON, callback: (da
     return (
         <div
             className='column'
-            style={{color: data.color, borderColor: data.color, width: `${100/numCols}%`}}
-            onBlur={() => setColorPickerOpen(false)}
+            style={{ color: data.color, borderColor: data.color, width: `${100 / numCols}%` }}
+            onContextMenu={event => {
+                event.preventDefault();
+                setMenuAnchorPoint({ x: event.clientX, y: event.clientY });
+                toggleMenu(true);
+                event.stopPropagation();
+            }}
         >
+            <ControlledMenu {...menuProps}
+                anchorPoint={menuAnchorPoint}
+                onClose={() => toggleMenu(false)}
+                menuStyles={{
+                    color: 'var(--vscode-editor-foreground)',
+                    backgroundColor: 'var(--vscode-editor-background)'
+                }}
+            >
+
+                <MenuItem className='context-menu-item' onClick={() => boardState.addTask(data.id)}>
+                    <span className='codicon codicon-add' /> &nbsp; Add Task
+                </MenuItem>
+                <MenuItem className='context-menu-red' onClick={() => boardState.removeColumn(data.id)}>
+                    <span className='codicon codicon-trash' /> &nbsp; Delete Column
+                </MenuItem>
+
+            </ControlledMenu>
+
+
             {/* Contains the column's title this column's buttons (add task, delete column, show/hide color picker) */}
             <div className='column-titlebar'>
-                <input value={data.title} maxLength={12} className='column-title' style={{color: data.color, outlineColor: data.color}} onChange={event => {
-                    data.title = event.target.value;
-                    callback(data);
-                }}/>
-                <a className='column-add-task' title='Add Task' {...anchorProps} onClick={() => {
-                    data.tasks.push(createTaskJson());
-                    callback(data);
-                }}>
-                    <span className='codicon codicon-empty-window'/>
+                <input value={data.title} maxLength={12} className='column-title' style={{ color: data.color, outlineColor: data.color }} onChange={event => {
+                    const title = event.target.value;
+                    boardState.changeColumnTitle(data.id, title);
+                }} />
+                <a className='column-settings-toggle' {...anchorProps} onClick={() => setSettingsOpen(!settingsOpen)}>
+                    <span className='codicon codicon-gear' />
                 </a>
+            </div>
+
+            {/* Settings */}
+            <div className='column-settings' style={settingsStyle}>
                 <a className='column-color' title='Change Color' {...anchorProps} onClick={() => setColorPickerOpen(!colorPickerOpen)}>
-                    <span className='codicon codicon-symbol-color'/>
+                    <span className='codicon codicon-symbol-color' />
                 </a>
-                <a className='column-delete' title='Delete Column' {...anchorProps} onClick={() => callback(data.id)}>
-                    <span className='codicon codicon-trash'/>
+
+                <a
+                    className='column-left' title='Move Column Left' {...anchorProps}
+                    style={{ display: (index > 0) ? 'block' : 'none', color: data.color }}
+                    onClick={() => boardState.moveColumn(data.id, index - 1)}
+                >
+                    <span className='codicon codicon-arrow-left' />
+                </a>
+                <a
+                    className='column-right' title='Move Column Left' {...anchorProps}
+                    style={{ display: (index < numCols - 1) ? 'block' : 'none', color: data.color }}
+                    onClick={() => boardState.moveColumn(data.id, index + 1)}
+                >
+                    <span className='codicon codicon-arrow-right' />
+                </a>
+
+                <a className='column-delete' title='Delete Column' {...anchorProps} onClick={() => boardState.removeColumn(data.id)}>
+                    <span className='codicon codicon-trash' />
                 </a>
             </div>
 
@@ -116,15 +132,19 @@ function Column({data,callback, numCols}: {data: StrictColumnJSON, callback: (da
                     <button
                         key={swatch}
                         className='column-color-picker__swatch'
-                        style={{backgroundColor: swatch}}
+                        style={{ backgroundColor: swatch }}
                         onClick={() => changeColor(swatch)}
                     />
                 ))}
                 <div className='text-picker'>
                     <div className='input-tag'> # </div>
-                    <HexColorInput color={data.color} onChange={changeColor}/>
+                    <HexColorInput color={data.color} onChange={changeColor} />
                 </div>
             </div>
+
+            <a className='column-add-task' title='Add Task' style={{ color: data.color, borderColor: data.color }} onClick={() => boardState.addTask(data.id)}>
+                <span className='codicon codicon-add' />
+            </a>
 
             {/* Main content. The Task list. Droppables are where Draggables can be moved to (react-beautiful-dnd) */}
             <Droppable droppableId={data.id} key={data.id}>
@@ -132,14 +152,14 @@ function Column({data,callback, numCols}: {data: StrictColumnJSON, callback: (da
                     <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className= {['column-tasks', snapshot.isDraggingOver ? 'drag-over' : ''].join(' ')}
+                        className={['column-tasks', snapshot.isDraggingOver ? 'drag-over' : ''].join(' ')}
                     >
                         {data.tasks.map((task, index) => (
                             <Task
                                 data={task}
-                                index={index} 
-                                callback={(str: string | null) => taskCallback(str, index)}
+                                index={index}
                                 key={task.id}
+                                columnId={data.id}
                             />
                         ))}
                         {provided.placeholder}

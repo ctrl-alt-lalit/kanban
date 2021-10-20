@@ -96,6 +96,52 @@ body {
     overflow-y: scroll;
 }
 
+.board-add-column {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    opacity: 0.3;
+    cursor: pointer;
+    color: var(--vscode-editor-foreground) !important;
+    transition: opacity 0.2s;
+    text-align: center;
+}
+
+.board-add-column:hover, .board-add-column:focus, .board-add-column:active {
+    opacity: 1;
+}
+
+.board-add-column .vertical-line {
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.board-add-column .vertical-line::before {
+    content: "";
+    display: block;
+    background: none;
+    border-right: 0.08rem solid var(--vscode-editor-foreground);
+    width: 50%;
+}
+
+.board-add-column .vertical-line::after {
+    content: "";
+    display: block;
+    background: none;
+    border-left: 0.08rem solid var(--vscode-editor-foreground);
+    width: 50%;
+}
+
+.board-add-column .codicon {
+    font-size: 1.5rem !important;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    padding-left: 0.1rem; /* codicon is not perfectly centered */
+}
+
+
 /*****************************
   COLUMN
 *****************************/
@@ -130,7 +176,7 @@ body {
     transition: color 0.3s;
 }
 
-.column-titlebar a {
+.column-titlebar a, .column-settings a {
     color: var(--vscode-editor-foreground);
     padding-left: 0.2rem;
     padding-right: 0.2rem;
@@ -138,25 +184,26 @@ body {
     cursor: pointer;
 }
 
-.column-titlebar a:hover, .column-titlebar a:focus, .column-titlebar a:active {
+.column-titlebar a:hover, .column-titlebar a:focus, .column-titlebar a:active,
+.column-settings a:hover, .column-settings a:focus, .column-settings a:active {
     color: var(--vscode-editor-background) !important;
 }
 
-.column-titlebar .codicon[class*="codicon-"] {
+.column-titlebar .codicon[class*="codicon-"], .column-settings .codicon[class*="codicon-"] {
     font-size: 1rem !important;
     margin-top: 0.25rem !important;
 }
 
-.column-titlebar .codicon {
+.column-titlebar .codicon, .column-settings .codicon {
     width: 1.25rem;
 }
 
-.column-delete {
+.column-delete, .column-settings-toggle {
     margin-left: auto;
     margin-right: 0.6rem;
 }
 
-.column-color-picker{
+.column-color-picker, .column-settings {
     overflow-y: hidden;
     display: inline-flex;
     flex-direction: row;
@@ -213,11 +260,40 @@ body {
     background-color: var(--vscode-activityBar-background);
 }
 
+.column-add-task {
+    padding-top: 0.2rem;
+    display: flex;
+    flex-direction: row;
+    width: 95%;
+    align-self: center;
+    opacity: 0.3;
+    transition: opacity 0.2s;
+    cursor: pointer;
+}
+
+.column-add-task:hover, .column-add-task:focus, .column-add-task:active {
+    opacity: 1;
+}
+
+.column-add-task::before, .column-add-task::after {
+    content: "";
+    border-bottom: 0.1rem solid;
+    height: calc(50% - 0.1rem);
+    flex-grow: 1;
+    align-self: flex-start;
+}
+
+.column-add-task .codicon {
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
+}
+
 .column-tasks {
     flex-grow: 1;
     margin-bottom: 1rem;
     overflow-y: scroll;
 }
+
 
 /**************************
   TASK
@@ -274,3 +350,104 @@ body {
     overflow-wrap: break-word;
 }
 
+/*****************************
+  HISTORY
+*****************************/
+
+.history {
+    background-color: var(--vscode-activityBar-background);
+    color: var(--vscode-activityBar-foreground);
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    display: flex;
+    overflow-x: hidden;
+    width: 25%;
+}
+
+.history-titlebar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    min-width: 15vw;
+}
+
+.history-titlebar a {
+    cursor: pointer;
+    color: var(--vscode-activityBar-foreground) !important;
+    font-size: 2rem !important;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.history-titlebar a .codicon {
+    margin-top: 0.5rem !important;
+    font-size: 2rem !important;
+    transition: color 0.2s, background-color 0.2s;
+}
+
+.history-titlebar a:hover .codicon, .history-titlebar a:focus .codicon, .history-titlebar a:active .codicon {
+    background-color: var(--vscode-activityBar-foreground) !important;
+    color: var(--vscode-activityBar-background) !important;
+}
+
+.history-scroller {
+    width: 100%;
+    min-width: 15vw;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: scroll;
+    margin-bottom: 2rem;
+    box-shadow: inset 0 1rem 0.5rem var(--vscode-activityBar-background);
+}
+
+.history-item {
+    background-color: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+    border: 1px solid var(--vscode-editor-foreground);
+    width: 90%;
+    margin-top: 0.5rem;
+    padding-left: 0.5rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.history-item:hover, .history-item:focus, .history-item:active {
+    color: var(--vscode-editor-background);
+    border-color: var(--vscode-editor-background);
+    background-color: var(--vscode-editor-foreground);
+}
+
+/*****************************
+  CONTEXT MENU
+*****************************/
+
+.context-menu {
+    color: var(--vscode-editor-foreground);
+    background-color: var(--vscode-editor-background);
+}
+
+.context-menu-item {
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.context-menu-item:hover, .context-menu-item:focus, .context-menu-item:active {
+    color: var(--vscode-editor-background);
+    background-color: var(--vscode-activityBar-foreground);
+}
+
+.context-menu-red {
+    color: var(--vscode-charts-red);
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.context-menu-red:hover, .context-menu-red:focus, .context-menu-red:active {
+    color: var(--vscode-editor-background);
+    background-color: var(--vscode-charts-red);
+}
