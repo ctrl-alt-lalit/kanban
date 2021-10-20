@@ -5,7 +5,7 @@
    version="1.1"
    id="svg920"
    sodipodi:docname="icon.svg"
-   inkscape:version="1.1 (c4e8f9ed74, 2021-05-24)"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
    inkscape:export-filename="/home/lalit/Documents/Personal/kanban/images/icon.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
@@ -25,11 +25,11 @@
      inkscape:pagecheckerboard="0"
      showgrid="false"
      inkscape:zoom="6.46875"
-     inkscape:cx="34.628019"
-     inkscape:cy="61.217391"
+     inkscape:cx="38.028986"
+     inkscape:cy="66.628019"
      inkscape:window-width="1920"
      inkscape:window-height="1028"
-     inkscape:window-x="0"
+     inkscape:window-x="2560"
      inkscape:window-y="296"
      inkscape:window-maximized="1"
      inkscape:current-layer="g918" />
@@ -56,74 +56,31 @@
        cx="63.873016"
        style="fill:#1b31a0;fill-opacity:1"
        rx="63.000946"
-       ry="63" />
+       ry="63"
+       inkscape:export-filename="/home/lalit/Documents/Personal/kanban/images/icon.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <path
        id="svg_3"
-       fill="#157984"
-       d="m127,64c0,-3.13 -0.231,-6.205 -0.673,-9.213l-21.835,-21.836l-80.667,62.374l31.007,31.008c2.993,0.437 6.053,0.667 9.168,0.667c34.794,0 63,-28.207 63,-63z"
-       style="fill:#151b84;fill-opacity:1" />
-    <path
-       id="svg_4"
-       fill="#004e8e"
-       d="m100.002,31.123l-72.003,0c-3.544,0 -6.427,2.883 -6.427,6.428l0,52.898c0,3.545 2.883,6.428 6.427,6.428l72.002,0c3.545,0 6.428,-2.884 6.428,-6.428l0,-52.898c0.001,-3.545 -2.883,-6.428 -6.427,-6.428z"
-       style="fill:#006e8e;fill-opacity:1" />
-    <path
-       id="svg_6"
-       fill="#ffffff"
-       d="m 75.961525,93.744225 -23.927675,-0.05755 -0.0031,-59.369507 23.948983,0.04331 z M 24.658016,90.449 V 37.551 c 0,-1.772 1.44101,-3.207956 3.214,-3.214 l 22.119871,-0.03224 -10e-6,59.444339 -22.119857,-0.0861 c -1.772,0 -3.214,-1.442 -3.214,-3.214 z m 78.431004,0 c 0,1.771 -1.442,3.214 -3.215004,3.214 l -21.86504,0.05824 -0.02797,-59.360778 21.894016,-0.02345 c 1.771002,-0.0019 3.214002,1.441 3.214002,3.214 z"
-       sodipodi:nodetypes="cccccssscccssssccsss" />
+       style="fill:#000052;fill-opacity:1;stroke-width:1.1282"
+       d="M 103.22656 22.855469 L 21.003906 100.74414 L 37.824219 121.35352 A 63.000946 63 0 0 0 63.873047 127 A 63.000946 63 0 0 0 123.57617 83.753906 C 125.25329 76.732695 126.16797 69.312239 126.16797 61.626953 C 126.16797 58.221066 125.97884 54.871749 125.63477 51.580078 A 63.000946 63 0 0 0 125.24219 49.828125 L 103.22656 22.855469 z " />
     <rect
-       id="svg_14"
-       fill="#3eb2e5"
-       y="40.468811"
-       x="81.520844"
-       width="17.975561"
-       height="13.943913"
-       style="stroke-width:1.17247;fill:#3eb2e5;fill-opacity:1" />
-    <rect
-       id="rect6672"
-       fill="#3eb2e5"
-       y="40.468811"
-       x="54.950874"
-       width="17.975561"
-       height="13.943913"
-       ry="0"
-       style="stroke-width:1.17247;fill:#3eb2e5;fill-opacity:1" />
-    <rect
-       id="rect6674"
-       fill="#3eb2e5"
-       y="40.468811"
-       x="28.262949"
-       width="17.975561"
-       height="13.943913"
-       ry="0"
-       style="stroke-width:1.17247;fill:#3eb2e5;fill-opacity:1" />
-    <rect
-       id="rect7486"
-       fill="#3eb2e5"
-       y="57.223022"
-       x="28.262949"
-       width="17.975561"
-       height="13.943913"
-       ry="0"
-       style="stroke-width:1.17247;fill:#3eb2e5;fill-opacity:1" />
-    <rect
-       id="rect7488"
-       fill="#3eb2e5"
-       y="73.977242"
-       x="81.520844"
-       width="17.975561"
-       height="13.943913"
-       ry="0"
-       style="stroke-width:1.17247" />
-    <rect
-       id="rect7490"
-       fill="#3eb2e5"
-       y="57.223022"
-       x="81.520844"
-       width="17.975561"
-       height="13.943913"
-       ry="0"
-       style="stroke-width:1.17247" />
+       style="fill:#1b31a0;fill-opacity:1;fill-rule:evenodd"
+       id="rect2940"
+       width="73.08625"
+       height="69.739998"
+       x="27.094641"
+       y="28.666672" />
+    <g
+       style="fill:#00cde9;fill-opacity:1"
+       id="g669"
+       transform="matrix(6.0905208,0,0,5.8116663,14.9136,17.043339)">
+      <path
+         fill-rule="evenodd"
+         clip-rule="evenodd"
+         d="m 1.5,1 h 13 L 15,1.5 v 13 L 14.5,15 H 1.5 L 1,14.5 V 1.5 Z M 2,14 H 14 V 2 H 2 Z M 3,3 H 5 V 13 H 3 Z M 9,3 H 7 v 6 h 2 z m 2,0 h 2 v 8 h -2 z"
+         id="path660"
+         style="fill:#00cde9;fill-opacity:1" />
+    </g>
   </g>
 </svg>

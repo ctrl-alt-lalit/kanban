@@ -5,7 +5,7 @@
 A visual way to keep track of your progress and boost productivity for your projects.
 
 ![Kanban Demo](https://raw.githubusercontent.com/lbauskar/kanban/main/images/demo.gif)
-Make, edit, and organize your goals in whatever way you see fit!
+Make, edit, and organize your goals in whatever way works best for you!
 
 ## Using Kanban
 

@@ -16,6 +16,8 @@
    - it saves button-click changes immediately
    - it saves what you typed when you stop typing for a couple seconds
  - Buttons to change a column's color and delete a column moved under a per-column settings panel
+ - Added context menu for columns to support quickly adding tasks or deleting the column
+ - Added buttons to move a column for each column's settings panel
 
 ## 1.3.0
  - You can now save and load from a file in addition to the workspace
