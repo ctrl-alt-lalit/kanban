@@ -14,7 +14,7 @@ import { ControlledMenu, MenuDivider, MenuItem, useMenuState } from '@szhsin/rea
  * A StrictColumnJSON passed in will update the data prop of this Column to the parameter. If this Columns' id (a string)
  * is given, then this Column will be deleted
  */
-function Column({ data, numCols }: { data: StrictColumnJSON, numCols: number }) {
+function Column({ data, numCols, index }: { data: StrictColumnJSON, numCols: number, index: number }) {
 
     const [colorPickerOpen, setColorPickerOpen] = React.useState(false);
     const [settingsOpen, setSettingsOpen] = React.useState(false);
@@ -96,7 +96,7 @@ function Column({ data, numCols }: { data: StrictColumnJSON, numCols: number }) 
                     boardState.changeColumnTitle(data.id, title);
                 }} />
                 <a className='column-settings-toggle' {...anchorProps} onClick={() => setSettingsOpen(!settingsOpen)}>
-                    <span className='codicon codicon-gear'></span>
+                    <span className='codicon codicon-gear' />
                 </a>
             </div>
 
@@ -105,6 +105,22 @@ function Column({ data, numCols }: { data: StrictColumnJSON, numCols: number }) 
                 <a className='column-color' title='Change Color' {...anchorProps} onClick={() => setColorPickerOpen(!colorPickerOpen)}>
                     <span className='codicon codicon-symbol-color' />
                 </a>
+
+                <a
+                    className='column-left' title='Move Column Left' {...anchorProps}
+                    style={{ display: (index > 0) ? 'block' : 'none', color: data.color }}
+                    onClick={() => boardState.moveColumn(data.id, index - 1)}
+                >
+                    <span className='codicon codicon-arrow-left' />
+                </a>
+                <a
+                    className='column-right' title='Move Column Left' {...anchorProps}
+                    style={{ display: (index < numCols - 1) ? 'block' : 'none', color: data.color }}
+                    onClick={() => boardState.moveColumn(data.id, index + 1)}
+                >
+                    <span className='codicon codicon-arrow-right' />
+                </a>
+
                 <a className='column-delete' title='Delete Column' {...anchorProps} onClick={() => boardState.removeColumn(data.id)}>
                     <span className='codicon codicon-trash' />
                 </a>
@@ -127,7 +143,7 @@ function Column({ data, numCols }: { data: StrictColumnJSON, numCols: number }) 
             </div>
 
             <a className='column-add-task' title='Add Task' style={{ color: data.color, borderColor: data.color }} onClick={() => boardState.addTask(data.id)}>
-                <span className='codicon codicon-add'></span>
+                <span className='codicon codicon-add' />
             </a>
 
             {/* Main content. The Task list. Droppables are where Draggables can be moved to (react-beautiful-dnd) */}

@@ -13,6 +13,7 @@ export enum StateChanges {
     COLUMN_DELETED,
     COLUMN_TITLE,
     COLUMN_COLOR,
+    COLUMN_MOVED,
 
     TASK_ADDED,
     TASK_DELETED,
@@ -63,7 +64,7 @@ class BoardState {
     }
 
     public getHistory() {
-        return [...this.history];
+        return clone(this.history);
     }
 
     public changeAutosave(newAutosave: boolean): void {
@@ -188,6 +189,27 @@ class BoardState {
         });
 
         this.currentKanban.cols[columnIdx].color = newColor;
+        this.endChange(true);
+    }
+
+    public moveColumn(id: string, toIndex: number) {
+        if (toIndex < 0 || toIndex >= this.currentKanban.cols.length) {
+            return;
+        }
+
+        const columnIdx = this.getColumnIndex(id);
+        if (columnIdx === -1) {
+            return;
+        }
+
+        this.history.push({
+            change: StateChanges.COLUMN_MOVED,
+            data: clone(this.currentKanban),
+            details: `"${this.currentKanban.cols[columnIdx].title}" moved`
+        });
+
+        const [column] = this.currentKanban.cols.splice(columnIdx, 1);
+        this.currentKanban.cols.splice(toIndex, 0, column);
         this.endChange(true);
     }
 

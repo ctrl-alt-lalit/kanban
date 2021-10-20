@@ -87,6 +87,8 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[], op
                 return 'Changed task text';
             case StateChanges.BOARD_LOADED:
                 return 'Loaded Kanban';
+            case StateChanges.COLUMN_MOVED:
+                return 'Moved Column';
             default:
                 return 'ERROR';
         }

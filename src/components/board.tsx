@@ -40,10 +40,11 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
                 <this.Titlebar />
                 <div className='board-content'>
                     <DragDropContext onDragEnd={result => this.dragEnd(result)}>
-                        {this.state.data.cols.map(col => (
+                        {this.state.data.cols.map((col, index) => (
                             <Column
                                 data={col}
                                 numCols={this.state.data.cols.length}
+                                index={index}
                                 key={col.id}
                             />
                         ))}

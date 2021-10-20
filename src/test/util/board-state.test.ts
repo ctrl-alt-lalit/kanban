@@ -1,3 +1,4 @@
+import clone from "just-clone";
 import boardState from "../../util/board-state";
 import { createStrictColumnJson, createStrictKanbanJson, createTaskJson } from "../../util/kanban-type-functions";
 
@@ -48,6 +49,31 @@ describe('Board State', () => {
             boardState.fakeRefresh(newData);
 
             expect(result).toEqual(newData);
+        });
+    });
+
+    describe('moveColumn()', () => {
+        it('moves a column in a kanban board', () => {
+            const swappedKanban = clone(originalData);
+            const tmp = swappedKanban.cols[0];
+            swappedKanban.cols[0] = swappedKanban.cols[1];
+            swappedKanban.cols[1] = tmp;
+
+            boardState.save(originalData);
+            boardState.moveColumn(tmp.id, 1);
+
+            expect(boardState.getCurrentState().cols).toEqual(swappedKanban.cols); //do not expect equal timestamps
+        });
+
+        it('sanity checks inputs', () => {
+            boardState.save(originalData);
+            const column = originalData.cols[0];
+
+            boardState.moveColumn(column.id, -1);
+            boardState.moveColumn(column.id, 10);
+            boardState.moveColumn('nonexistent', 0);
+
+            expect(boardState.getCurrentState()).toEqual(originalData);
         });
     });
 
