@@ -262,7 +262,7 @@ describe('Board, Column, and Task', () => {
         it.return();
     });
 
-    it("can change a column's color with a color picker", async () => {
+    it("can change a column's color with a color picker", () => {
         boardState.save(createStrictKanbanJson('', [createStrictColumnJson('', [])])); //1 column, 0 tasks
 
 
@@ -286,5 +286,42 @@ describe('Board, Column, and Task', () => {
         userEvent.click(swatch);
         expect(column.style.color).toBe(swatch.style.backgroundColor);
         it.return();
+    });
+
+    it('can open a context menu over a column', async () => {
+        boardState.save(createStrictKanbanJson('', [createStrictColumnJson('', [])]));
+
+        const it = boardSetup();
+        const board = it.next().value!;
+
+        const column = board.querySelector('div.column') as HTMLDivElement;
+        let menu = column.querySelector('.szh-menu');
+        expect(menu).toBeNull();
+
+        userEvent.click(column, { button: 2 }); //right click
+        menu = column.querySelector('.szh-menu');
+        expect(menu).not.toBeNull();
+    });
+
+    it("has functional buttons in a column's context menu", () => {
+        boardState.save(createStrictKanbanJson('', [createStrictColumnJson('', [])]));
+
+        const it = boardSetup();
+        const board = it.next().value!;
+
+        const column = board.querySelector('div.column') as HTMLDivElement;
+        userEvent.click(column, { button: 2 });
+        const menu = column.querySelector('.szh-menu') as HTMLUListElement;
+
+        const [addTask, deleteColumn] = Array.from(menu.children);
+
+        const addTaskSpy = jest.spyOn(boardState, 'addTask');
+        const removeColumnSpy = jest.spyOn(boardState, 'removeColumn');
+
+        userEvent.click(addTask);
+        expect(addTaskSpy).toHaveBeenCalled();
+
+        userEvent.click(deleteColumn);
+        expect(removeColumnSpy).toHaveBeenCalled();
     });
 });

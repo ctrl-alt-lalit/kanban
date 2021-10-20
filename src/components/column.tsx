@@ -3,6 +3,7 @@ import { Droppable } from 'react-beautiful-dnd';
 import Task from './task';
 import { HexColorInput } from 'react-colorful';
 import boardState from '../util/board-state';
+import { ControlledMenu, MenuDivider, MenuItem, useMenuState } from '@szhsin/react-menu';
 
 /**
  * React component showing a vertical list of Tasks. Tasks from other Columns can be dropped into this list and vice-versa.
@@ -17,6 +18,9 @@ function Column({ data, numCols }: { data: StrictColumnJSON, numCols: number }) 
 
     const [colorPickerOpen, setColorPickerOpen] = React.useState(false);
     const [settingsOpen, setSettingsOpen] = React.useState(false);
+
+    const { toggleMenu, ...menuProps } = useMenuState();
+    const [menuAnchorPoint, setMenuAnchorPoint] = React.useState({ x: 0, y: 0 });
 
     const changeColor = (color: string) => {
         if (color.length < 6) {
@@ -59,7 +63,32 @@ function Column({ data, numCols }: { data: StrictColumnJSON, numCols: number }) 
         <div
             className='column'
             style={{ color: data.color, borderColor: data.color, width: `${100 / numCols}%` }}
+            onContextMenu={event => {
+                event.preventDefault();
+                setMenuAnchorPoint({ x: event.clientX, y: event.clientY });
+                toggleMenu(true);
+                event.stopPropagation();
+            }}
         >
+            <ControlledMenu {...menuProps}
+                anchorPoint={menuAnchorPoint}
+                onClose={() => toggleMenu(false)}
+                menuStyles={{
+                    color: 'var(--vscode-editor-foreground)',
+                    backgroundColor: 'var(--vscode-editor-background)'
+                }}
+            >
+
+                <MenuItem className='context-menu-item' onClick={() => boardState.addTask(data.id)}>
+                    <span className='codicon codicon-add' /> &nbsp; Add Task
+                </MenuItem>
+                <MenuItem className='context-menu-red' onClick={() => boardState.removeColumn(data.id)}>
+                    <span className='codicon codicon-trash' /> &nbsp; Delete Column
+                </MenuItem>
+
+            </ControlledMenu>
+
+
             {/* Contains the column's title this column's buttons (add task, delete column, show/hide color picker) */}
             <div className='column-titlebar'>
                 <input value={data.title} maxLength={12} className='column-title' style={{ color: data.color, outlineColor: data.color }} onChange={event => {

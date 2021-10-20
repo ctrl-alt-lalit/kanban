@@ -29,6 +29,7 @@ function Task({ data, index, columnId }: { data: TaskJSON, index: number, column
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     className={['task', snapshot.isDragging ? 'drag' : ''].join(' ')}
+                    onContextMenu={event => event.stopPropagation()}
                 >
                     {/* 'Handle' user must click on to move the whole Task (react-beautiful-dnd) */}
                     <div
@@ -62,8 +63,9 @@ function Task({ data, index, columnId }: { data: TaskJSON, index: number, column
                         </ReactMarkdown>
                     </div>
                 </div>
-            )}
-        </Draggable>
+            )
+            }
+        </Draggable >
     );
 }
 

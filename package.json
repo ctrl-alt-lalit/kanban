@@ -95,6 +95,7 @@
     "webpack-cli": "^4.4.0"
   },
   "dependencies": {
+    "@szhsin/react-menu": "^2.1.0",
     "@vscode/codicons": "^0.0.21",
     "cuid": "^2.1.8",
     "just-clone": "^3.2.1",

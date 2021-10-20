@@ -103,18 +103,10 @@ class Panel {
 		const manifest = require(
 			path.join(this.extensionPath, 'build', 'asset-manifest.json'));
 		const csp = this.webviewPanel.webview.cspSource;
-		const scriptSource = vscode.Uri
-			.file(path.join(this.extensionPath, 'build',
-				manifest.files['main.js']))
-			.with({ scheme: 'vscode-resource' });
-		const stylesheet =
-			vscode.Uri.file(path.join(this.extensionPath, 'build', 'index.css'))
-				.with({ scheme: 'vscode-resource' });
-		const codicons =
-			vscode.Uri
-				.file(path.join(this.extensionPath, 'node_modules', '@vscode',
-					'codicons', 'dist', 'codicon.css'))
-				.with({ scheme: 'vscode-resource' });
+		const scriptSource = vscode.Uri.file(path.join(this.extensionPath, 'build', manifest.files['main.js'])).with({ scheme: 'vscode-resource' });
+		const stylesheet = vscode.Uri.file(path.join(this.extensionPath, 'build', 'index.css')).with({ scheme: 'vscode-resource' });
+		const codicons = vscode.Uri.file(path.join(this.extensionPath, 'node_modules', '@vscode', 'codicons', 'dist', 'codicon.css')).with({ scheme: 'vscode-resource' });
+		const reactMenu = vscode.Uri.file(path.join(this.extensionPath, 'node_modules', '@szhsin', 'react-menu', 'dist', 'index.css')).with({ scheme: 'vscode-resource' });
 
 		return (`
 			<!DOCTYPE html>
@@ -127,6 +119,7 @@ class Panel {
 				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src ${csp}; style-src ${csp} 'unsafe-inline'; font-src ${csp}">
 				<link rel="stylesheet" type="text/css" href="${stylesheet}"/>
 				<link rel="stylesheet" type="text/css" href="${codicons}"/>
+				<link rel="stylesheet" type="text/css" href="${reactMenu}"/>
 			</head
 			<body>
 				<noscript> This extension needs JavaScript in order to run </noscript>

@@ -421,3 +421,33 @@ body {
     border-color: var(--vscode-editor-background);
     background-color: var(--vscode-editor-foreground);
 }
+
+/*****************************
+  CONTEXT MENU
+*****************************/
+
+.context-menu {
+    color: var(--vscode-editor-foreground);
+    background-color: var(--vscode-editor-background);
+}
+
+.context-menu-item {
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.context-menu-item:hover, .context-menu-item:focus, .context-menu-item:active {
+    color: var(--vscode-editor-background);
+    background-color: var(--vscode-activityBar-foreground);
+}
+
+.context-menu-red {
+    color: var(--vscode-charts-red);
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.context-menu-red:hover, .context-menu-red:focus, .context-menu-red:active {
+    color: var(--vscode-editor-background);
+    background-color: var(--vscode-charts-red);
+}
