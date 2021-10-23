@@ -29,10 +29,7 @@ function Task({ data, index, columnId }: { data: TaskJSON, index: number, column
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     className={['task', snapshot.isDragging ? 'drag' : ''].join(' ')}
-                    onContextMenu={event => {
-                        console.log('hehe');
-                        event.stopPropagation();
-                    }}
+                    onContextMenu={event => event.stopPropagation()}
                 >
                     {/* 'Handle' user must click on to move the whole Task (react-beautiful-dnd) */}
                     <div

@@ -17,23 +17,3 @@ export function randomString() {
 export function rightClick(element: HTMLElement) {
     userEvent.click(element, { button: 2 });
 }
-
-/*
-export function mockReactBeautifulDND() {
-    return jest.mock('react-beautiful-dnd', () => {
-        const dragDropElem = ({ children }: { children: Function }) => children({
-            draggableProps: {
-                style: {},
-            },
-            innerRef: jest.fn(),
-        }, {});
-
-
-        return {
-            Droppable: clone(dragDropElem),
-            Draggable: clone(dragDropElem),
-            DragDropContext: ({ children }: { children: Function }) => children,
-        };
-    });
-}
-*/
