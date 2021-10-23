@@ -3,8 +3,7 @@ import Board from '../../components/board';
 import { createStrictColumnJson, createStrictKanbanJson, createTaskJson } from '../../util/kanban-type-functions';
 import userEvent from '@testing-library/user-event';
 import boardState from '../../util/board-state';
-import { randStr } from '../helpers';
-
+import { randomString } from '../helpers';
 
 function* boardSetup() {
     const wrapper = render(<Board />);
@@ -26,24 +25,24 @@ describe('Board, Column, and Task', () => {
 
     it('renders data in a StrictKanbanJSON', async () => {
         const data = createStrictKanbanJson(
-            randStr(),
+            randomString(),
             [
                 createStrictColumnJson(
-                    randStr(),
+                    randomString(),
                     [
-                        createTaskJson(randStr()),
-                        createTaskJson(randStr()),
-                        createTaskJson(randStr())
+                        createTaskJson(randomString()),
+                        createTaskJson(randomString()),
+                        createTaskJson(randomString())
                     ],
                     '#000000' //variable color names don't work in test, but do work in production
                 ),
                 createStrictColumnJson(
-                    randStr(),
+                    randomString(),
                     [createTaskJson()],
                     '#ff00ff'
                 ),
                 createStrictColumnJson(
-                    randStr(),
+                    randomString(),
                     [],
                     '#f0f0f0'
                 )
@@ -151,19 +150,19 @@ describe('Board, Column, and Task', () => {
         userEvent.click(taskDisplay);
         const taskEdit = task.querySelector('textarea.task-edit') as HTMLTextAreaElement;
         userEvent.dblClick(taskEdit);
-        const taskString = randStr();
+        const taskString = randomString();
         userEvent.type(taskEdit, taskString);
 
         //edit column title
         const columnTitle = board.querySelector('input.column-title') as HTMLInputElement;
         userEvent.dblClick(columnTitle);
-        const columnString = randStr();
+        const columnString = randomString();
         userEvent.type(columnTitle, columnString);
 
         //edit board title
         const boardTitle = board.querySelector('input.board-title') as HTMLInputElement;
         userEvent.dblClick(boardTitle);
-        const boardString = randStr();
+        const boardString = randomString();
         userEvent.type(boardTitle, boardString);
 
         //save changes and get current board state

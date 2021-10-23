@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import boardState from '../../util/board-state';
 import { createStrictColumnJson, createStrictKanbanJson } from '../../util/kanban-type-functions';
 import clone from 'just-clone';
-import { randStr } from '../helpers';
+import { randomString } from '../helpers';
 
 jest.mock('../../util/delayed-updater');
 import DelayedUpdater from '../../util/delayed-updater';
@@ -89,19 +89,19 @@ describe('Revision History', () => {
         boardState.save(createStrictKanbanJson());
         boardState.addColumn();
 
-        boardState.changeBoardTitle(randStr());
+        boardState.changeBoardTitle(randomString());
 
         const colId = boardState.getCurrentState().cols[0].id;
-        boardState.changeColumnTitle(colId, randStr());
+        boardState.changeColumnTitle(colId, randomString());
         boardState.changeColumnColor(colId, 'red');
         boardState.addTask(colId);
         boardState.removeTask(colId, boardState.getCurrentState().cols[0].tasks[0].id);
         boardState.addTask(colId);
 
         const taskId = boardState.getCurrentState().cols[0].tasks[0].id;
-        boardState.changeTaskText(colId, taskId, randStr());
+        boardState.changeTaskText(colId, taskId, randomString());
 
-        boardState.changeTaskText(colId, taskId, randStr());
+        boardState.changeTaskText(colId, taskId, randomString());
 
         boardState.removeTask(colId, taskId);
         boardState.removeColumn(colId);
