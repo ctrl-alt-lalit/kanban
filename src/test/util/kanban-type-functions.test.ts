@@ -1,12 +1,6 @@
 import * as KT from '../../util/kanban-type-functions';
+import { randomBoolean, randomString } from '../helpers';
 
-function randomString() {
-    return Math.random().toString();
-}
-
-function randomBoolean() {
-    return Math.random() < 0.5;
-}
 
 describe('Kanban Type Handler', () => {
     describe('createStrictTaskJson()', () => {

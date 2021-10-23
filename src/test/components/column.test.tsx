@@ -1,6 +1,6 @@
 import Column from "../../components/column";
 import boardState from "../../util/board-state";
-import { fireEvent, render } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createStrictColumnJson, createStrictKanbanJson, createTaskJson } from "../../util/kanban-type-functions";
 import { randomString, rightClick } from "../helpers";
@@ -71,7 +71,7 @@ describe('<Column />', () => {
         const title = column.querySelector('.column-titlebar input') as HTMLInputElement;
         const taskList = column.querySelector('.column-tasks') as HTMLDivElement;
 
-        expect(title.value).toBe(columnData.title);
+        expect(title.value).toEqual(columnData.title);
         expect(taskList.childElementCount).toEqual(columnData.tasks.length);
 
         wrapper.unmount();

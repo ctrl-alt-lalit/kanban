@@ -1,5 +1,4 @@
 import userEvent from "@testing-library/user-event";
-import clone from "just-clone";
 
 export function wait(ms: number) {
     return new Promise(resolve => {
@@ -16,4 +15,8 @@ export function randomString() {
 
 export function rightClick(element: HTMLElement) {
     userEvent.click(element, { button: 2 });
+}
+
+export function randomBoolean() {
+    return Math.random() < 0.5;
 }
