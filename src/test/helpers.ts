@@ -20,3 +20,7 @@ export function rightClick(element: HTMLElement) {
 export function randomBoolean() {
     return Math.random() < 0.5;
 }
+
+export function randomInteger(hi = 1_000_000_000, lo = 0) {
+    return Math.floor(Math.random() * (hi - lo)) + lo;
+}

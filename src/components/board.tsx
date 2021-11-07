@@ -22,7 +22,7 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
 
     componentDidMount() {
         boardState.addKanbanChangeListener(this.loadCallback);
-        boardState.refresh();
+        boardState.refreshKanban();
 
         window.addEventListener('keydown', this.shortcutKeydown);
         window.addEventListener('keyup', this.shortcutKeyup);

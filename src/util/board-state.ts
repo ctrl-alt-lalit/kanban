@@ -51,6 +51,10 @@ class BoardState {
         this.kanbanChangeListeners = this.kanbanChangeListeners.filter(l => l !== listener);
     }
 
+    public refreshKanban() {
+        this.kanbanChangeListeners.forEach(listener => listener(this.currentKanban));
+    }
+
     public addHistoryUpdateListener(listener: (history: HistoryObject) => void) {
         this.historyUpdateListeners.push(listener);
     }
@@ -59,28 +63,16 @@ class BoardState {
         this.historyUpdateListeners = this.historyUpdateListeners.filter(l => l !== listener);
     }
 
-    public refresh() {
-        this.kanbanChangeListeners.forEach(listener => listener(this.currentKanban));
-    }
-
     public getHistory() {
         return clone(this.history);
     }
 
     public changeAutosave(newAutosave: boolean): void {
-        if (newAutosave === this.currentKanban.autosave) {
-            return;
-        }
-
         this.currentKanban.autosave = newAutosave;
         this.endChange(false);
     }
 
     public changeSaveToFile(newSaveToFile: boolean): void {
-        if (newSaveToFile === this.currentKanban.saveToFile) {
-            return;
-        }
-
         this.currentKanban.saveToFile = newSaveToFile;
         this.endChange(false);
     }
@@ -89,11 +81,7 @@ class BoardState {
         if (!this.previousText.has('board')) {
             this.previousText.set('board', this.currentKanban.title);
         }
-
         const oldTitle = this.previousText.get('board')!;
-        if (newTitle === oldTitle) {
-            return;
-        }
 
         this.boardTextUpdater.tryUpdate(() => {
             const copy = clone(this.currentKanban);
@@ -148,10 +136,6 @@ class BoardState {
             this.previousText.set(column.id, column.title);
         }
         const oldTitle = this.previousText.get(column.id)!;
-
-        if (newTitle === oldTitle) {
-            return;
-        }
 
         this.columnTextUpdater.tryUpdate(() => {
             const copy = clone(this.currentKanban);
@@ -283,12 +267,7 @@ class BoardState {
         if (!this.previousText.has(taskId)) {
             this.previousText.set(taskId, this.currentKanban.cols[columnIdx].tasks[taskIdx].text);
         }
-
         const oldText = this.previousText.get(taskId)!;
-
-        if (newText === oldText) {
-            return;
-        }
 
         this.taskTextUpdater.tryUpdate(() => {
             const copy = clone(this.currentKanban);
@@ -309,7 +288,7 @@ class BoardState {
         this.endChange(true, this.taskTextUpdater);
     }
 
-    public reverseHistory(index: number) {
+    public undoChange(index: number) {
         if (index < 0 || index >= this.history.length) {
             return;
         }
@@ -330,13 +309,13 @@ class BoardState {
         if (kanban) {
             this.history.push({
                 change: StateChanges.BOARD_LOADED,
-                data: this.currentKanban,
+                data: clone(this.currentKanban),
                 details: ''
             });
 
-            this.currentKanban = kanban;
+            this.currentKanban = clone(kanban);
             this.historyUpdateListeners.forEach(listener => listener(this.history[this.history.length - 1]));
-            this.refresh();
+            this.refreshKanban();
         }
 
         this.vscodeHandler.save(this.currentKanban);
@@ -363,7 +342,7 @@ class BoardState {
 
     private loadFromVscode = (kanban: StrictKanbanJSON) => {
         this.currentKanban = kanban;
-        this.refresh();
+        this.refreshKanban();
     };
 
     private getColumnIndex(columnId: string): number {
@@ -371,15 +350,9 @@ class BoardState {
     }
 
     private endChange(updateHistory: boolean, updater: DelayedUpdater | null = null) {
-        if (this.currentKanban.autosave) {
-            const save = () => this.vscodeHandler.save(this.currentKanban);
-
-            if (updater) {
-                updater.tryUpdate(save, 'save');
-            } else {
-                save();
-            }
-        }
+        const save = this.currentKanban.autosave
+            ? () => this.vscodeHandler.save(this.currentKanban)
+            : () => undefined;
 
         const doUpdateHistory = updateHistory
             ? () => this.historyUpdateListeners.forEach(listener => listener(this.history[this.history.length - 1]))
@@ -387,11 +360,13 @@ class BoardState {
 
         if (updater) {
             updater.tryUpdate(doUpdateHistory, 'history');
+            save();
         } else {
             doUpdateHistory();
+            save();
         }
 
-        this.refresh();
+        this.refreshKanban();
     }
 
     private taskTextUpdater = new DelayedUpdater(3000);
