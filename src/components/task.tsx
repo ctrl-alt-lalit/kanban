@@ -4,49 +4,58 @@ import ReactMarkdown from 'react-markdown';
 import { Draggable } from 'react-beautiful-dnd';
 import boardState from '../util/board-state';
 
-
 /**
  * React component showing editable text that is rendered in markdown. This component can be dragged to different Columns.
- * 
- * @prop data - TaskJSON this Task will represent
- * @prop index - position of this Task in a list of Tasks
- * @prop callback - (string | null) => void -- notifies parent Column whenever Task state is updated.
- * A string will be the new text this Task displays. null means this Task should be deleted.
+ *
+ * @prop data {TaskJSON} TaskJSON this Task will represent
+ * @prop index {number} position of this Task in parent Column's list of Tasks
+ * @prop columnId {string} ID of parent Column
  */
-function Task({ data, index, columnId }: { data: TaskJSON, index: number, columnId: string }): JSX.Element {
-
+function Task({
+    data,
+    index,
+    columnId,
+}: {
+    data: TaskJSON;
+    index: number;
+    columnId: string;
+}): JSX.Element {
     const [editing, setEditing] = React.useState(false);
 
     return (
-        <Draggable
-            key={data.id}
-            draggableId={data.id}
-            index={index}
-        >
+        <Draggable key={data.id} draggableId={data.id} index={index}>
             {(provided, snapshot) => (
                 //draggable container for the task (see react-beautiful-dnd)
                 <div
                     ref={provided.innerRef}
                     {...provided.draggableProps}
-                    className={['task', snapshot.isDragging ? 'drag' : ''].join(' ')}
-                    onContextMenu={event => event.stopPropagation()}
+                    className={['task', snapshot.isDragging ? 'drag' : ''].join(
+                        ' '
+                    )}
+                    onContextMenu={(event) => event.stopPropagation()}
                 >
                     {/* 'Handle' user must click on to move the whole Task (react-beautiful-dnd) */}
                     <div
-                        className='task-handle'
+                        className="task-handle"
                         {...provided.dragHandleProps}
                         onMouseDown={() => setEditing(false)}
                     >
-                        <a className='task-delete' title='Delete Task' onClick={() => boardState.removeTask(columnId, data.id)}>
-                            <span className='codicon codicon-close' />
+                        <a
+                            className="task-delete"
+                            title="Delete Task"
+                            onClick={() =>
+                                boardState.removeTask(columnId, data.id)
+                            }
+                        >
+                            <span className="codicon codicon-close" />
                         </a>
                     </div>
 
                     {/* Main content. Autosizing textbox or text rendered as markdown */}
                     <TextAreaAutosize
-                        className='task-edit task-section'
+                        className="task-edit task-section"
                         value={data.text}
-                        onChange={event => {
+                        onChange={(event) => {
                             const text = event.target.value;
                             boardState.changeTaskText(columnId, data.id, text);
                         }}
@@ -54,7 +63,7 @@ function Task({ data, index, columnId }: { data: TaskJSON, index: number, column
                         style={{ display: editing ? 'block' : 'none' }}
                     />
                     <div
-                        className='task-display task-section'
+                        className="task-display task-section"
                         onClick={() => setEditing(true)}
                         style={{ display: editing ? 'none' : 'block' }}
                     >
@@ -63,9 +72,8 @@ function Task({ data, index, columnId }: { data: TaskJSON, index: number, column
                         </ReactMarkdown>
                     </div>
                 </div>
-            )
-            }
-        </Draggable >
+            )}
+        </Draggable>
     );
 }
 

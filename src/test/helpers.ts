@@ -1,3 +1,5 @@
+import userEvent from "@testing-library/user-event";
+
 export function wait(ms: number) {
     return new Promise(resolve => {
         setTimeout(() => resolve(true), ms);
@@ -7,6 +9,18 @@ export function wait(ms: number) {
 /**
  * @returns a random string of 10 characters
  */
-export function randStr() {
+export function randomString() {
     return Math.random().toString(36).slice(0, 10);
+}
+
+export function rightClick(element: HTMLElement) {
+    userEvent.click(element, { button: 2 });
+}
+
+export function randomBoolean() {
+    return Math.random() < 0.5;
+}
+
+export function randomInteger(hi = 1_000_000_000, lo = 0) {
+    return Math.floor(Math.random() * (hi - lo)) + lo;
 }

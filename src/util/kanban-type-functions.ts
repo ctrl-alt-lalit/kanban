@@ -18,7 +18,7 @@ import cuid from 'cuid';
  */
 export function toTaskJson(task: TaskJSON | string): TaskJSON {
     if (typeof task === 'string') {
-        return {text: task, id: cuid()};
+        return { text: task, id: cuid() };
     } else {
         return task;
     }
