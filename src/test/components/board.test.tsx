@@ -1,10 +1,12 @@
-import Board from "../../components/board";
-import { render } from "@testing-library/react";
+import Board from '../../components/board';
+import { render } from '@testing-library/react';
 import boardState from '../../util/board-state';
-import { createStrictColumnJson, createStrictKanbanJson } from "../../util/kanban-type-functions";
-import userEvent from "@testing-library/user-event";
-import { randomString } from "../helpers";
-
+import {
+    createStrictColumnJson,
+    createStrictKanbanJson,
+} from '../../util/kanban-type-functions';
+import userEvent from '@testing-library/user-event';
+import { randomString } from '../helpers';
 
 function* boardSetup() {
     const defaultKanban = createStrictKanbanJson();
@@ -19,17 +21,24 @@ function* boardSetup() {
 
 describe('<Board />', () => {
     it('renders a board', () => {
-        const kanbanData = createStrictKanbanJson(randomString(), [createStrictColumnJson(), createStrictColumnJson()]);
+        const kanbanData = createStrictKanbanJson(randomString(), [
+            createStrictColumnJson(),
+            createStrictColumnJson(),
+        ]);
         boardState.save(kanbanData);
 
         const wrapper = render(<Board />);
         const board = wrapper.container.firstElementChild as HTMLDivElement;
 
-        const title = board.querySelector('input.board-title') as HTMLInputElement;
+        const title = board.querySelector(
+            'input.board-title'
+        ) as HTMLInputElement;
         expect(title.value).toEqual(kanbanData.title);
 
         const columnList = board.querySelector('.board-content')!;
-        expect(columnList.childElementCount).toEqual(kanbanData.cols.length + 1); //add 1 for add-col btn
+        expect(columnList.childElementCount).toEqual(
+            kanbanData.cols.length + 1
+        ); //add 1 for add-col btn
     });
 
     describe('titlebar', () => {
@@ -37,7 +46,9 @@ describe('<Board />', () => {
             const setup = boardSetup();
             const board = setup.next().value!;
 
-            const title = board.querySelector('input.board-title') as HTMLInputElement;
+            const title = board.querySelector(
+                'input.board-title'
+            ) as HTMLInputElement;
             const spy = jest.spyOn(boardState, 'changeBoardTitle');
 
             userEvent.type(title, 'blah');
@@ -75,8 +86,12 @@ describe('<Board />', () => {
             const setup = boardSetup();
             const board = setup.next().value!;
 
-            const settingsButton = board.querySelector('a.board-settings-toggle')!;
-            const settingsPanel = board.querySelector('.board-settings') as HTMLDivElement;
+            const settingsButton = board.querySelector(
+                'a.board-settings-toggle'
+            )!;
+            const settingsPanel = board.querySelector(
+                '.board-settings'
+            ) as HTMLDivElement;
 
             expect(settingsPanel.style.opacity).toEqual('0');
 
@@ -94,10 +109,14 @@ describe('<Board />', () => {
             const setup = boardSetup();
             const board = setup.next().value!;
 
-            const settingsButton = board.querySelector('a.board-settings-toggle')!;
+            const settingsButton = board.querySelector(
+                'a.board-settings-toggle'
+            )!;
             userEvent.click(settingsButton);
 
-            const settingsPanel = board.querySelector('.board-settings') as HTMLDivElement;
+            const settingsPanel = board.querySelector(
+                '.board-settings'
+            ) as HTMLDivElement;
             yield settingsPanel;
 
             setup.next();

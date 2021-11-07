@@ -1,17 +1,24 @@
-import Task from "../../components/task";
-import boardState from "../../util/board-state";
-import { fireEvent, render } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { createStrictColumnJson, createStrictKanbanJson, createTaskJson } from "../../util/kanban-type-functions";
-import { randomString, rightClick } from "../helpers";
-
+import Task from '../../components/task';
+import boardState from '../../util/board-state';
+import { fireEvent, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import {
+    createStrictColumnJson,
+    createStrictKanbanJson,
+    createTaskJson,
+} from '../../util/kanban-type-functions';
+import { randomString, rightClick } from '../helpers';
 
 function* taskSetup() {
-    const defaultKanban = createStrictKanbanJson('', [createStrictColumnJson('', [createTaskJson()])]);
+    const defaultKanban = createStrictKanbanJson('', [
+        createStrictColumnJson('', [createTaskJson()]),
+    ]);
     const defaultColumn = defaultKanban.cols[0];
     const defaultTask = defaultColumn.tasks[0];
 
-    const wrapper = render(<Task data={defaultTask} index={0} columnId={defaultColumn.id} />);
+    const wrapper = render(
+        <Task data={defaultTask} index={0} columnId={defaultColumn.id} />
+    );
     const task = wrapper.container.firstElementChild as HTMLDivElement;
     yield task;
 
@@ -19,13 +26,16 @@ function* taskSetup() {
 }
 
 jest.mock('react-beautiful-dnd', () => {
-    const dragDropElem = ({ children }: { children: Function }) => children({
-        draggableProps: {
-            style: {},
-        },
-        innerRef: jest.fn(),
-    }, {});
-
+    const dragDropElem = ({ children }: { children: Function }) =>
+        children(
+            {
+                draggableProps: {
+                    style: {},
+                },
+                innerRef: jest.fn(),
+            },
+            {}
+        );
 
     return {
         Droppable: dragDropElem,
@@ -34,12 +44,13 @@ jest.mock('react-beautiful-dnd', () => {
     };
 });
 
-
 describe('<Task>', () => {
     it('Renders a task', () => {
         const taskData = createTaskJson(randomString());
 
-        const wrapper = render(<Task data={taskData} index={0} columnId={''} />);
+        const wrapper = render(
+            <Task data={taskData} index={0} columnId={''} />
+        );
         const task = wrapper.container.firstElementChild as HTMLDivElement;
 
         const textarea = task.querySelector('textarea')!;
@@ -63,7 +74,9 @@ describe('<Task>', () => {
 
     describe('Text Display', () => {
         function* displayClicking(task: HTMLDivElement) {
-            const displaySection = task.querySelector('.task-display') as HTMLDivElement;
+            const displaySection = task.querySelector(
+                '.task-display'
+            ) as HTMLDivElement;
             const textarea = task.querySelector('textarea')!;
 
             userEvent.click(displaySection);
@@ -110,7 +123,10 @@ describe('<Task>', () => {
         const setup = taskSetup();
         const task = setup.next().value!;
 
-        const propagateSpy = jest.spyOn(MouseEvent.prototype, 'stopPropagation');
+        const propagateSpy = jest.spyOn(
+            MouseEvent.prototype,
+            'stopPropagation'
+        );
         rightClick(task);
 
         expect(propagateSpy).toHaveBeenCalled();

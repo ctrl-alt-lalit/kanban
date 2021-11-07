@@ -1,18 +1,25 @@
-import Column from "../../components/column";
-import boardState from "../../util/board-state";
-import { render } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { createStrictColumnJson, createStrictKanbanJson, createTaskJson } from "../../util/kanban-type-functions";
-import { randomString, rightClick } from "../helpers";
+import Column from '../../components/column';
+import boardState from '../../util/board-state';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import {
+    createStrictColumnJson,
+    createStrictKanbanJson,
+    createTaskJson,
+} from '../../util/kanban-type-functions';
+import { randomString, rightClick } from '../helpers';
 
 jest.mock('react-beautiful-dnd', () => {
-    const dragDropElem = ({ children }: { children: Function }) => children({
-        draggableProps: {
-            style: {},
-        },
-        innerRef: jest.fn(),
-    }, {});
-
+    const dragDropElem = ({ children }: { children: Function }) =>
+        children(
+            {
+                draggableProps: {
+                    style: {},
+                },
+                innerRef: jest.fn(),
+            },
+            {}
+        );
 
     return {
         Droppable: dragDropElem,
@@ -25,8 +32,9 @@ const defaultKanban = createStrictKanbanJson('', [createStrictColumnJson()]);
 const defaultColumn = defaultKanban.cols[0];
 
 function* columnSetup(index = 0, numCols = 1) {
-
-    const wrapper = render(<Column data={defaultColumn} numCols={numCols} index={index} />);
+    const wrapper = render(
+        <Column data={defaultColumn} numCols={numCols} index={index} />
+    );
     const column = wrapper.container.firstElementChild as HTMLDivElement;
     yield column;
 
@@ -55,21 +63,31 @@ function* colorSetup() {
     const colorToggle = settings.querySelector('.column-color')!;
     userEvent.click(colorToggle);
 
-    const colorPicker = settings.parentElement!.querySelector('.column-color-picker') as HTMLDivElement;
+    const colorPicker = settings.parentElement!.querySelector(
+        '.column-color-picker'
+    ) as HTMLDivElement;
     yield colorPicker;
 
     setup.next();
 }
 
-
 describe('<Column />', () => {
     it('renders a column', () => {
-        const columnData = createStrictColumnJson(randomString(), [createTaskJson(), createTaskJson()]);
-        const wrapper = render(<Column data={columnData} numCols={1} index={0} />);
+        const columnData = createStrictColumnJson(randomString(), [
+            createTaskJson(),
+            createTaskJson(),
+        ]);
+        const wrapper = render(
+            <Column data={columnData} numCols={1} index={0} />
+        );
         const column = wrapper.container.firstElementChild as HTMLDivElement;
 
-        const title = column.querySelector('.column-titlebar input') as HTMLInputElement;
-        const taskList = column.querySelector('.column-tasks') as HTMLDivElement;
+        const title = column.querySelector(
+            '.column-titlebar input'
+        ) as HTMLInputElement;
+        const taskList = column.querySelector(
+            '.column-tasks'
+        ) as HTMLDivElement;
 
         expect(title.value).toEqual(columnData.title);
         expect(taskList.childElementCount).toEqual(columnData.tasks.length);
@@ -82,7 +100,9 @@ describe('<Column />', () => {
             const setup = columnSetup();
             const column = setup.next().value!;
 
-            const title = column.querySelector('.column-titlebar input') as HTMLInputElement;
+            const title = column.querySelector(
+                '.column-titlebar input'
+            ) as HTMLInputElement;
             const editSpy = jest.spyOn(boardState, 'changeColumnTitle');
 
             userEvent.dblClick(title);
@@ -96,7 +116,9 @@ describe('<Column />', () => {
             const setup = columnSetup();
             const column = setup.next().value!;
 
-            const settings = column.querySelector('.column-settings') as HTMLDivElement;
+            const settings = column.querySelector(
+                '.column-settings'
+            ) as HTMLDivElement;
             expect(settings.style.maxHeight).toBe('0');
 
             clickSettings(column);
@@ -109,7 +131,6 @@ describe('<Column />', () => {
     });
 
     describe('settings panel', () => {
-
         it('can delete this column', () => {
             const setup = settingsSetup();
             const settings = setup.next().value!;
@@ -144,8 +165,12 @@ describe('<Column />', () => {
                 const setup = settingsSetup();
                 const settings = setup.next().value!;
 
-                const leftButton = settings.querySelector('.column-left') as HTMLAnchorElement;
-                const rightButton = settings.querySelector('.column-right') as HTMLAnchorElement;
+                const leftButton = settings.querySelector(
+                    '.column-left'
+                ) as HTMLAnchorElement;
+                const rightButton = settings.querySelector(
+                    '.column-right'
+                ) as HTMLAnchorElement;
 
                 expect(leftButton.style.display).toBe('none');
                 expect(rightButton.style.display).toBe('none');
@@ -158,7 +183,9 @@ describe('<Column />', () => {
             const setup = settingsSetup();
             const settings = setup.next().value!;
 
-            const colorPicker = settings.parentElement!.querySelector('.column-color-picker') as HTMLDivElement;
+            const colorPicker = settings.parentElement!.querySelector(
+                '.column-color-picker'
+            ) as HTMLDivElement;
             expect(colorPicker.style.maxHeight).toBe('0');
 
             const colorToggle = settings.querySelector('.column-color')!;
@@ -190,7 +217,9 @@ describe('<Column />', () => {
                 const setup = colorSetup();
                 const picker = setup.next().value!;
 
-                const input = picker.querySelector('.text-picker input') as HTMLInputElement;
+                const input = picker.querySelector(
+                    '.text-picker input'
+                ) as HTMLInputElement;
                 userEvent.clear(input);
                 yield input;
 
@@ -254,7 +283,9 @@ describe('<Column />', () => {
             const column = setup.next().value!;
             rightClick(column);
 
-            const contextMenu = column.querySelector('.szh-menu') as HTMLUListElement;
+            const contextMenu = column.querySelector(
+                '.szh-menu'
+            ) as HTMLUListElement;
             yield contextMenu;
 
             setup.next();
