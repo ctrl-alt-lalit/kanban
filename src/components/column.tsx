@@ -197,7 +197,7 @@ function Column({
                 </a>
                 <a
                     className="column-right"
-                    title="Move Column Left"
+                    title="Move Column Right"
                     {...anchorProps}
                     style={{
                         display: index < numCols - 1 ? 'block' : 'none',
