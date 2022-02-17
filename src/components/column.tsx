@@ -3,12 +3,7 @@ import { Droppable } from 'react-beautiful-dnd';
 import Task from './task';
 import { HexColorInput } from 'react-colorful';
 import boardState from '../util/board-state';
-import {
-    ControlledMenu,
-    MenuDivider,
-    MenuItem,
-    useMenuState,
-} from '@szhsin/react-menu';
+import { ControlledMenu, MenuItem, useMenuState } from '@szhsin/react-menu';
 
 /**
  * React component showing a vertical list of Tasks. Tasks from other Columns can be dropped into this list and vice-versa.
@@ -166,7 +161,10 @@ function Column({
                 <a
                     className="column-settings-toggle"
                     {...anchorProps}
-                    onClick={() => setSettingsOpen(!settingsOpen)}
+                    onClick={() => {
+                        setColorPickerOpen(false);
+                        setSettingsOpen(!settingsOpen);
+                    }}
                 >
                     <span className="codicon codicon-gear" />
                 </a>
