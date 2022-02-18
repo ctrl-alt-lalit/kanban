@@ -4,7 +4,7 @@
   "displayName": "Kanban",
   "description": "Simple kanban board for VS Code. Visually organize your ideas!",
   "icon": "images/icon.png",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "engines": {
     "vscode": "^1.53.2"
   },
