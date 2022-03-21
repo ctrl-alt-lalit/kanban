@@ -328,6 +328,7 @@ body {
 
 .task-handle .codicon[class*='codicon-'] {
     color: var(--vscode-activityBar-foreground);
+    vertical-align: bottom;
 }
 
 .task-delete {

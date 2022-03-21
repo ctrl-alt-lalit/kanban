@@ -6,6 +6,7 @@
 -   Updated dependencies to work with newer versions of Jest and Typescript
 -   Columns' color pallete closes when settings menu closes
 -   Task handles now have a gripper icon to signify that they can be dragged
+-   Touched up task element appearance: handle is thinner and icons are vertically aligned
 
 ## 1.4.0
 
