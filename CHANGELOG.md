@@ -5,6 +5,7 @@
 -   Fixed text on right arrow to "Move Column Right" (thanks @md2perpe!)
 -   Updated dependencies to work with newer versions of Jest and Typescript
 -   Columns' color pallete closes when settings menu closes
+-   Task handles now have a gripper icon to signify that they can be dragged
 
 ## 1.4.0
 

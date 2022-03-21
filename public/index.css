@@ -61,7 +61,7 @@ body {
     padding: 0.4rem;
 }
 
-.board-titlebar .codicon[class*="codicon-"] {
+.board-titlebar .codicon[class*='codicon-'] {
     font-size: 1.5rem !important;
     margin-top: 0.5rem !important;
 }
@@ -107,7 +107,9 @@ body {
     text-align: center;
 }
 
-.board-add-column:hover, .board-add-column:focus, .board-add-column:active {
+.board-add-column:hover,
+.board-add-column:focus,
+.board-add-column:active {
     opacity: 1;
 }
 
@@ -119,7 +121,7 @@ body {
 }
 
 .board-add-column .vertical-line::before {
-    content: "";
+    content: '';
     display: block;
     background: none;
     border-right: 0.08rem solid var(--vscode-editor-foreground);
@@ -127,7 +129,7 @@ body {
 }
 
 .board-add-column .vertical-line::after {
-    content: "";
+    content: '';
     display: block;
     background: none;
     border-left: 0.08rem solid var(--vscode-editor-foreground);
@@ -140,7 +142,6 @@ body {
     padding-bottom: 0.2rem;
     padding-left: 0.1rem; /* codicon is not perfectly centered */
 }
-
 
 /*****************************
   COLUMN
@@ -176,7 +177,8 @@ body {
     transition: color 0.3s;
 }
 
-.column-titlebar a, .column-settings a {
+.column-titlebar a,
+.column-settings a {
     color: var(--vscode-editor-foreground);
     padding-left: 0.2rem;
     padding-right: 0.2rem;
@@ -184,26 +186,34 @@ body {
     cursor: pointer;
 }
 
-.column-titlebar a:hover, .column-titlebar a:focus, .column-titlebar a:active,
-.column-settings a:hover, .column-settings a:focus, .column-settings a:active {
+.column-titlebar a:hover,
+.column-titlebar a:focus,
+.column-titlebar a:active,
+.column-settings a:hover,
+.column-settings a:focus,
+.column-settings a:active {
     color: var(--vscode-editor-background) !important;
 }
 
-.column-titlebar .codicon[class*="codicon-"], .column-settings .codicon[class*="codicon-"] {
+.column-titlebar .codicon[class*='codicon-'],
+.column-settings .codicon[class*='codicon-'] {
     font-size: 1rem !important;
     margin-top: 0.25rem !important;
 }
 
-.column-titlebar .codicon, .column-settings .codicon {
+.column-titlebar .codicon,
+.column-settings .codicon {
     width: 1.25rem;
 }
 
-.column-delete, .column-settings-toggle {
+.column-delete,
+.column-settings-toggle {
     margin-left: auto;
     margin-right: 0.6rem;
 }
 
-.column-color-picker, .column-settings {
+.column-color-picker,
+.column-settings {
     overflow-y: hidden;
     display: inline-flex;
     flex-direction: row;
@@ -271,12 +281,15 @@ body {
     cursor: pointer;
 }
 
-.column-add-task:hover, .column-add-task:focus, .column-add-task:active {
+.column-add-task:hover,
+.column-add-task:focus,
+.column-add-task:active {
     opacity: 1;
 }
 
-.column-add-task::before, .column-add-task::after {
-    content: "";
+.column-add-task::before,
+.column-add-task::after {
+    content: '';
     border-bottom: 0.1rem solid;
     height: calc(50% - 0.1rem);
     flex-grow: 1;
@@ -294,7 +307,6 @@ body {
     overflow-y: scroll;
 }
 
-
 /**************************
   TASK
 **************************/
@@ -302,7 +314,7 @@ body {
 .task {
     margin-top: 0.5rem;
     background-color: var(--vscode-activityBar-background);
-    color: var(--vscode-chart)
+    color: var(--vscode-chart);
 }
 
 .task-handle {
@@ -311,15 +323,22 @@ body {
     width: 100%;
     display: inline-flex;
     flex-direction: row-reverse;
+    justify-content: space-between;
 }
 
-.task-delete  {
+.task-handle .codicon[class*='codicon-'] {
+    color: var(--vscode-activityBar-foreground);
+}
+
+.task-delete {
     transition: background-color 0.3s;
     color: var(--vscode-activityBar-foreground);
     cursor: pointer;
 }
 
-.task-delete:hover, .task-delete:focus, .task-delete:active {
+.task-delete:hover,
+.task-delete:focus,
+.task-delete:active {
     color: var(--vscode-activityBar-foreground);
     background-color: var(--vscode-charts-red);
 }
@@ -387,7 +406,9 @@ body {
     transition: color 0.2s, background-color 0.2s;
 }
 
-.history-titlebar a:hover .codicon, .history-titlebar a:focus .codicon, .history-titlebar a:active .codicon {
+.history-titlebar a:hover .codicon,
+.history-titlebar a:focus .codicon,
+.history-titlebar a:active .codicon {
     background-color: var(--vscode-activityBar-foreground) !important;
     color: var(--vscode-activityBar-background) !important;
 }
@@ -416,7 +437,9 @@ body {
     transition: 0.2s;
 }
 
-.history-item:hover, .history-item:focus, .history-item:active {
+.history-item:hover,
+.history-item:focus,
+.history-item:active {
     color: var(--vscode-editor-background);
     border-color: var(--vscode-editor-background);
     background-color: var(--vscode-editor-foreground);
@@ -436,7 +459,9 @@ body {
     cursor: pointer;
 }
 
-.context-menu-item:hover, .context-menu-item:focus, .context-menu-item:active {
+.context-menu-item:hover,
+.context-menu-item:focus,
+.context-menu-item:active {
     color: var(--vscode-editor-background);
     background-color: var(--vscode-activityBar-foreground);
 }
@@ -447,7 +472,9 @@ body {
     cursor: pointer;
 }
 
-.context-menu-red:hover, .context-menu-red:focus, .context-menu-red:active {
+.context-menu-red:hover,
+.context-menu-red:focus,
+.context-menu-red:active {
     color: var(--vscode-editor-background);
     background-color: var(--vscode-charts-red);
 }
