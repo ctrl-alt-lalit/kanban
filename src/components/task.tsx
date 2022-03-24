@@ -49,6 +49,10 @@ function Task({
                         >
                             <span className="codicon codicon-close" />
                         </a>
+                        <span
+                            className="codicon codicon-gripper"
+                            style={{ opacity: 0.25 }}
+                        />
                     </div>
 
                     {/* Main content. Autosizing textbox or text rendered as markdown */}

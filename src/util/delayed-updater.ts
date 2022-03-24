@@ -6,15 +6,15 @@ class DelayedUpdater {
     public tryUpdate(callback: () => void, timeoutKey: string) {
         if (this.timeoutMap.has(timeoutKey)) {
             const oldTimeout = this.timeoutMap.get(timeoutKey)!;
-            clearTimeout(oldTimeout);
+            window.clearTimeout(oldTimeout);
         }
 
-        const timeout = setTimeout(callback, this.delay);
+        const timeout = window.setTimeout(callback, this.delay);
         this.timeoutMap.set(timeoutKey, timeout);
     }
 
     private delay: number;
-    private timeoutMap: Map<string, NodeJS.Timeout> = new Map();
+    private timeoutMap: Map<string, number> = new Map();
 }
 
 export default DelayedUpdater;
