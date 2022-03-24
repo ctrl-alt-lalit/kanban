@@ -51,7 +51,7 @@ function Task({
                         </a>
                         <span
                             className="codicon codicon-gripper"
-                            style={{ opacity: 0.5 }}
+                            style={{ opacity: 0.25 }}
                         />
                     </div>
 
