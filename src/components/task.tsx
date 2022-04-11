@@ -4,6 +4,16 @@ import ReactMarkdown from 'react-markdown';
 import { Draggable } from 'react-beautiful-dnd';
 import boardState from '../util/board-state';
 
+const mouse = {
+    x: 0,
+    y: 0,
+};
+
+window.addEventListener('mousemove', (event) => {
+    mouse.x = event.clientX;
+    mouse.y = event.clientY;
+});
+
 /**
  * React component showing editable text that is rendered in markdown. This component can be dragged to different Columns.
  *
@@ -58,6 +68,7 @@ function Task({
                     {/* Main content. Autosizing textbox or text rendered as markdown */}
                     <TextAreaAutosize
                         className="task-edit task-section"
+                        id={`${data.id}-edit`}
                         value={data.text}
                         onChange={(event) => {
                             const text = event.target.value;
@@ -68,8 +79,19 @@ function Task({
                     />
                     <div
                         className="task-display task-section"
-                        onClick={() => setEditing(true)}
+                        onClick={() => {
+                            setEditing(true);
+                            setTimeout(() => {
+                                const textArea = document.getElementById(
+                                    `${data.id}-edit`
+                                ) as HTMLTextAreaElement;
+                                textArea.focus();
+                                textArea.selectionStart = 0;
+                                textArea.selectionEnd = textArea.value.length;
+                            }, 0); // Put refocusing at end of event queue so that React's DOM recreation happens first.
+                        }}
                         style={{ display: editing ? 'none' : 'block' }}
+                        id={`${data.id}-display`}
                     >
                         <ReactMarkdown>
                             {data.text || '_enter text or markdown here_'}
