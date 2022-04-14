@@ -8,20 +8,16 @@ let previousFocusedTask = '';
 let anyTaskIsFocused = false;
 
 document.addEventListener('keypress', (event) => {
-    console.log(`ctrl: ${event.ctrlKey}, key: ${event.key}`);
-
     if (!event.ctrlKey || event.key !== 'Enter') {
         return;
     }
 
-    console.log(`tf: ${anyTaskIsFocused}`);
     if (anyTaskIsFocused) {
         const textArea = document.getElementById(`${previousFocusedTask}-edit`);
         if (textArea) {
             textArea.blur();
         }
     } else {
-        console.log(`prev: ${previousFocusedTask}`);
         const taskDisplay = document.getElementById(
             `${previousFocusedTask}-display`
         );

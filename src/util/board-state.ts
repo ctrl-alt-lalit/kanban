@@ -312,15 +312,18 @@ class BoardState {
      * Append's a task to the task list of the column with the given id.
      *
      * @param columnId ID of the column to add a task to
+     * @returns the ID of the newly created task
      */
-    public addTask(columnId: string): void {
+    public addTask(columnId: string): string {
         const columnIdx = this.getColumnIndex(columnId);
         if (columnIdx === -1) {
-            return;
+            return '';
         }
 
-        this.currentKanban.cols[columnIdx].tasks.splice(0, 0, createTaskJson());
+        const newTask = createTaskJson();
+        this.currentKanban.cols[columnIdx].tasks.splice(0, 0, newTask);
         this.endChange(false);
+        return newTask.id;
     }
 
     /**

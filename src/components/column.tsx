@@ -236,7 +236,17 @@ function Column({
                 className="column-add-task"
                 title="Add Task"
                 style={{ color: data.color, borderColor: data.color }}
-                onClick={() => boardState.addTask(data.id)}
+                onClick={() => {
+                    const taskId = boardState.addTask(data.id);
+                    setTimeout(() => {
+                        const taskElem = document.getElementById(
+                            `${taskId}-display`
+                        );
+                        if (taskElem) {
+                            taskElem.click();
+                        }
+                    }, 0);
+                }}
             >
                 <span className="codicon codicon-add" />
             </a>
