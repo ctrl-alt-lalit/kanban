@@ -232,19 +232,20 @@ function Column({
                 </div>
             </div>
 
+            {/* Add Task Button */}
             <a
                 className="column-add-task"
                 title="Add Task"
                 style={{ color: data.color, borderColor: data.color }}
                 onClick={() => {
                     const taskId = boardState.addTask(data.id);
+                    sessionStorage.setItem('taskJustAdded', taskId);
                     setTimeout(() => {
                         const taskElem = document.getElementById(
-                            `${taskId}-display`
+                            `${taskId}-edit`
                         );
-                        if (taskElem) {
-                            taskElem.click();
-                        }
+                        taskElem?.focus();
+                        sessionStorage.removeItem('taskJustAdded');
                     }, 0);
                 }}
             >

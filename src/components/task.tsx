@@ -14,9 +14,7 @@ document.addEventListener('keypress', (event) => {
 
     if (anyTaskIsFocused) {
         const textArea = document.getElementById(`${previousFocusedTask}-edit`);
-        if (textArea) {
-            textArea.blur();
-        }
+        textArea?.blur();
     } else {
         const taskDisplay = document.getElementById(
             `${previousFocusedTask}-display`
@@ -37,9 +35,6 @@ function focusOnTask(taskId: string) {
     textArea.focus();
     textArea.selectionStart = 0;
     textArea.selectionEnd = textArea.value.length;
-    previousFocusedTask = taskId;
-    anyTaskIsFocused = true;
-    console.log(`id: ${taskId}`);
 }
 
 /**
@@ -58,7 +53,9 @@ function Task({
     index: number;
     columnId: string;
 }): JSX.Element {
-    const [editing, setEditing] = React.useState(false);
+    const [editing, setEditing] = React.useState(
+        data.id === sessionStorage.getItem('taskJustAdded')
+    );
 
     return (
         <Draggable key={data.id} draggableId={data.id} index={index}>
@@ -101,6 +98,10 @@ function Task({
                         onChange={(event) => {
                             const text = event.target.value;
                             boardState.changeTaskText(columnId, data.id, text);
+                        }}
+                        onFocus={() => {
+                            previousFocusedTask = data.id;
+                            anyTaskIsFocused = true;
                         }}
                         onBlur={() => {
                             setEditing(false);
