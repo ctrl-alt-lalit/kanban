@@ -131,7 +131,7 @@ describe('Revision History', () => {
         const histScroller = it.next().value!;
         openPanel();
 
-        const fakeRefreshSpy = jest.spyOn(boardState, 'fakeRefresh');
+        const fakeRefreshSpy = jest.spyOn(boardState, 'forceReload');
         const refreshSpy = jest.spyOn(boardState, 'refreshKanban');
 
         boardState.addColumn();

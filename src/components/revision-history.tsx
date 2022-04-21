@@ -66,7 +66,7 @@ class RevisionHistory extends React.Component<
                                     onClick={() => boardState.undoChange(index)}
                                     key={index}
                                     onMouseEnter={() =>
-                                        boardState.fakeRefresh(histObj.data)
+                                        boardState.forceReload(histObj.data)
                                     }
                                     onMouseLeave={() =>
                                         boardState.refreshKanban()

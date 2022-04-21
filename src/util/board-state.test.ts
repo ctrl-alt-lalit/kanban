@@ -7,6 +7,7 @@ import {
     createTaskJson,
 } from '../util/kanban-type-functions';
 import { randomInteger, randomString } from '../test-helpers';
+import VsCodeHandler from './vscode-handler';
 
 jest.useFakeTimers();
 
@@ -391,18 +392,6 @@ describe('Board State', () => {
             kbEqual(boardState.getCurrentState(), originalKanban);
         });
 
-        it('uses a DelayedUpdater', () => {
-            const spy = jest.spyOn(DelayedUpdater.prototype, 'tryUpdate');
-
-            boardState.changeTaskText(
-                originalColumn.id,
-                originalTask.id,
-                randomString()
-            );
-            expect(spy).toHaveBeenCalled();
-            spy.mockClear();
-        });
-
         it('adds to revision history', () => {
             const oldHistoryLength = histLen();
             boardState.changeTaskText(
@@ -432,16 +421,24 @@ describe('Board State', () => {
         });
     });
 
-    //describe('save()', () => {});
+    describe('save()', () => {
+        it('saves the board to VsCode', () => {
+            const spy = jest.spyOn(VsCodeHandler.prototype as any, 'save');
 
-    describe('fakeRefresh()', () => {
+            boardState.save();
+            expect(spy).toHaveBeenCalled();
+            spy.mockClear();
+        });
+    });
+
+    describe('forceReload()', () => {
         it('makes change listeners load a specified kanban board', () => {
             let result = originalKanban;
             const listener = (kanban: StrictKanbanJSON) => (result = kanban);
             boardState.addKanbanChangeListener(listener);
 
             const newData = createStrictKanbanJson();
-            boardState.fakeRefresh(newData);
+            boardState.forceReload(newData);
 
             expect(result).toEqual(newData);
         });

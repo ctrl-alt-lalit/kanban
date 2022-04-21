@@ -513,7 +513,7 @@ class BoardState {
      * Make the kanban-change listeners load a given StrictKanbanJSON
      * @param kanban StrictKanbanJSON to load
      */
-    public fakeRefresh(kanban: StrictKanbanJSON) {
+    public forceReload(kanban: StrictKanbanJSON) {
         this.kanbanChangeListeners.forEach((listener) => listener(kanban));
     }
 
