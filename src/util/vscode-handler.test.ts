@@ -1,5 +1,5 @@
-import { createStrictKanbanJson } from "../../util/kanban-type-functions";
-import VsCodeHandler from "../../util/vscode-handler";
+import { createStrictKanbanJson } from '../util/kanban-type-functions';
+import VsCodeHandler from '../util/vscode-handler';
 
 const VsCodeApiMock = () => {
     let setStateCalls = 0;
@@ -12,7 +12,7 @@ const VsCodeApiMock = () => {
         postMessage: () => ++postMessageCalls,
         numGetState: () => getStateCalls,
         numSetState: () => setStateCalls,
-        numPostMessage: () => postMessageCalls
+        numPostMessage: () => postMessageCalls,
     };
 };
 
@@ -53,7 +53,7 @@ describe('VsCodeHandler', () => {
         event.data = { command: 'load', data: expected };
 
         let result: StrictKanbanJSON | null = null;
-        const listener = (kanban: StrictKanbanJSON) => result = kanban;
+        const listener = (kanban: StrictKanbanJSON) => (result = kanban);
 
         vscode.addLoadListener(listener);
         window.dispatchEvent(event);

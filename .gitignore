@@ -1,7 +1,7 @@
 .vscode/kanban.json
 node_modules/
 build/
-src/coverage/
+coverage
 *.vsix
 yarn.lock
 yarn-error.log

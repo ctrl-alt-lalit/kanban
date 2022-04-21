@@ -1,14 +1,18 @@
-import * as KT from '../../util/kanban-type-functions';
-import { randomBoolean, randomString } from '../helpers';
-
+import * as KT from '../util/kanban-type-functions';
+import { randomBoolean, randomString } from '../test-helpers';
 
 describe('Kanban Type Handler', () => {
     describe('createStrictTaskJson()', () => {
         it('Should return a TaskJson', () => {
-            const manuallyCreated: TaskJSON = { text: 'any string', id: '12345' };
+            const manuallyCreated: TaskJSON = {
+                text: 'any string',
+                id: '12345',
+            };
             const task = KT.createTaskJson();
 
-            expect(Object.keys(task)).toStrictEqual(Object.keys(manuallyCreated));
+            expect(Object.keys(task)).toStrictEqual(
+                Object.keys(manuallyCreated)
+            );
             expect(typeof task.id).toBe(typeof manuallyCreated.id);
             expect(typeof task.text).toBe(typeof manuallyCreated.text);
         });
@@ -26,11 +30,13 @@ describe('Kanban Type Handler', () => {
                 title: 'title',
                 tasks: [],
                 id: '12345',
-                color: '#000000'
+                color: '#000000',
             };
             const column = KT.createStrictColumnJson();
 
-            expect(Object.keys(column)).toStrictEqual(Object.keys(manuallyCreated));
+            expect(Object.keys(column)).toStrictEqual(
+                Object.keys(manuallyCreated)
+            );
             expect(typeof column.title).toBe(typeof manuallyCreated.title);
             expect(typeof column.id).toBe(typeof manuallyCreated.id);
             expect(typeof column.color).toBe(typeof manuallyCreated.color);
@@ -38,7 +44,11 @@ describe('Kanban Type Handler', () => {
 
         it('Should create a StrictColumnJSON with the given parameters', () => {
             const title = randomString();
-            const tasks = [KT.createTaskJson(), KT.createTaskJson(), KT.createTaskJson()];
+            const tasks = [
+                KT.createTaskJson(),
+                KT.createTaskJson(),
+                KT.createTaskJson(),
+            ];
             const color = randomString();
             const column = KT.createStrictColumnJson(title, tasks, color);
 
@@ -58,19 +68,31 @@ describe('Kanban Type Handler', () => {
                 timestamp: 123,
             };
 
-
             const kanban = KT.createStrictKanbanJson();
-            expect(Object.keys(kanban)).toStrictEqual(Object.keys(manuallyCreated));
+            expect(Object.keys(kanban)).toStrictEqual(
+                Object.keys(manuallyCreated)
+            );
             expect(typeof kanban.title).toBe(typeof manuallyCreated.title);
-            expect(typeof kanban.autosave).toBe(typeof manuallyCreated.autosave);
+            expect(typeof kanban.autosave).toBe(
+                typeof manuallyCreated.autosave
+            );
         });
 
         it('Should create a StrictKanbanJSON with the given parameters', () => {
             const title = randomString();
-            const cols = [KT.createStrictColumnJson(), KT.createStrictColumnJson(), KT.createStrictColumnJson()];
+            const cols = [
+                KT.createStrictColumnJson(),
+                KT.createStrictColumnJson(),
+                KT.createStrictColumnJson(),
+            ];
             const autosave = randomBoolean();
             const saveToFile = randomBoolean();
-            const kanban = KT.createStrictKanbanJson(title, cols, autosave, saveToFile);
+            const kanban = KT.createStrictKanbanJson(
+                title,
+                cols,
+                autosave,
+                saveToFile
+            );
 
             expect(kanban.title).toBe(title);
             expect(kanban.cols).toStrictEqual(cols);
@@ -99,18 +121,31 @@ describe('Kanban Type Handler', () => {
         it('converts a ColumnJSON to a StrictColumnJSON', () => {
             const strictKeys = Object.keys(KT.createStrictColumnJson());
 
-            const stringTasks: ColumnJSON = { title: 'tasks_are_strings', tasks: ['a', 'b', 'c'] };
+            const stringTasks: ColumnJSON = {
+                title: 'tasks_are_strings',
+                tasks: ['a', 'b', 'c'],
+            };
             const convertedStringTasks = KT.toStrictColumnJson(stringTasks);
             expect(Object.keys(convertedStringTasks)).toStrictEqual(strictKeys);
-            expect(convertedStringTasks.tasks.map(task => task.text)).toStrictEqual(stringTasks.tasks);
+            expect(
+                convertedStringTasks.tasks.map((task) => task.text)
+            ).toStrictEqual(stringTasks.tasks);
 
-            const ntasks: ColumnJSON = { title: 'extra_ntasks_key', tasks: [], ntasks: 0 };
+            const ntasks: ColumnJSON = {
+                title: 'extra_ntasks_key',
+                tasks: [],
+                ntasks: 0,
+            };
             const convertedNtasks = KT.toStrictColumnJson(ntasks);
             expect(Object.keys(convertedNtasks)).toStrictEqual(strictKeys);
         });
 
         it('does not modify StrictColumnJSONs passed into it', () => {
-            const alreadyStrict = KT.createStrictColumnJson('dont_convert', [], 'green');
+            const alreadyStrict = KT.createStrictColumnJson(
+                'dont_convert',
+                [],
+                'green'
+            );
             const converted = KT.toStrictColumnJson(alreadyStrict);
             expect(converted).toStrictEqual(alreadyStrict);
         });
@@ -120,19 +155,33 @@ describe('Kanban Type Handler', () => {
         const strictKeys = Object.keys(KT.createStrictKanbanJson());
 
         it('converts a KanbanJSON to a StrictKanbanJSON', () => {
-            const onlyColumns: KanbanJSON = { cols: [KT.createStrictColumnJson(), KT.createStrictColumnJson()] };
+            const onlyColumns: KanbanJSON = {
+                cols: [
+                    KT.createStrictColumnJson(),
+                    KT.createStrictColumnJson(),
+                ],
+            };
             const convertedOnlyColumns = KT.toStrictKanbanJson(onlyColumns);
             expect(Object.keys(convertedOnlyColumns)).toStrictEqual(strictKeys);
 
-            const ncols: KanbanJSON = { title: 'extra_ncols_key', cols: [], ncols: 0 };
+            const ncols: KanbanJSON = {
+                title: 'extra_ncols_key',
+                cols: [],
+                ncols: 0,
+            };
             const convertedNcols = KT.toStrictKanbanJson(ncols);
             expect(Object.keys(convertedNcols)).toStrictEqual(strictKeys);
         });
 
         it('can get autosave data from settings', () => {
-            const settings: KanbanJSON = { cols: [], settings: { autosave: randomBoolean() } };
+            const settings: KanbanJSON = {
+                cols: [],
+                settings: { autosave: randomBoolean() },
+            };
             const convertedSettings = KT.toStrictKanbanJson(settings);
-            expect(convertedSettings.autosave).toBe(settings.settings!.autosave);
+            expect(convertedSettings.autosave).toBe(
+                settings.settings!.autosave
+            );
         });
 
         it('does not modify StrictKanbanJSONs passed into it', () => {

@@ -1,12 +1,12 @@
-import Board from '../../components/board';
+import Board from '../components/board';
 import { render } from '@testing-library/react';
-import boardState from '../../util/board-state';
+import boardState from '../util/board-state';
 import {
     createStrictColumnJson,
     createStrictKanbanJson,
-} from '../../util/kanban-type-functions';
+} from '../util/kanban-type-functions';
 import userEvent from '@testing-library/user-event';
-import { randomString } from '../helpers';
+import { randomString } from '../test-helpers';
 
 function* boardSetup() {
     const defaultKanban = createStrictKanbanJson();

@@ -1,16 +1,16 @@
-import RevisionHistory from '../../components/revision-history';
+import RevisionHistory from '../components/revision-history';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import boardState from '../../util/board-state';
+import boardState from '../util/board-state';
 import {
     createStrictColumnJson,
     createStrictKanbanJson,
-} from '../../util/kanban-type-functions';
+} from '../util/kanban-type-functions';
 import clone from 'just-clone';
-import { randomString } from '../helpers';
+import { randomString } from '../test-helpers';
 
-jest.mock('../../util/delayed-updater');
-import DelayedUpdater from '../../util/delayed-updater';
+jest.mock('../util/delayed-updater');
+import DelayedUpdater from '../util/delayed-updater';
 (DelayedUpdater as any).mockImplementation(() => {
     return {
         tryUpdate: (callback: () => void) => {

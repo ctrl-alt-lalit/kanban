@@ -1,13 +1,13 @@
-import Task from '../../components/task';
-import boardState from '../../util/board-state';
+import Task from '../components/task';
+import boardState from '../util/board-state';
 import { fireEvent, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
     createStrictColumnJson,
     createStrictKanbanJson,
     createTaskJson,
-} from '../../util/kanban-type-functions';
-import { randomString, rightClick } from '../helpers';
+} from '../util/kanban-type-functions';
+import { randomString, rightClick } from '../test-helpers';
 
 function* taskSetup() {
     const defaultKanban = createStrictKanbanJson('', [

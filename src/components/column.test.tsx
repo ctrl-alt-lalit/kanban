@@ -1,13 +1,13 @@
-import Column from '../../components/column';
-import boardState from '../../util/board-state';
+import Column from '../components/column';
+import boardState from '../util/board-state';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
     createStrictColumnJson,
     createStrictKanbanJson,
     createTaskJson,
-} from '../../util/kanban-type-functions';
-import { randomString, rightClick } from '../helpers';
+} from '../util/kanban-type-functions';
+import { randomString, rightClick } from '../test-helpers';
 
 jest.mock('react-beautiful-dnd', () => {
     const dragDropElem = ({ children }: { children: Function }) =>
