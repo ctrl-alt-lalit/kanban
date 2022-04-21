@@ -4,38 +4,30 @@ import ReactMarkdown from 'react-markdown';
 import { Draggable } from 'react-beautiful-dnd';
 import boardState from '../util/board-state';
 
-let previousFocusedTask = '';
+let previousFocusedTaskId = '';
 let anyTaskIsFocused = false;
 
-document.addEventListener('keypress', (event) => {
+/**
+ * Listens for the keyboard shortcut 'Ctrl + Enter'. If a task is currently being edited,
+ * then that task stops being edited. Otherwise, the previously edited task will be edited again.
+ */
+window.addEventListener('keypress', (event) => {
     if (!event.ctrlKey || event.key !== 'Enter') {
         return;
     }
 
     if (anyTaskIsFocused) {
-        const textArea = document.getElementById(`${previousFocusedTask}-edit`);
-        textArea?.blur();
+        const taskEditor = document.getElementById(
+            `${previousFocusedTaskId}-edit`
+        );
+        taskEditor?.blur();
     } else {
         const taskDisplay = document.getElementById(
-            `${previousFocusedTask}-display`
+            `${previousFocusedTaskId}-display`
         );
         taskDisplay?.click();
     }
 });
-
-function focusOnTask(taskId: string) {
-    const textArea = document.getElementById(
-        `${taskId}-edit`
-    ) as HTMLTextAreaElement | null;
-
-    if (!textArea) {
-        return;
-    }
-
-    textArea.focus();
-    textArea.selectionStart = 0;
-    textArea.selectionEnd = textArea.value.length;
-}
 
 /**
  * React component showing editable text that is rendered in markdown. This component can be dragged to different Columns.
@@ -48,14 +40,14 @@ function Task({
     data,
     index,
     columnId,
+    defaultToEdit,
 }: {
     data: TaskJSON;
     index: number;
     columnId: string;
+    defaultToEdit: boolean;
 }): JSX.Element {
-    const [editing, setEditing] = React.useState(
-        data.id === sessionStorage.getItem('taskJustAdded')
-    );
+    const [editing, setEditing] = React.useState(defaultToEdit);
 
     return (
         <Draggable key={data.id} draggableId={data.id} index={index}>
@@ -100,7 +92,7 @@ function Task({
                             boardState.changeTaskText(columnId, data.id, text);
                         }}
                         onFocus={() => {
-                            previousFocusedTask = data.id;
+                            previousFocusedTaskId = data.id;
                             anyTaskIsFocused = true;
                         }}
                         onBlur={() => {
@@ -113,7 +105,15 @@ function Task({
                         className="task-display task-section"
                         onClick={() => {
                             setEditing(true);
-                            setTimeout(() => focusOnTask(data.id), 0); // Put refocusing at end of event queue so that React's DOM recreation happens first.
+                            setTimeout(() => {
+                                const textArea = document.getElementById(
+                                    `${data.id}-edit`
+                                ) as HTMLTextAreaElement;
+
+                                textArea.focus();
+                                textArea.selectionStart = 0;
+                                textArea.selectionEnd = textArea.value.length;
+                            }, 0); // Put refocusing at end of event queue so that React's DOM recreation happens first.
                         }}
                         style={{ display: editing ? 'none' : 'block' }}
                         id={`${data.id}-display`}

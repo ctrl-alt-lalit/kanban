@@ -5,6 +5,8 @@ import { HexColorInput } from 'react-colorful';
 import boardState from '../util/board-state';
 import { ControlledMenu, MenuItem, useMenuState } from '@szhsin/react-menu';
 
+let IdOfTaskJustAdded = '';
+
 /**
  * React component showing a vertical list of Tasks. Tasks from other Columns can be dropped into this list and vice-versa.
  *
@@ -239,13 +241,13 @@ function Column({
                 style={{ color: data.color, borderColor: data.color }}
                 onClick={() => {
                     const taskId = boardState.addTask(data.id);
-                    sessionStorage.setItem('taskJustAdded', taskId);
+                    IdOfTaskJustAdded = taskId;
                     setTimeout(() => {
                         const taskElem = document.getElementById(
                             `${taskId}-edit`
                         );
                         taskElem?.focus();
-                        sessionStorage.removeItem('taskJustAdded');
+                        IdOfTaskJustAdded = '';
                     }, 0);
                 }}
             >
@@ -269,6 +271,7 @@ function Column({
                                 index={taskIndex}
                                 key={task.id}
                                 columnId={data.id}
+                                defaultToEdit={IdOfTaskJustAdded === task.id}
                             />
                         ))}
                         {provided.placeholder}
