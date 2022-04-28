@@ -5,6 +5,8 @@
 -   You can use `Ctrl` + `Enter` to unfocus and refocus a Task when editing
 -   When a new Task is added, that Task is automatically focused and editable
 -   History button toggles the history panel instead of just opening it
+-   Reversed history direction in Revision History panel
+    -   This change was made so that if you had a lot of edits and you decided to revert to a previous state, your cursor would still hover over the state you just clicked.
 
 ## 1.5.0
 

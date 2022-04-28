@@ -49,39 +49,33 @@ class RevisionHistory extends React.Component<
                     <h1> Revision History </h1>
                 </div>
                 <div className="history-scroller">
-                    {this.state.history
-                        .map((histObj, index) => {
-                            const prevHist =
-                                index > 0
-                                    ? this.state.history[index - 1]
-                                    : null;
-                            const prevChange = prevHist
-                                ? prevHist.change
-                                : StateChanges.BOARD_LOADED;
-                            const prevDetail = prevHist ? prevHist.details : '';
+                    {this.state.history.map((histObj, index) => {
+                        const prevHist =
+                            index > 0 ? this.state.history[index - 1] : null;
+                        const prevChange = prevHist
+                            ? prevHist.change
+                            : StateChanges.BOARD_LOADED;
+                        const prevDetail = prevHist ? prevHist.details : '';
 
-                            return (
-                                <a
-                                    className="history-item"
-                                    onClick={() => boardState.undoChange(index)}
-                                    key={index}
-                                    onMouseEnter={() =>
-                                        boardState.forceReload(histObj.data)
-                                    }
-                                    onMouseLeave={() =>
-                                        boardState.refreshKanban()
-                                    }
-                                >
-                                    <h3>
-                                        {' '}
-                                        {`${index + 1}.`}{' '}
-                                        {this.stateChangeName(prevChange)}{' '}
-                                    </h3>
-                                    <p> {prevDetail} </p>
-                                </a>
-                            );
-                        })
-                        .reverse()}
+                        return (
+                            <a
+                                className="history-item"
+                                onClick={() => boardState.undoChange(index)}
+                                key={index}
+                                onMouseEnter={() =>
+                                    boardState.forceReload(histObj.data)
+                                }
+                                onMouseLeave={() => boardState.refreshKanban()}
+                            >
+                                <h3>
+                                    {' '}
+                                    {`${index + 1}.`}{' '}
+                                    {this.stateChangeName(prevChange)}{' '}
+                                </h3>
+                                <p> {prevDetail} </p>
+                            </a>
+                        );
+                    })}
                 </div>
             </div>
         );
