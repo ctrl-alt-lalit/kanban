@@ -8,6 +8,7 @@
 -   Reversed history direction in Revision History panel
     -   This change was made so that if you had a lot of edits and you decided to revert to a previous state, your cursor would still hover over the state you just clicked.
 -   Restyled revision history panel
+-   Changed extension icon to a stick note
 
 ## 1.5.0
 
