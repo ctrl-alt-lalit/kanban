@@ -1,16 +1,16 @@
-import RevisionHistory from '../../components/revision-history';
+import RevisionHistory from '../components/revision-history';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import boardState from '../../util/board-state';
+import boardState from '../util/board-state';
 import {
     createStrictColumnJson,
     createStrictKanbanJson,
-} from '../../util/kanban-type-functions';
+} from '../util/kanban-type-functions';
 import clone from 'just-clone';
-import { randomString } from '../helpers';
+import { randomString } from '../test-helpers';
 
-jest.mock('../../util/delayed-updater');
-import DelayedUpdater from '../../util/delayed-updater';
+jest.mock('../util/delayed-updater');
+import DelayedUpdater from '../util/delayed-updater';
 (DelayedUpdater as any).mockImplementation(() => {
     return {
         tryUpdate: (callback: () => void) => {
@@ -32,7 +32,8 @@ function* panelSetup() {
     wrapper.unmount();
 }
 
-const openPanel = () => window.dispatchEvent(new CustomEvent('open-history'));
+const togglePanel = () =>
+    window.dispatchEvent(new CustomEvent('toggle-history'));
 
 describe('Revision History', () => {
     it('can open and close', () => {
@@ -41,7 +42,7 @@ describe('Revision History', () => {
 
         expect(parseInt(histPanel.style.maxWidth)).toBe(0);
 
-        openPanel();
+        togglePanel();
 
         expect(parseInt(histPanel.style.maxWidth)).toBeGreaterThan(0);
 
@@ -79,7 +80,7 @@ describe('Revision History', () => {
             numHistItems - 2
         ] as HTMLAnchorElement;
 
-        window.dispatchEvent(new CustomEvent('open-history'));
+        window.dispatchEvent(new CustomEvent('toggle-history'));
         userEvent.click(secondToLast);
 
         originalData.timestamp = boardState.getCurrentState().timestamp; //timestamp equality is NOT expected
@@ -129,9 +130,9 @@ describe('Revision History', () => {
         const it = panelSetup();
         it.next();
         const histScroller = it.next().value!;
-        openPanel();
+        togglePanel();
 
-        const fakeRefreshSpy = jest.spyOn(boardState, 'fakeRefresh');
+        const fakeRefreshSpy = jest.spyOn(boardState, 'forceReload');
         const refreshSpy = jest.spyOn(boardState, 'refreshKanban');
 
         boardState.addColumn();

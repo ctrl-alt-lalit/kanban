@@ -4,6 +4,31 @@ import ReactMarkdown from 'react-markdown';
 import { Draggable } from 'react-beautiful-dnd';
 import boardState from '../util/board-state';
 
+let previousFocusedTaskId = '';
+let anyTaskIsFocused = false;
+
+/**
+ * Listens for the keyboard shortcut 'Ctrl + Enter'. If a task is currently being edited,
+ * then that task stops being edited. Otherwise, the previously edited task will be edited again.
+ */
+window.addEventListener('keypress', (event) => {
+    if (!event.ctrlKey || event.key !== 'Enter') {
+        return;
+    }
+
+    if (anyTaskIsFocused) {
+        const taskEditor = document.getElementById(
+            `${previousFocusedTaskId}-edit`
+        );
+        taskEditor?.blur();
+    } else {
+        const taskDisplay = document.getElementById(
+            `${previousFocusedTaskId}-display`
+        );
+        taskDisplay?.click();
+    }
+});
+
 /**
  * React component showing editable text that is rendered in markdown. This component can be dragged to different Columns.
  *
@@ -15,12 +40,14 @@ function Task({
     data,
     index,
     columnId,
+    defaultToEdit,
 }: {
     data: TaskJSON;
     index: number;
     columnId: string;
+    defaultToEdit: boolean;
 }): JSX.Element {
-    const [editing, setEditing] = React.useState(false);
+    const [editing, setEditing] = React.useState(defaultToEdit);
 
     return (
         <Draggable key={data.id} draggableId={data.id} index={index}>
@@ -58,18 +85,38 @@ function Task({
                     {/* Main content. Autosizing textbox or text rendered as markdown */}
                     <TextAreaAutosize
                         className="task-edit task-section"
+                        id={`${data.id}-edit`}
                         value={data.text}
                         onChange={(event) => {
                             const text = event.target.value;
                             boardState.changeTaskText(columnId, data.id, text);
                         }}
-                        onBlur={() => setEditing(false)}
+                        onFocus={() => {
+                            previousFocusedTaskId = data.id;
+                            anyTaskIsFocused = true;
+                        }}
+                        onBlur={() => {
+                            setEditing(false);
+                            anyTaskIsFocused = false;
+                        }}
                         style={{ display: editing ? 'block' : 'none' }}
                     />
                     <div
                         className="task-display task-section"
-                        onClick={() => setEditing(true)}
+                        onClick={() => {
+                            setEditing(true);
+                            setTimeout(() => {
+                                const textArea = document.getElementById(
+                                    `${data.id}-edit`
+                                ) as HTMLTextAreaElement;
+
+                                textArea.focus();
+                                textArea.selectionStart = 0;
+                                textArea.selectionEnd = textArea.value.length;
+                            }, 0); // Put refocusing at end of event queue so that React's DOM recreation happens first.
+                        }}
                         style={{ display: editing ? 'none' : 'block' }}
+                        id={`${data.id}-display`}
                     >
                         <ReactMarkdown>
                             {data.text || '_enter text or markdown here_'}

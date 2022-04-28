@@ -23,14 +23,12 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
         boardState.addKanbanChangeListener(this.loadCallback);
         boardState.refreshKanban();
 
-        window.addEventListener('keydown', this.shortcutKeydown);
-        window.addEventListener('keyup', this.shortcutKeyup);
+        window.addEventListener('keypress', this.saveShortcut);
     }
 
     componentWillUnmount() {
         boardState.removeKanbanChangeListener(this.loadCallback);
-        window.removeEventListener('keydown', this.shortcutKeydown);
-        window.removeEventListener('keyup', this.shortcutKeyup);
+        window.removeEventListener('keypress', this.saveShortcut);
     }
 
     render(): JSX.Element {
@@ -108,14 +106,28 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
                         toast('Board Saved', { duration: 1000 });
                         boardState.save();
                     }}
+                    style={{
+                        position: 'relative',
+                        pointerEvents: boardState.changedSinceSave()
+                            ? 'auto'
+                            : 'none',
+                    }}
                 >
                     <span className="codicon codicon-save" />
+                    <span
+                        className="codicon codicon-pass-filled"
+                        style={{
+                            display: boardState.changedSinceSave()
+                                ? 'none'
+                                : '',
+                        }}
+                    />
                 </a>
                 <a
                     className="board-history-open"
-                    title="Show Revision History"
+                    title="Show/Hide Revision History"
                     onClick={() =>
-                        window.dispatchEvent(new CustomEvent('open-history'))
+                        window.dispatchEvent(new CustomEvent('toggle-history'))
                     }
                 >
                     <span className="codicon codicon-discard"></span>
@@ -217,24 +229,15 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
     private loadCallback = (data: StrictKanbanJSON) =>
         this.setState({ data: data });
 
-    /* Listen to keypresses so Ctrl + S saves the board */
-    private shortcutKeys = { s: false, Control: false };
-
-    private shortcutKeydown = (event: KeyboardEvent) => {
-        if (event.key === 'Control' || event.key === 's') {
-            this.shortcutKeys[event.key] = true;
-        }
-
-        if (this.shortcutKeys['Control'] && this.shortcutKeys['s']) {
+    /**
+     * Listens for 'Ctrl + S' to save
+     * @param event a KeyboardEvent
+     */
+    private saveShortcut(event: KeyboardEvent) {
+        if (!(event.ctrlKey && event.key === 's')) {
             boardState.save();
         }
-    };
-
-    private shortcutKeyup = (event: KeyboardEvent) => {
-        if (event.key === 'Control' || event.key === 's') {
-            this.shortcutKeys[event.key] = false;
-        }
-    };
+    }
 }
 
 export default Board;

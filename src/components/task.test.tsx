@@ -1,13 +1,13 @@
-import Task from '../../components/task';
-import boardState from '../../util/board-state';
+import Task from '../components/task';
+import boardState from '../util/board-state';
 import { fireEvent, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
     createStrictColumnJson,
     createStrictKanbanJson,
     createTaskJson,
-} from '../../util/kanban-type-functions';
-import { randomString, rightClick } from '../helpers';
+} from '../util/kanban-type-functions';
+import { randomString, rightClick } from '../test-helpers';
 
 function* taskSetup() {
     const defaultKanban = createStrictKanbanJson('', [
@@ -17,7 +17,12 @@ function* taskSetup() {
     const defaultTask = defaultColumn.tasks[0];
 
     const wrapper = render(
-        <Task data={defaultTask} index={0} columnId={defaultColumn.id} />
+        <Task
+            data={defaultTask}
+            index={0}
+            columnId={defaultColumn.id}
+            defaultToEdit={false}
+        />
     );
     const task = wrapper.container.firstElementChild as HTMLDivElement;
     yield task;
@@ -49,14 +54,45 @@ describe('<Task>', () => {
         const taskData = createTaskJson(randomString());
 
         const wrapper = render(
-            <Task data={taskData} index={0} columnId={''} />
+            <Task
+                data={taskData}
+                index={0}
+                columnId={''}
+                defaultToEdit={false}
+            />
         );
         const task = wrapper.container.firstElementChild as HTMLDivElement;
 
-        const textarea = task.querySelector('textarea')!;
-        expect(textarea.value).toBe(taskData.text);
+        const textArea = task.querySelector('textarea')!;
+        expect(textArea.value).toBe(taskData.text);
+        expect(textArea.style.display).toBe('none');
+
+        const displayArea = task.querySelector(
+            '.task-display'
+        ) as HTMLDivElement;
+        expect(displayArea.style.display).not.toBe('none');
 
         wrapper.unmount();
+    });
+
+    it('Can render a task in edit mode', () => {
+        const wrapper = render(
+            <Task
+                data={createTaskJson()}
+                index={0}
+                columnId={''}
+                defaultToEdit={true}
+            />
+        );
+
+        const task = wrapper.container.firstElementChild as HTMLDivElement;
+        const displayArea = task.querySelector(
+            '.task-display'
+        ) as HTMLDivElement;
+        expect(displayArea.style.display).toBe('none');
+
+        const textArea = task.querySelector('textarea')!;
+        expect(textArea.style.display).not.toBe('none');
     });
 
     it('Is deleted when you click the delete button', () => {
@@ -118,6 +154,8 @@ describe('<Task>', () => {
             setup.next();
         });
     });
+
+    // Userevent not working with keyboard shortcuts for some reason
 
     it('Does not propagate a contextmenu event', () => {
         const setup = taskSetup();

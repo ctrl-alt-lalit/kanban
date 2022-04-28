@@ -5,6 +5,8 @@ import { HexColorInput } from 'react-colorful';
 import boardState from '../util/board-state';
 import { ControlledMenu, MenuItem, useMenuState } from '@szhsin/react-menu';
 
+let IdOfTaskJustAdded = '';
+
 /**
  * React component showing a vertical list of Tasks. Tasks from other Columns can be dropped into this list and vice-versa.
  *
@@ -232,11 +234,22 @@ function Column({
                 </div>
             </div>
 
+            {/* Add Task Button */}
             <a
                 className="column-add-task"
                 title="Add Task"
                 style={{ color: data.color, borderColor: data.color }}
-                onClick={() => boardState.addTask(data.id)}
+                onClick={() => {
+                    const taskId = boardState.addTask(data.id);
+                    IdOfTaskJustAdded = taskId;
+                    setTimeout(() => {
+                        const taskElem = document.getElementById(
+                            `${taskId}-edit`
+                        );
+                        taskElem?.focus();
+                        IdOfTaskJustAdded = '';
+                    }, 0);
+                }}
             >
                 <span className="codicon codicon-add" />
             </a>
@@ -258,6 +271,7 @@ function Column({
                                 index={taskIndex}
                                 key={task.id}
                                 columnId={data.id}
+                                defaultToEdit={IdOfTaskJustAdded === task.id}
                             />
                         ))}
                         {provided.placeholder}

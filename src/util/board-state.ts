@@ -312,15 +312,18 @@ class BoardState {
      * Append's a task to the task list of the column with the given id.
      *
      * @param columnId ID of the column to add a task to
+     * @returns the ID of the newly created task
      */
-    public addTask(columnId: string): void {
+    public addTask(columnId: string): string {
         const columnIdx = this.getColumnIndex(columnId);
         if (columnIdx === -1) {
-            return;
+            return '';
         }
 
-        this.currentKanban.cols[columnIdx].tasks.splice(0, 0, createTaskJson());
+        const newTask = createTaskJson();
+        this.currentKanban.cols[columnIdx].tasks.splice(0, 0, newTask);
         this.endChange(false);
+        return newTask.id;
     }
 
     /**
@@ -496,6 +499,7 @@ class BoardState {
             this.refreshKanban();
         }
 
+        this.hasChangedSinceSave = false;
         this.vscodeHandler.save(this.currentKanban);
     }
 
@@ -510,8 +514,12 @@ class BoardState {
      * Make the kanban-change listeners load a given StrictKanbanJSON
      * @param kanban StrictKanbanJSON to load
      */
-    public fakeRefresh(kanban: StrictKanbanJSON) {
+    public forceReload(kanban: StrictKanbanJSON) {
         this.kanbanChangeListeners.forEach((listener) => listener(kanban));
+    }
+
+    public changedSinceSave() {
+        return this.hasChangedSinceSave;
     }
 
     /*******************
@@ -552,6 +560,7 @@ class BoardState {
                   )
             : () => undefined;
 
+        this.hasChangedSinceSave = true;
         if (updater) {
             updater.tryUpdate(doUpdateHistory, 'history');
             save();
@@ -568,6 +577,8 @@ class BoardState {
     private columnTextUpdater = new DelayedUpdater(1000);
 
     private previousText: Map<string, string> = new Map();
+
+    private hasChangedSinceSave = false;
 }
 
 export default new BoardState();

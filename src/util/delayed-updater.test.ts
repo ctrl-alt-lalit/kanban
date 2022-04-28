@@ -1,5 +1,5 @@
-import DelayedUpdater from "../../util/delayed-updater";
-import { wait } from "../helpers";
+import DelayedUpdater from '../util/delayed-updater';
+import { wait } from '../test-helpers';
 
 describe('DelayedUpdater', () => {
     it('calls a function after a certain amount of time', async () => {
