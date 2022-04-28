@@ -32,7 +32,8 @@ function* panelSetup() {
     wrapper.unmount();
 }
 
-const openPanel = () => window.dispatchEvent(new CustomEvent('open-history'));
+const togglePanel = () =>
+    window.dispatchEvent(new CustomEvent('toggle-history'));
 
 describe('Revision History', () => {
     it('can open and close', () => {
@@ -41,7 +42,7 @@ describe('Revision History', () => {
 
         expect(parseInt(histPanel.style.maxWidth)).toBe(0);
 
-        openPanel();
+        togglePanel();
 
         expect(parseInt(histPanel.style.maxWidth)).toBeGreaterThan(0);
 
@@ -79,7 +80,7 @@ describe('Revision History', () => {
             numHistItems - 2
         ] as HTMLAnchorElement;
 
-        window.dispatchEvent(new CustomEvent('open-history'));
+        window.dispatchEvent(new CustomEvent('toggle-history'));
         userEvent.click(secondToLast);
 
         originalData.timestamp = boardState.getCurrentState().timestamp; //timestamp equality is NOT expected
@@ -129,7 +130,7 @@ describe('Revision History', () => {
         const it = panelSetup();
         it.next();
         const histScroller = it.next().value!;
-        openPanel();
+        togglePanel();
 
         const fakeRefreshSpy = jest.spyOn(boardState, 'forceReload');
         const refreshSpy = jest.spyOn(boardState, 'refreshKanban');

@@ -17,7 +17,7 @@ class RevisionHistory extends React.Component<
             open: false,
         };
 
-        window.addEventListener('open-history', this.openListener);
+        window.addEventListener('toggle-history', this.toggleListener);
     }
 
     componentDidMount() {
@@ -25,7 +25,7 @@ class RevisionHistory extends React.Component<
     }
 
     componentWillUnmount() {
-        window.removeEventListener('open-history', this.openListener);
+        window.removeEventListener('toggle-history', this.toggleListener);
         boardState.removeHistoryUpdateListener(this.historyUpdater);
     }
 
@@ -130,7 +130,7 @@ class RevisionHistory extends React.Component<
     }
 
     /* Callback for when the open event is fired */
-    private openListener = () => this.setState({ open: true });
+    private toggleListener = () => this.setState({ open: !this.state.open });
 }
 
 export default RevisionHistory;

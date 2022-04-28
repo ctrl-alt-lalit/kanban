@@ -111,9 +111,9 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
                 </a>
                 <a
                     className="board-history-open"
-                    title="Show Revision History"
+                    title="Show/Hide Revision History"
                     onClick={() =>
-                        window.dispatchEvent(new CustomEvent('open-history'))
+                        window.dispatchEvent(new CustomEvent('toggle-history'))
                     }
                 >
                     <span className="codicon codicon-discard"></span>
