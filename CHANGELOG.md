@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.0
+
+-   You can use `Ctrl` + `Enter` to unfocus and refocus a Task when editing
+-   When a new Task is added, that Task is automatically focused and editable
+
 ## 1.5.0
 
 -   Fixed text on right arrow to "Move Column Right" (thanks @md2perpe!)
