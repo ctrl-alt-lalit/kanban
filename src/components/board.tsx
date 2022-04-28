@@ -106,8 +106,22 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
                         toast('Board Saved', { duration: 1000 });
                         boardState.save();
                     }}
+                    style={{
+                        position: 'relative',
+                        pointerEvents: boardState.changedSinceSave()
+                            ? 'auto'
+                            : 'none',
+                    }}
                 >
                     <span className="codicon codicon-save" />
+                    <span
+                        className="codicon codicon-pass-filled"
+                        style={{
+                            display: boardState.changedSinceSave()
+                                ? 'none'
+                                : '',
+                        }}
+                    />
                 </a>
                 <a
                     className="board-history-open"

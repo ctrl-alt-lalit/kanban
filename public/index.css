@@ -87,6 +87,13 @@ body {
     font-size: 1rem;
 }
 
+.board-save .codicon.codicon-pass-filled {
+    position: absolute;
+    bottom: -0.1rem;
+    right: -0.3rem;
+    font-size: 1rem !important;
+}
+
 .board-content {
     width: 100%;
     flex-basis: 0;

@@ -60,6 +60,12 @@ describe('<Board />', () => {
             const setup = boardSetup();
             const board = setup.next().value!;
 
+            //make a change so save button is enabled
+            const addButton = board.querySelector(
+                'a.board-add-column'
+            ) as HTMLAnchorElement;
+            userEvent.click(addButton);
+
             const saveButton = board.querySelector('a.board-save')!;
             const spy = jest.spyOn(boardState, 'save');
 

@@ -499,6 +499,7 @@ class BoardState {
             this.refreshKanban();
         }
 
+        this.hasChangedSinceSave = false;
         this.vscodeHandler.save(this.currentKanban);
     }
 
@@ -515,6 +516,10 @@ class BoardState {
      */
     public forceReload(kanban: StrictKanbanJSON) {
         this.kanbanChangeListeners.forEach((listener) => listener(kanban));
+    }
+
+    public changedSinceSave() {
+        return this.hasChangedSinceSave;
     }
 
     /*******************
@@ -555,6 +560,7 @@ class BoardState {
                   )
             : () => undefined;
 
+        this.hasChangedSinceSave = true;
         if (updater) {
             updater.tryUpdate(doUpdateHistory, 'history');
             save();
@@ -571,6 +577,8 @@ class BoardState {
     private columnTextUpdater = new DelayedUpdater(1000);
 
     private previousText: Map<string, string> = new Map();
+
+    private hasChangedSinceSave = false;
 }
 
 export default new BoardState();

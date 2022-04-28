@@ -9,6 +9,7 @@
     -   This change was made so that if you had a lot of edits and you decided to revert to a previous state, your cursor would still hover over the state you just clicked.
 -   Restyled revision history panel
 -   Changed extension icon to a stick note
+-   Save button has a checkmark and is unclickable when board does not need saving
 
 ## 1.5.0
 
