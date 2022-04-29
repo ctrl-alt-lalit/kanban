@@ -102,13 +102,10 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
                 <a
                     className="board-save"
                     title="Save"
-                    onClick={() => {
-                        toast('Board Saved', { duration: 1000 });
-                        boardState.save();
-                    }}
+                    onClick={() => this.saveBoard()}
                     style={{
                         position: 'relative',
-                        pointerEvents: boardState.changedSinceSave()
+                        pointerEvents: boardState.changedSinceSave
                             ? 'auto'
                             : 'none',
                     }}
@@ -117,9 +114,7 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
                     <span
                         className="codicon codicon-pass-filled"
                         style={{
-                            display: boardState.changedSinceSave()
-                                ? 'none'
-                                : '',
+                            display: boardState.changedSinceSave ? 'none' : '',
                         }}
                     />
                 </a>
@@ -229,15 +224,20 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
     private loadCallback = (data: StrictKanbanJSON) =>
         this.setState({ data: data });
 
+    private saveBoard() {
+        toast('Board Saved', { duration: 1000 });
+        boardState.save();
+    }
+
     /**
      * Listens for 'Ctrl + S' to save
      * @param event a KeyboardEvent
      */
-    private saveShortcut(event: KeyboardEvent) {
-        if (!(event.ctrlKey && event.key === 's')) {
-            boardState.save();
+    private saveShortcut = (event: KeyboardEvent) => {
+        if (event.ctrlKey && event.key === 's') {
+            this.saveBoard();
         }
-    }
+    };
 }
 
 export default Board;
