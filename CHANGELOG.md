@@ -1,5 +1,12 @@
 # Changelog
 
+### 1.6.1
+
+-   Bugfixes
+    -   Board saves on `Ctrl` + `S` again
+    -   Coverage directory no longer included in extension
+-   `Ctrl` + `S` shows the "Board Saved" toast
+
 ## 1.6.0
 
 -   You can use `Ctrl` + `Enter` to unfocus and refocus a Task when editing

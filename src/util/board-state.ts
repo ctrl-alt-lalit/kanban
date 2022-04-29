@@ -140,7 +140,7 @@ class BoardState {
     }
 
     /**
-     * Sets the saveToFile field of the current board state to newAutosave
+     * Sets the saveToFile field of the current board state to newSaveToFile
      *
      * @param newSaveToFile desired saveToFile value for current board state
      */
@@ -518,7 +518,7 @@ class BoardState {
         this.kanbanChangeListeners.forEach((listener) => listener(kanban));
     }
 
-    public changedSinceSave() {
+    get changedSinceSave() {
         return this.hasChangedSinceSave;
     }
 
@@ -549,11 +549,11 @@ class BoardState {
         updateHistory: boolean,
         updater: DelayedUpdater | null = null
     ) {
-        const save = this.currentKanban.autosave
-            ? () => this.vscodeHandler.save(this.currentKanban)
+        const maybeSave = this.currentKanban.autosave
+            ? () => this.save()
             : () => undefined;
 
-        const doUpdateHistory = updateHistory
+        const maybeUpdateHistory = updateHistory
             ? () =>
                   this.historyUpdateListeners.forEach((listener) =>
                       listener(this.history[this.history.length - 1])
@@ -561,15 +561,19 @@ class BoardState {
             : () => undefined;
 
         this.hasChangedSinceSave = true;
-        if (updater) {
-            updater.tryUpdate(doUpdateHistory, 'history');
-            save();
-        } else {
-            doUpdateHistory();
-            save();
-        }
 
-        this.refreshKanban();
+        const commitChange = () => {
+            maybeUpdateHistory();
+            maybeSave();
+            this.refreshKanban();
+        };
+
+        if (updater) {
+            updater.tryUpdate(commitChange, 'history');
+            this.refreshKanban(); //show change immediately even if it isn't saved yet
+        } else {
+            commitChange();
+        }
     }
 
     private taskTextUpdater = new DelayedUpdater(3000);
