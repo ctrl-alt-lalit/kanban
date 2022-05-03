@@ -1,5 +1,10 @@
 # Changelog
 
+### 1.6.2
+
+-   Internal Change: Revamped build process. Development-mode build times are now about twice as fast.
+    -   Removed "create-react-app" dependency
+
 ### 1.6.1
 
 -   Bugfixes

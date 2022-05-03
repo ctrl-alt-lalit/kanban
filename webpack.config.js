@@ -1,8 +1,10 @@
+'use strict'
+
 const path = require('path');
 const copy = require("copy-webpack-plugin");
 
 
-const production = (process.env.NODE_ENV === 'production');
+const PROD_BUILD = (process.env.NODE_ENV === 'production');
 
 module.exports = {
   entry: './src/index.tsx',
@@ -30,5 +32,5 @@ module.exports = {
   },
   target: 'webworker',
   stats: 'errors-only',
-  devtool: production ? false : 'cheap-source-map'
+  devtool: PROD_BUILD ? false : 'cheap-source-map'
 };

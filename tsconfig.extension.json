@@ -8,5 +8,5 @@
         "rootDir": "src",
         "strict": true
     },
-    "files": ["src/extension.ts"]
+    "include": ["src/extension"]
 }
