@@ -20,3 +20,5 @@ tsconfig.extension.json
 tsconfig.json
 yarn-error.log
 yarn.lock
+*.vsix
+webpack.config.js

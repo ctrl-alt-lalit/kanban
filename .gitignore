@@ -1,6 +1,6 @@
 .vscode/kanban.json
-node_modules/
-build/
+node_modules
+build
 coverage
 *.vsix
 yarn.lock
