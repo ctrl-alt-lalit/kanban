@@ -3,7 +3,7 @@ import TextAreaAutosize from 'react-textarea-autosize';
 import ReactMarkdown from 'react-markdown';
 import { Draggable } from 'react-beautiful-dnd';
 import boardState from '../util/board-state';
-import { TaskJSON } from '../util/kanban-type-functions';
+import { TaskJson } from '../util/kanban-types';
 
 let previousFocusedTaskId = '';
 let anyTaskIsFocused = false;
@@ -40,7 +40,7 @@ function Task({
     defaultToEdit,
     columnIndex,
 }: {
-    data: TaskJSON;
+    data: TaskJson;
     index: number;
     columnId: string;
     defaultToEdit: boolean;

@@ -5,17 +5,12 @@ export default class Storage {
     constructor(memento: vscode.Memento, workspacePath: string | undefined) {
         this.memento = memento;
         if (workspacePath) {
-            this.saveUri = vscode.Uri.file(
-                path.join(workspacePath, '.vscode', 'kanban.json')
-            );
+            this.saveUri = vscode.Uri.file(path.join(workspacePath, '.vscode', 'kanban.json'));
         }
     }
 
     public async loadKanban<T>(): Promise<T> {
-        const mementoData = this.memento.get<T>(
-            Storage.kanbanKey,
-            null as any
-        ) as any;
+        const mementoData = this.memento.get<T>(Storage.kanbanKey, null as any) as any;
         if (!this.saveUri) {
             return mementoData;
         }
@@ -53,14 +48,10 @@ export default class Storage {
         }
 
         try {
-            const buffer: Uint8Array = Buffer.from(
-                JSON.stringify(kanban, null, 4)
-            );
+            const buffer: Uint8Array = Buffer.from(JSON.stringify(kanban, null, 4));
             vscode.workspace.fs.writeFile(this.saveUri, buffer);
         } catch {
-            console.error(
-                'Could not save to file. Writing to metadata instead.'
-            );
+            console.error('Could not save to file. Writing to metadata instead.');
             this.memento.update(Storage.kanbanKey, kanban);
         }
     }

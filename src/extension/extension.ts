@@ -47,14 +47,9 @@ function createViewButton(
 ) {
     if (alignment !== 'None') {
         const buttonAlignment =
-            alignment === 'Left'
-                ? vscode.StatusBarAlignment.Left
-                : vscode.StatusBarAlignment.Right;
+            alignment === 'Left' ? vscode.StatusBarAlignment.Left : vscode.StatusBarAlignment.Right;
 
-        const viewButton = vscode.window.createStatusBarItem(
-            buttonAlignment,
-            priority
-        );
+        const viewButton = vscode.window.createStatusBarItem(buttonAlignment, priority);
 
         viewButton.command = viewCommand;
         viewButton.text = '$(project) Kanban';

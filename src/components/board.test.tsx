@@ -1,12 +1,12 @@
 import Board from '../components/board';
 import { render } from '@testing-library/react';
 import boardState from '../util/board-state';
-import { createStrictColumnJson, createStrictKanbanJson } from '../util/kanban-type-functions';
+import { createColumnJson, createKanbanJson } from '../util/kanban-types';
 import userEvent from '@testing-library/user-event';
 import { randomString } from '../test-helpers';
 
 function* boardSetup() {
-    const defaultKanban = createStrictKanbanJson();
+    const defaultKanban = createKanbanJson();
     boardState.save(defaultKanban);
 
     const wrapper = render(<Board />);
@@ -18,9 +18,9 @@ function* boardSetup() {
 
 describe('<Board />', () => {
     it('renders a board', () => {
-        const kanbanData = createStrictKanbanJson(randomString(), [
-            createStrictColumnJson(),
-            createStrictColumnJson(),
+        const kanbanData = createKanbanJson(randomString(), [
+            createColumnJson(),
+            createColumnJson(),
         ]);
         boardState.save(kanbanData);
 

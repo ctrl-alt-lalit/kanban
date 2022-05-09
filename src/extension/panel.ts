@@ -19,38 +19,19 @@ export default class Panel {
     private extensionPath: string;
     private disposables: vscode.Disposable[] = [];
 
-    private constructor(
-        context: vscode.ExtensionContext,
-        column: vscode.ViewColumn
-    ) {
+    private constructor(context: vscode.ExtensionContext, column: vscode.ViewColumn) {
         this.extensionPath = context.extensionPath;
-        const workspaceFolders = vscode.workspace.workspaceFolders ?? [
-            undefined,
-        ];
-        this.storage = new Storage(
-            context.workspaceState,
-            workspaceFolders[0]?.uri.fsPath
-        );
-        this.webviewPanel = vscode.window.createWebviewPanel(
-            'kanban',
-            'Kanban',
-            column,
-            {
-                enableScripts: true,
-                localResourceRoots: [vscode.Uri.file(this.extensionPath)],
-                retainContextWhenHidden: true,
-            }
-        );
+        const workspaceFolders = vscode.workspace.workspaceFolders ?? [undefined];
+        this.storage = new Storage(context.workspaceState, workspaceFolders[0]?.uri.fsPath);
+        this.webviewPanel = vscode.window.createWebviewPanel('kanban', 'Kanban', column, {
+            enableScripts: true,
+            localResourceRoots: [vscode.Uri.file(this.extensionPath)],
+            retainContextWhenHidden: true,
+        });
 
         this.webviewPanel.webview.html = this.makeHtml();
-        this.webviewPanel.onDidDispose(
-            () => this.dispose(),
-            null,
-            this.disposables
-        );
-        this.webviewPanel.webview.onDidReceiveMessage((message) =>
-            this.receiveMessage(message)
-        );
+        this.webviewPanel.onDidDispose(() => this.dispose(), null, this.disposables);
+        this.webviewPanel.webview.onDidReceiveMessage((message) => this.receiveMessage(message));
     }
 
     private dispose() {
@@ -117,10 +98,7 @@ export default class Panel {
 			`;
     }
 
-    private async receiveMessage(message: {
-        command: string;
-        data: any;
-    }): Promise<void> {
+    private async receiveMessage(message: { command: string; data: any }): Promise<void> {
         const { command, data } = message;
         if (command === 'save') {
             this.storage.saveKanban(data);

@@ -9,40 +9,40 @@
 
 import cuid from 'cuid';
 
-export type ColumnJSON = {
+export type WeakColumnJson = {
     title: string;
     ntasks?: number;
     id?: string;
-    tasks: string[] | TaskJSON[];
+    tasks: string[] | TaskJson[];
     color?: string;
 };
 
-export type StrictColumnJSON = {
+export type ColumnJson = {
     title: string;
     id: string;
-    tasks: TaskJSON[];
+    tasks: TaskJson[];
     color: string;
 };
 
-export type KanbanJSON = {
+export type WeakKanbanJson = {
     title?: string;
     ncols?: number;
-    cols: ColumnJSON[];
+    cols: WeakColumnJson[];
     settings?: { autosave: boolean };
     autosave?: boolean;
     saveToFile?: boolean;
     timestamp?: number;
 };
 
-export type StrictKanbanJSON = {
+export type KanbanJson = {
     title: string;
-    cols: StrictColumnJSON[];
+    cols: ColumnJson[];
     autosave: boolean;
     saveToFile: boolean;
     timestamp: number;
 };
 
-export type TaskJSON = {
+export type TaskJson = {
     text: string;
     id: string;
 };
@@ -50,10 +50,10 @@ export type TaskJSON = {
 /**
  * If `task` is a string, converts it to a TaskJSON
  *
- * @param {TaskJSON | string} task TaskJSON or string being converted
- * @returns {TaskJSON} `task` or a TaskJSON with its text field equal to `task`
+ * @param {TaskJson | string} task TaskJSON or string being converted
+ * @returns {TaskJson} `task` or a TaskJSON with its text field equal to `task`
  */
-export function toTaskJson(task: TaskJSON | string): TaskJSON {
+export function toTaskJson(task: TaskJson | string): TaskJson {
     if (typeof task === 'string') {
         return { text: task, id: cuid() };
     } else {
@@ -64,10 +64,10 @@ export function toTaskJson(task: TaskJSON | string): TaskJSON {
 /**
  * Converts a ColumnJSON to a StrictColumnJSON
  *
- * @param {ColumnJSON} column ColumnJSON being converted
- * @returns {StrictColumnJSON} StrictColumnJSON with `column`'s fields (when possible) or default values
+ * @param {WeakColumnJson} column ColumnJSON being converted
+ * @returns {ColumnJson} StrictColumnJSON with `column`'s fields (when possible) or default values
  */
-export function toStrictColumnJson(column: ColumnJSON): StrictColumnJSON {
+export function toColumnJson(column: WeakColumnJson): ColumnJson {
     return {
         title: column.title,
         tasks: column.tasks.map((task) => toTaskJson(task)),
@@ -79,10 +79,10 @@ export function toStrictColumnJson(column: ColumnJSON): StrictColumnJSON {
 /**
  * Converts a KanbanJSON to StrictKanbanJSON
  *
- * @param {KanbanJSON} kanban  KanbanJSON being converted
- * @returns {StrictKanbanJSON} StrictKanbanJSON with `kanban`'s fields (when possible) or default values
+ * @param {WeakKanbanJson} kanban  KanbanJSON being converted
+ * @returns {KanbanJson} StrictKanbanJSON with `kanban`'s fields (when possible) or default values
  */
-export function toStrictKanbanJson(kanban: KanbanJSON): StrictKanbanJSON {
+export function toKanbanJson(kanban: WeakKanbanJson): KanbanJson {
     let autosave = false;
     if (kanban.autosave !== undefined) {
         autosave = kanban.autosave;
@@ -92,7 +92,7 @@ export function toStrictKanbanJson(kanban: KanbanJSON): StrictKanbanJSON {
 
     return {
         title: kanban.title ?? 'Kanban',
-        cols: kanban.cols.map((col) => toStrictColumnJson(col)),
+        cols: kanban.cols.map((col) => toColumnJson(col)),
         autosave: autosave,
         saveToFile: kanban.saveToFile ?? false,
         timestamp: kanban.timestamp ?? Date.now(),
@@ -101,9 +101,9 @@ export function toStrictKanbanJson(kanban: KanbanJSON): StrictKanbanJSON {
 
 /**
  * @param {string} text markdown text the task will display
- * @returns {TaskJSON} TaskJSON with the given text or an empty string
+ * @returns {TaskJson} TaskJSON with the given text or an empty string
  */
-export function createTaskJson(text?: string): TaskJSON {
+export function createTaskJson(text?: string): TaskJson {
     return {
         text: text ?? '',
         id: cuid(),
@@ -112,15 +112,11 @@ export function createTaskJson(text?: string): TaskJSON {
 
 /**
  * @param {string} title title of the column
- * @param {TaskJSON[]} tasks Array of TaskJSON's to display in the column
+ * @param {TaskJson[]} tasks Array of TaskJSON's to display in the column
  * @param {string} color hex string for the column's color
- * @returns {StrictColumnJSON} StrictColumnJSON with the given or default parameters
+ * @returns {ColumnJson} StrictColumnJSON with the given or default parameters
  */
-export function createStrictColumnJson(
-    title?: string,
-    tasks?: TaskJSON[],
-    color?: string
-): StrictColumnJSON {
+export function createColumnJson(title?: string, tasks?: TaskJson[], color?: string): ColumnJson {
     return {
         title: title ?? 'New Column',
         tasks: tasks ?? [],
@@ -131,22 +127,22 @@ export function createStrictColumnJson(
 
 /**
  * @param {string} [title='Kanban'] title of the kanban board
- * @param {StrictColumnJSON[]} [columns] columns in the board
+ * @param {ColumnJson[]} [columns] columns in the board
  * @param {boolean} [autosave=false] whether to save on every change
- * @returns {StrictKanbanJSON} StrictKanbanJSON with the given or default paremeters.
+ * @returns {KanbanJson} StrictKanbanJSON with the given or default paremeters.
  */
-export function createStrictKanbanJson(
+export function createKanbanJson(
     title?: string,
-    columns?: StrictColumnJSON[],
+    columns?: ColumnJson[],
     autosave?: boolean,
     saveToFile?: boolean
-): StrictKanbanJSON {
+): KanbanJson {
     if (!columns) {
         columns = [
-            createStrictColumnJson('Bugs', [], '#eb144c'),
-            createStrictColumnJson('To-Do', [createTaskJson()], '#fcb900'),
-            createStrictColumnJson('Doing', [], '#0693e3'),
-            createStrictColumnJson('Done', [], '#00d084'),
+            createColumnJson('Bugs', [], '#eb144c'),
+            createColumnJson('To-Do', [createTaskJson()], '#fcb900'),
+            createColumnJson('Doing', [], '#0693e3'),
+            createColumnJson('Done', [], '#00d084'),
         ];
     }
 

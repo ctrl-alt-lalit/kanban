@@ -2,20 +2,20 @@ import React from 'react';
 import Column from './column';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import toast from 'react-hot-toast';
-import { createStrictKanbanJson, StrictKanbanJSON } from '../util/kanban-type-functions';
+import { createKanbanJson, KanbanJson } from '../util/kanban-types';
 import boardState from '../util/board-state';
 
 /**
  * A kanban board containing multiple Columns and Tasks that can be dragged to each column.
  */
-class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
+class Board extends React.Component<{}, { data: KanbanJson }> {
     /**
      * Creates the Board and loads a StrictKanbanJSON from the Extension Host
      */
     constructor(props: never) {
         super(props);
         this.state = {
-            data: createStrictKanbanJson(),
+            data: createKanbanJson(),
         };
     }
 
@@ -202,7 +202,7 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
         </a>
     );
 
-    private loadCallback = (data: StrictKanbanJSON) => this.setState({ data: data });
+    private loadCallback = (data: KanbanJson) => this.setState({ data: data });
 
     private saveBoard() {
         toast('Board Saved', { duration: 1000 });

@@ -2,17 +2,11 @@ import Task from '../components/task';
 import boardState from '../util/board-state';
 import { fireEvent, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-    createStrictColumnJson,
-    createStrictKanbanJson,
-    createTaskJson,
-} from '../util/kanban-type-functions';
+import { createColumnJson, createKanbanJson, createTaskJson } from '../util/kanban-types';
 import { randomString, rightClick } from '../test-helpers';
 
 function* taskSetup() {
-    const defaultKanban = createStrictKanbanJson('', [
-        createStrictColumnJson('', [createTaskJson()]),
-    ]);
+    const defaultKanban = createKanbanJson('', [createColumnJson('', [createTaskJson()])]);
     const defaultColumn = defaultKanban.cols[0];
     const defaultTask = defaultColumn.tasks[0];
 

@@ -2,7 +2,7 @@ import RevisionHistory from '../components/revision-history';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import boardState from '../util/board-state';
-import { createStrictColumnJson, createStrictKanbanJson } from '../util/kanban-type-functions';
+import { createColumnJson, createKanbanJson } from '../util/kanban-types';
 import clone from 'just-clone';
 import { randomString } from '../test-helpers';
 
@@ -52,10 +52,7 @@ describe('Revision History', () => {
         const it = panelSetup();
         it.next();
 
-        const originalData = createStrictKanbanJson('blah', [
-            createStrictColumnJson(),
-            createStrictColumnJson(),
-        ]);
+        const originalData = createKanbanJson('blah', [createColumnJson(), createColumnJson()]);
 
         boardState.save(clone(originalData));
         boardState.removeColumn(originalData.cols[0].id);
@@ -87,7 +84,7 @@ describe('Revision History', () => {
         const it = panelSetup();
         it.next();
 
-        boardState.save(createStrictKanbanJson());
+        boardState.save(createKanbanJson());
         boardState.addColumn();
 
         boardState.changeBoardTitle(randomString());

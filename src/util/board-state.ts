@@ -1,10 +1,10 @@
 import {
-    createStrictColumnJson,
-    createStrictKanbanJson,
+    createColumnJson,
+    createKanbanJson,
     createTaskJson,
-    StrictKanbanJSON,
-    TaskJSON,
-} from './kanban-type-functions';
+    KanbanJson,
+    TaskJson,
+} from './kanban-types';
 import VsCodeHandler from './vscode-handler';
 import DelayedUpdater from './delayed-updater';
 import clone from 'just-clone';
@@ -39,7 +39,7 @@ export enum StateChanges {
 
 export type HistoryObject = {
     change: StateChanges;
-    data: StrictKanbanJSON;
+    data: KanbanJson;
     details: string;
 };
 
@@ -72,7 +72,7 @@ class BoardState {
      *
      * @param listener callback to be added
      */
-    public addKanbanChangeListener(listener: (kanban: StrictKanbanJSON) => void) {
+    public addKanbanChangeListener(listener: (kanban: KanbanJson) => void) {
         this.kanbanChangeListeners.push(listener);
     }
 
@@ -81,7 +81,7 @@ class BoardState {
      *
      * @param listener callback to be removed
      */
-    public removeKanbanChangeListener(listener: (kanban: StrictKanbanJSON) => void) {
+    public removeKanbanChangeListener(listener: (kanban: KanbanJson) => void) {
         this.kanbanChangeListeners = this.kanbanChangeListeners.filter((l) => l !== listener);
     }
 
@@ -173,7 +173,7 @@ class BoardState {
      */
     public addColumn(): void {
         const columnName = `Column ${this.currentKanban.cols.length + 1}`;
-        const column = createStrictColumnJson(columnName);
+        const column = createColumnJson(columnName);
 
         this.currentKanban.cols.push(column);
         this.endChange(false);
@@ -408,7 +408,7 @@ class BoardState {
      * Save a given StrictKanbanJSON or, if no kanban is provided, the BoardStates' current state.
      * @param kanban StrictKanbanJSON to save
      */
-    public save(kanban: StrictKanbanJSON | null = null) {
+    public save(kanban: KanbanJson | null = null) {
         if (kanban) {
             this.history.push({
                 change: StateChanges.BOARD_LOADED,
@@ -438,7 +438,7 @@ class BoardState {
      * Make the kanban-change listeners load a given StrictKanbanJSON
      * @param kanban StrictKanbanJSON to load
      */
-    public forceReload(kanban: StrictKanbanJSON) {
+    public forceReload(kanban: KanbanJson) {
         this.kanbanChangeListeners.forEach((listener) => listener(kanban));
     }
 
@@ -510,13 +510,13 @@ class BoardState {
      *******************/
 
     private vscodeHandler;
-    private currentKanban = createStrictKanbanJson();
-    private kanbanChangeListeners: Array<(kanban: StrictKanbanJSON) => void> = [];
+    private currentKanban = createKanbanJson();
+    private kanbanChangeListeners: Array<(kanban: KanbanJson) => void> = [];
     private historyUpdateListeners: Array<(historyStep: HistoryObject) => void> = [];
 
     private history: HistoryObject[] = [];
 
-    private loadFromVscode = (kanban: StrictKanbanJSON) => {
+    private loadFromVscode = (kanban: KanbanJson) => {
         this.currentKanban = kanban;
         this.refreshKanban();
     };

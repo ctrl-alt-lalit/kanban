@@ -1,4 +1,4 @@
-import { createStrictKanbanJson, StrictKanbanJSON } from '../util/kanban-type-functions';
+import { createKanbanJson, KanbanJson } from './kanban-types';
 import VsCodeHandler from '../util/vscode-handler';
 
 const VsCodeApiMock = () => {
@@ -21,7 +21,7 @@ describe('VsCodeHandler', () => {
         const api = VsCodeApiMock();
         const vscode = new VsCodeHandler(api);
 
-        vscode.save(createStrictKanbanJson());
+        vscode.save(createKanbanJson());
         expect(api.numPostMessage()).toBe(1);
 
         vscode.load();
@@ -49,11 +49,11 @@ describe('VsCodeHandler', () => {
         const vscode = new VsCodeHandler(VsCodeApiMock());
 
         const event = new CustomEvent('message') as any;
-        const expected = createStrictKanbanJson(Math.random().toString(36));
+        const expected = createKanbanJson(Math.random().toString(36));
         event.data = { command: 'load', data: expected };
 
-        let result: StrictKanbanJSON | null = null;
-        const listener = (kanban: StrictKanbanJSON) => (result = kanban);
+        let result: KanbanJson | null = null;
+        const listener = (kanban: KanbanJson) => (result = kanban);
 
         vscode.addLoadListener(listener);
         window.dispatchEvent(event);

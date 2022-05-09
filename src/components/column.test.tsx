@@ -2,11 +2,7 @@ import Column from '../components/column';
 import boardState from '../util/board-state';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-    createStrictColumnJson,
-    createStrictKanbanJson,
-    createTaskJson,
-} from '../util/kanban-type-functions';
+import { createColumnJson, createKanbanJson, createTaskJson } from '../util/kanban-types';
 import { randomString, rightClick } from '../test-helpers';
 
 jest.mock('react-beautiful-dnd', () => {
@@ -28,7 +24,7 @@ jest.mock('react-beautiful-dnd', () => {
     };
 });
 
-const defaultKanban = createStrictKanbanJson('', [createStrictColumnJson()]);
+const defaultKanban = createKanbanJson('', [createColumnJson()]);
 const defaultColumn = defaultKanban.cols[0];
 
 function* columnSetup(index = 0, numCols = 1) {
@@ -71,10 +67,7 @@ function* colorSetup() {
 
 describe('<Column />', () => {
     it('renders a column', () => {
-        const columnData = createStrictColumnJson(randomString(), [
-            createTaskJson(),
-            createTaskJson(),
-        ]);
+        const columnData = createColumnJson(randomString(), [createTaskJson(), createTaskJson()]);
         const wrapper = render(<Column data={columnData} numCols={1} index={0} />);
         const column = wrapper.container.firstElementChild as HTMLDivElement;
 

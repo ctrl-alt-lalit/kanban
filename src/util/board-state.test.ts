@@ -1,12 +1,7 @@
 import clone from 'just-clone';
 import boardState from '../util/board-state';
 import DelayedUpdater from '../util/delayed-updater';
-import {
-    createStrictColumnJson,
-    createStrictKanbanJson,
-    createTaskJson,
-    StrictKanbanJSON,
-} from '../util/kanban-type-functions';
+import { createColumnJson, createKanbanJson, createTaskJson, KanbanJson } from './kanban-types';
 import { randomInteger, randomString } from '../test-helpers';
 import VsCodeHandler from './vscode-handler';
 
@@ -24,9 +19,9 @@ function kbEqual(actual: any, expected: any) {
 }
 
 describe('Board State', () => {
-    const originalKanban = createStrictKanbanJson('blah', [
-        createStrictColumnJson('col1', [createTaskJson('blah'), createTaskJson()]),
-        createStrictColumnJson(),
+    const originalKanban = createKanbanJson('blah', [
+        createColumnJson('col1', [createTaskJson('blah'), createTaskJson()]),
+        createColumnJson(),
     ]);
     const originalColumn = originalKanban.cols[0];
     const originalTask = originalColumn.tasks[0];
@@ -411,10 +406,10 @@ describe('Board State', () => {
     describe('forceReload()', () => {
         it('makes change listeners load a specified kanban board', () => {
             let result = originalKanban;
-            const listener = (kanban: StrictKanbanJSON) => (result = kanban);
+            const listener = (kanban: KanbanJson) => (result = kanban);
             boardState.addKanbanChangeListener(listener);
 
-            const newData = createStrictKanbanJson();
+            const newData = createKanbanJson();
             boardState.forceReload(newData);
 
             expect(result).toEqual(newData);

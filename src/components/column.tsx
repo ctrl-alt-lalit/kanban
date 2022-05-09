@@ -4,7 +4,7 @@ import Task from './task';
 import { HexColorInput } from 'react-colorful';
 import boardState from '../util/board-state';
 import { ControlledMenu, MenuItem, useMenuState } from '@szhsin/react-menu';
-import { StrictColumnJSON } from '../util/kanban-type-functions';
+import { ColumnJson } from '../util/kanban-types';
 
 let IdOfTaskJustAdded = '';
 
@@ -18,15 +18,7 @@ let IdOfTaskJustAdded = '';
  * A StrictColumnJSON passed in will update the data prop of this Column to the parameter. If this Columns' id (a string)
  * is given, then this Column will be deleted.
  */
-function Column({
-    data,
-    numCols,
-    index,
-}: {
-    data: StrictColumnJSON;
-    numCols: number;
-    index: number;
-}) {
+function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; index: number }) {
     // open and close context menu
     const { toggleMenu, ...menuProps } = useMenuState();
     const [menuAnchorPoint, setMenuAnchorPoint] = React.useState({
