@@ -4,6 +4,8 @@ import toast, { Toaster, useToasterStore } from 'react-hot-toast';
 import Board from './board';
 import RevisionHistory from './revision-history';
 
+import './index.css';
+
 function App(): JSX.Element {
     const { toasts } = useToasterStore();
     const TOAST_LIMIT = 2;

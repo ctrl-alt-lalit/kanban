@@ -51,9 +51,9 @@ export default class Panel {
         const scriptSource = vscode.Uri.file(
             path.join(this.extensionPath, 'build', 'main.js')
         ).with({ scheme: 'vscode-resource' });
-        const stylesheet = vscode.Uri.file(
-            path.join(this.extensionPath, 'build', 'index.css')
-        ).with({ scheme: 'vscode-resource' });
+        const stylesheet = vscode.Uri.file(path.join(this.extensionPath, 'build', 'main.css')).with(
+            { scheme: 'vscode-resource' }
+        );
         const codicons = vscode.Uri.file(
             path.join(
                 this.extensionPath,

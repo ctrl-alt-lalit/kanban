@@ -5,8 +5,9 @@
 -   Internal Changes:
 
     -   Build times are now twice as fast in development mode
-    -   Github Actions caches the node_modules folder
+    -   Github Actions caches the `node_modules` folder
     -   Removed DelayedUpdater class
+    -   CSS files are in `src` directory and are split up
 
 -   Bugfixes:
     -   Task edit no longer shows up in history if it was previously empty

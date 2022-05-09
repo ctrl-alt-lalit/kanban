@@ -2,6 +2,7 @@
 
 const path = require('path');
 const copy = require("copy-webpack-plugin");
+const miniCss = require('mini-css-extract-plugin');
 
 
 const PROD_BUILD = (process.env.NODE_ENV === 'production');
@@ -16,17 +17,14 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '...']
   },
+  plugins: [new miniCss()],
   module: {
     rules: [
       // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
-      { test: /\.tsx?$/, loader: "ts-loader" }
+      { test: /\.tsx?$/, loader: 'ts-loader' },
+      {test: /\.css$/i, use: [miniCss.loader, 'css-loader']}
     ]
   },
-  plugins: [
-    new copy({
-      patterns: [{from: 'public', to: './'}]
-    })
-  ],
   performance: {
     maxAssetSize: 1_000_000 // This is not a webpage, so asset can be 1 big blob  
   },
