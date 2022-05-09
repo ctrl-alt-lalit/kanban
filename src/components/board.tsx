@@ -2,20 +2,21 @@ import React from 'react';
 import Column from './column';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import toast from 'react-hot-toast';
-import { createStrictKanbanJson } from '../util/kanban-type-functions';
+import { createKanbanJson, KanbanJson } from '../util/kanban-types';
 import boardState from '../util/board-state';
 
 /**
  * A kanban board containing multiple Columns and Tasks that can be dragged to each column.
  */
-class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
+class Board extends React.Component<{}, { data: KanbanJson; title: string }> {
     /**
      * Creates the Board and loads a StrictKanbanJSON from the Extension Host
      */
     constructor(props: never) {
         super(props);
         this.state = {
-            data: createStrictKanbanJson(),
+            data: createKanbanJson(),
+            title: 'Kanban',
         };
     }
 
@@ -36,9 +37,7 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
             <div className="board">
                 <this.Titlebar />
                 <div className="board-content">
-                    <DragDropContext
-                        onDragEnd={(result) => this.dragEnd(result)}
-                    >
+                    <DragDropContext onDragEnd={(result) => this.dragEnd(result)}>
                         {this.state.data.cols.map((col, index) => (
                             <Column
                                 data={col}
@@ -93,11 +92,11 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
                 <input
                     className="board-title"
                     maxLength={18}
-                    value={this.state.data.title}
+                    value={this.state.title}
                     onChange={(event) => {
-                        const title = event.target.value;
-                        boardState.changeBoardTitle(title);
+                        this.setState({ title: event.target.value });
                     }}
+                    onBlur={() => boardState.changeBoardTitle(this.state.title)}
                 />
                 <a
                     className="board-save"
@@ -105,9 +104,7 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
                     onClick={() => this.saveBoard()}
                     style={{
                         position: 'relative',
-                        pointerEvents: boardState.changedSinceSave
-                            ? 'auto'
-                            : 'none',
+                        pointerEvents: boardState.changedSinceSave ? 'auto' : 'none',
                     }}
                 >
                     <span className="codicon codicon-save" />
@@ -121,9 +118,7 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
                 <a
                     className="board-history-open"
                     title="Show/Hide Revision History"
-                    onClick={() =>
-                        window.dispatchEvent(new CustomEvent('toggle-history'))
-                    }
+                    onClick={() => window.dispatchEvent(new CustomEvent('toggle-history'))}
                 >
                     <span className="codicon codicon-discard"></span>
                 </a>
@@ -141,27 +136,22 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
                         className="board-autosave"
                         onClick={() => {
                             const autosave = !this.state.data.autosave;
-                            toast(
-                                `Autosave ${autosave ? 'Enabled' : 'Disabled'}`,
-                                { duration: 1000 }
-                            );
+                            toast(`Autosave ${autosave ? 'Enabled' : 'Disabled'}`, {
+                                duration: 1000,
+                            });
                             boardState.changeAutosave(autosave);
                         }}
                     >
                         <span
                             className={[
                                 'codicon',
-                                this.state.data.autosave
-                                    ? 'codicon-sync'
-                                    : 'codicon-sync-ignored',
+                                this.state.data.autosave ? 'codicon-sync' : 'codicon-sync-ignored',
                             ].join(' ')}
                         />
                     </a>
                     <p
                         style={{
-                            textDecoration: this.state.data.autosave
-                                ? 'none'
-                                : 'line-through',
+                            textDecoration: this.state.data.autosave ? 'none' : 'line-through',
                         }}
                     >
                         {' '}
@@ -173,9 +163,7 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
                             const saveToFile = !this.state.data.saveToFile;
                             toast(
                                 `Will save to ${
-                                    saveToFile
-                                        ? '.vscode/kanban.json'
-                                        : 'workspace metadata'
+                                    saveToFile ? '.vscode/kanban.json' : 'workspace metadata'
                                 }.`,
                                 { duration: 2000 }
                             );
@@ -193,9 +181,7 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
                     </a>
                     <p
                         style={{
-                            textDecoration: this.state.data.saveToFile
-                                ? 'none'
-                                : 'line-through',
+                            textDecoration: this.state.data.saveToFile ? 'none' : 'line-through',
                         }}
                     >
                         {' '}
@@ -210,19 +196,16 @@ class Board extends React.Component<{}, { data: StrictKanbanJSON }> {
      * Vertical bar on that adds a column to the board when clicked.
      */
     private AddColumnButton = (): JSX.Element => (
-        <a
-            className="board-add-column"
-            title="Add Column"
-            onClick={() => boardState.addColumn()}
-        >
+        <a className="board-add-column" title="Add Column" onClick={() => boardState.addColumn()}>
             <div className="vertical-line"></div>
             <span className="codicon codicon-add"></span>
             <div className="vertical-line"></div>
         </a>
     );
 
-    private loadCallback = (data: StrictKanbanJSON) =>
-        this.setState({ data: data });
+    private loadCallback = (data: KanbanJson) => {
+        this.setState({ data: data, title: data.title });
+    };
 
     private saveBoard() {
         toast('Board Saved', { duration: 1000 });

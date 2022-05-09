@@ -3,15 +3,10 @@
         "module": "commonjs",
         "target": "es6",
         "outDir": "build",
-        "lib": [
-            "es6",
-            "DOM"
-        ],
-        "sourceMap": true,
+        "lib": ["es6", "DOM"],
+        "sourceMap": false,
         "rootDir": "src",
         "strict": true
     },
-    "files": [
-        "src/extension.ts"
-    ]
+    "include": ["src/extension"]
 }

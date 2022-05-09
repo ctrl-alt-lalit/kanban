@@ -2,17 +2,11 @@ import Task from '../components/task';
 import boardState from '../util/board-state';
 import { fireEvent, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-    createStrictColumnJson,
-    createStrictKanbanJson,
-    createTaskJson,
-} from '../util/kanban-type-functions';
-import { randomString, rightClick } from '../test-helpers';
+import { createColumnJson, createKanbanJson, createTaskJson } from '../util/kanban-types';
+import { randomString, rightClick } from '../util/test-helpers';
 
 function* taskSetup() {
-    const defaultKanban = createStrictKanbanJson('', [
-        createStrictColumnJson('', [createTaskJson()]),
-    ]);
+    const defaultKanban = createKanbanJson('', [createColumnJson('', [createTaskJson()])]);
     const defaultColumn = defaultKanban.cols[0];
     const defaultTask = defaultColumn.tasks[0];
 
@@ -21,6 +15,7 @@ function* taskSetup() {
             data={defaultTask}
             index={0}
             columnId={defaultColumn.id}
+            columnIndex={0}
             defaultToEdit={false}
         />
     );
@@ -54,12 +49,7 @@ describe('<Task>', () => {
         const taskData = createTaskJson(randomString());
 
         const wrapper = render(
-            <Task
-                data={taskData}
-                index={0}
-                columnId={''}
-                defaultToEdit={false}
-            />
+            <Task data={taskData} index={0} columnId={''} columnIndex={0} defaultToEdit={false} />
         );
         const task = wrapper.container.firstElementChild as HTMLDivElement;
 
@@ -67,9 +57,7 @@ describe('<Task>', () => {
         expect(textArea.value).toBe(taskData.text);
         expect(textArea.style.display).toBe('none');
 
-        const displayArea = task.querySelector(
-            '.task-display'
-        ) as HTMLDivElement;
+        const displayArea = task.querySelector('.task-display') as HTMLDivElement;
         expect(displayArea.style.display).not.toBe('none');
 
         wrapper.unmount();
@@ -81,14 +69,13 @@ describe('<Task>', () => {
                 data={createTaskJson()}
                 index={0}
                 columnId={''}
+                columnIndex={0}
                 defaultToEdit={true}
             />
         );
 
         const task = wrapper.container.firstElementChild as HTMLDivElement;
-        const displayArea = task.querySelector(
-            '.task-display'
-        ) as HTMLDivElement;
+        const displayArea = task.querySelector('.task-display') as HTMLDivElement;
         expect(displayArea.style.display).toBe('none');
 
         const textArea = task.querySelector('textarea')!;
@@ -97,7 +84,7 @@ describe('<Task>', () => {
 
     it('Is deleted when you click the delete button', () => {
         const setup = taskSetup();
-        const task = setup.next().value!;
+        const task = setup.next().value as HTMLDivElement;
 
         const deleteButton = task.querySelector('a.task-delete')!;
         const removeTaskSpy = jest.spyOn(boardState, 'removeTask');
@@ -110,9 +97,7 @@ describe('<Task>', () => {
 
     describe('Text Display', () => {
         function* displayClicking(task: HTMLDivElement) {
-            const displaySection = task.querySelector(
-                '.task-display'
-            ) as HTMLDivElement;
+            const displaySection = task.querySelector('.task-display') as HTMLDivElement;
             const textarea = task.querySelector('textarea')!;
 
             userEvent.click(displaySection);
@@ -125,13 +110,14 @@ describe('<Task>', () => {
 
         it('Is editable', () => {
             const setup = taskSetup();
-            const task = setup.next().value!;
+            const task = setup.next().value as HTMLDivElement;
 
             const clicker = displayClicking(task);
-            const textarea = clicker.next().value!;
+            const textarea = clicker.next().value as HTMLTextAreaElement;
 
             const editSpy = jest.spyOn(boardState, 'changeTaskText');
             userEvent.type(textarea, 'blah blah');
+            textarea.blur();
 
             expect(editSpy).toHaveBeenCalled();
             setup.next();
@@ -139,7 +125,7 @@ describe('<Task>', () => {
 
         it('Shows and hides the textarea', () => {
             const setup = taskSetup();
-            const task = setup.next().value!;
+            const task = setup.next().value as HTMLDivElement;
 
             const textarea = task.querySelector('textarea')!;
             expect(textarea.style.display).toBe('none');
@@ -159,12 +145,9 @@ describe('<Task>', () => {
 
     it('Does not propagate a contextmenu event', () => {
         const setup = taskSetup();
-        const task = setup.next().value!;
+        const task = setup.next().value as HTMLDivElement;
 
-        const propagateSpy = jest.spyOn(
-            MouseEvent.prototype,
-            'stopPropagation'
-        );
+        const propagateSpy = jest.spyOn(MouseEvent.prototype, 'stopPropagation');
         rightClick(task);
 
         expect(propagateSpy).toHaveBeenCalled();

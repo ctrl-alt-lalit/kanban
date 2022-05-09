@@ -1,0 +1,55 @@
+body {
+    margin: 0;
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+    background-color: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+    height: 99vh;
+}
+
+#root {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@import 'board.css';
+@import 'column.css';
+@import 'task.css';
+@import 'revision-history.css';
+
+/*****************************
+  CONTEXT MENU
+*****************************/
+
+.context-menu {
+    color: var(--vscode-editor-foreground);
+    background-color: var(--vscode-editor-background);
+}
+
+.context-menu-item {
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.context-menu-item:hover,
+.context-menu-item:focus,
+.context-menu-item:active {
+    color: var(--vscode-editor-background);
+    background-color: var(--vscode-activityBar-foreground);
+}
+
+.context-menu-red {
+    color: var(--vscode-charts-red);
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.context-menu-red:hover,
+.context-menu-red:focus,
+.context-menu-red:active {
+    color: var(--vscode-editor-background);
+    background-color: var(--vscode-charts-red);
+}

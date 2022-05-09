@@ -1,5 +1,20 @@
 # Changelog
 
+### 1.6.2
+
+-   Internal Changes:
+
+    -   Build times are now twice as fast in development mode
+    -   Github Actions caches the `node_modules` folder
+    -   Removed DelayedUpdater class
+    -   CSS files are in `src` directory and are split up
+
+-   Bugfixes:
+    -   Task edit no longer shows up in history if it was previously empty
+    -   Long task text is now shortened in history
+    -   Text editing is _significantly_ less performance intensive
+    -   Save checkmark no longer moves around a bunch when resizing window
+
 ### 1.6.1
 
 -   Bugfixes

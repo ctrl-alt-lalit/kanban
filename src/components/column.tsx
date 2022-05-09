@@ -4,6 +4,7 @@ import Task from './task';
 import { HexColorInput } from 'react-colorful';
 import boardState from '../util/board-state';
 import { ControlledMenu, MenuItem, useMenuState } from '@szhsin/react-menu';
+import { ColumnJson } from '../util/kanban-types';
 
 let IdOfTaskJustAdded = '';
 
@@ -17,21 +18,14 @@ let IdOfTaskJustAdded = '';
  * A StrictColumnJSON passed in will update the data prop of this Column to the parameter. If this Columns' id (a string)
  * is given, then this Column will be deleted.
  */
-function Column({
-    data,
-    numCols,
-    index,
-}: {
-    data: StrictColumnJSON;
-    numCols: number;
-    index: number;
-}) {
+function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; index: number }) {
     // open and close context menu
     const { toggleMenu, ...menuProps } = useMenuState();
     const [menuAnchorPoint, setMenuAnchorPoint] = React.useState({
         x: 0,
         y: 0,
     });
+    const [title, setTitle] = React.useState(data.title);
 
     // hooks to open and close settings and color picker
     const [colorPickerOpen, setColorPickerOpen] = React.useState(false);
@@ -92,20 +86,16 @@ function Column({
         '#f78da7',
         '#9900ef',
     ];
-    const swatches = document.querySelector('body.vscode-dark')
-        ? lightSwatches
-        : darkSwatches;
+    const swatches = document.querySelector('body.vscode-dark') ? lightSwatches : darkSwatches;
     /* End Color Picker */
 
     const anchorProps = {
         // CSS styles so that buttons match Column's color
         style: { color: data.color },
-        onMouseEnter: (
-            event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
-        ) => (event.currentTarget.style.backgroundColor = data.color),
-        onMouseLeave: (
-            event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
-        ) => (event.currentTarget.style.backgroundColor = 'inherit'),
+        onMouseEnter: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) =>
+            (event.currentTarget.style.backgroundColor = data.color),
+        onMouseLeave: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) =>
+            (event.currentTarget.style.backgroundColor = 'inherit'),
     } as const;
 
     return (
@@ -133,32 +123,26 @@ function Column({
                     backgroundColor: 'var(--vscode-editor-background)',
                 }}
             >
-                <MenuItem
-                    className="context-menu-item"
-                    onClick={() => boardState.addTask(data.id)}
-                >
+                <MenuItem className="context-menu-item" onClick={() => boardState.addTask(data.id)}>
                     <span className="codicon codicon-add" /> &nbsp; Add Task
                 </MenuItem>
                 <MenuItem
                     className="context-menu-red"
                     onClick={() => boardState.removeColumn(data.id)}
                 >
-                    <span className="codicon codicon-trash" /> &nbsp; Delete
-                    Column
+                    <span className="codicon codicon-trash" /> &nbsp; Delete Column
                 </MenuItem>
             </ControlledMenu>
 
             {/* Contains the column's title this column's buttons (add task, delete column, show/hide color picker) */}
             <div className="column-titlebar">
                 <input
-                    value={data.title}
+                    value={title}
                     maxLength={12}
                     className="column-title"
                     style={{ color: data.color, outlineColor: data.color }}
-                    onChange={(event) => {
-                        const title = event.target.value;
-                        boardState.changeColumnTitle(data.id, title);
-                    }}
+                    onChange={(event) => setTitle(event.target.value)}
+                    onBlur={() => boardState.changeColumnTitle(data.id, title)}
                 />
                 <a
                     className="column-settings-toggle"
@@ -243,9 +227,7 @@ function Column({
                     const taskId = boardState.addTask(data.id);
                     IdOfTaskJustAdded = taskId;
                     setTimeout(() => {
-                        const taskElem = document.getElementById(
-                            `${taskId}-edit`
-                        );
+                        const taskElem = document.getElementById(`${taskId}-edit`);
                         taskElem?.focus();
                         IdOfTaskJustAdded = '';
                     }, 0);
@@ -271,6 +253,7 @@ function Column({
                                 index={taskIndex}
                                 key={task.id}
                                 columnId={data.id}
+                                columnIndex={index}
                                 defaultToEdit={IdOfTaskJustAdded === task.id}
                             />
                         ))}

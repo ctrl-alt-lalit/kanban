@@ -1,0 +1,71 @@
+/* Imported by index.css, do NOT import manually */
+
+.history {
+    background-color: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    display: flex;
+    overflow-x: hidden;
+    width: 25%;
+}
+
+.history-titlebar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    min-width: 15vw;
+}
+
+.history-titlebar a {
+    cursor: pointer;
+    color: var(--vscode-editor-foreground) !important;
+    font-size: 2.5rem !important;
+    margin-left: -0.5rem;
+    margin-right: 0.5rem;
+}
+
+.history-titlebar a .codicon {
+    margin-top: 0.5rem !important;
+    font-size: 2.5rem !important;
+    transition: color 0.2s
+}
+
+.history-titlebar a:hover .codicon,
+.history-titlebar a:focus .codicon,
+.history-titlebar a:active .codicon {
+    color: var(--vscode-editor-selectionBackground) !important;
+}
+
+.history-scroller {
+    width: 100%;
+    min-width: 15vw;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: scroll;
+    margin-bottom: 2rem;
+    box-shadow: inset 0 1rem 0.5rem var(--vscode-editor-background);
+}
+
+.history-item {
+    background-color: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+    border-left: 0.2rem solid var(--vscode-editor-foreground);
+    width: 90%;
+    margin-top: 0.5rem;
+    padding-left: 0.5rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.history-item:hover,
+.history-item:focus,
+.history-item:active {
+    color: var(--vscode-editor-selectionBackground);
+    border-color: var(--vscode-editor-selectionBackground);
+}

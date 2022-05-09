@@ -1,0 +1,133 @@
+/* Imported by index.css, do NOT import manually */
+
+.board {
+    width: 95%;
+    height: 95%;
+    display: flex;
+    padding: 1rem;
+    flex-direction: column;
+    overflow-y: scroll;
+}
+
+.board-titlebar {
+    width: 100%;
+    flex-grow: 0;
+    display: inline-flex;
+    flex-direction: row;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.board-title {
+    background-color: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+    font-size: 2rem;
+    margin: 0;
+    font-weight: bold;
+    border-width: 0;
+}
+
+.board-title:focus {
+    outline-color: var(--vscode-editor-foreground);
+}
+
+.board-titlebar a {
+    color: var(--vscode-editor-foreground);
+}
+
+.board-titlebar .codicon {
+    transition: color 0.3s;
+    cursor: pointer;
+    transition: color 0.3s, background-color 0.3s;
+    padding: 0.4rem;
+}
+
+.board-titlebar .codicon[class*='codicon-'] {
+    font-size: 1.5rem !important;
+    margin-top: 0.5rem !important;
+}
+
+.board-titlebar .codicon:hover,
+.board-titlebar .codicon:focus,
+.board-titlebar .codicon:active {
+    color: var(--vscode-editor-background);
+    background-color: var(--vscode-editor-foreground);
+}
+
+.board-settings-toggle {
+    margin-right: 3rem;
+}
+
+.board-settings {
+    display: inline-flex;
+}
+
+.board-settings p {
+    margin-left: 0.2rem;
+    margin-right: 0.8rem;
+    font-size: 1rem;
+}
+
+.board-save .codicon.codicon-pass-filled {
+    position: absolute;
+    top: 0.7rem;
+    right: -0.3rem;
+    font-size: 1rem !important;
+    background: radial-gradient(var(--vscode-editor-background) 28%, transparent 28%)
+}
+
+.board-content {
+    width: 100%;
+    flex-basis: 0;
+    flex-grow: 1;
+    display: inline-flex;
+    flex-direction: row;
+    overflow-y: scroll;
+}
+
+.board-add-column {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    opacity: 0.3;
+    cursor: pointer;
+    color: var(--vscode-editor-foreground) !important;
+    transition: opacity 0.2s;
+    text-align: center;
+}
+
+.board-add-column:hover,
+.board-add-column:focus,
+.board-add-column:active {
+    opacity: 1;
+}
+
+.board-add-column .vertical-line {
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.board-add-column .vertical-line::before {
+    content: '';
+    display: block;
+    background: none;
+    border-right: 0.08rem solid var(--vscode-editor-foreground);
+    width: 50%;
+}
+
+.board-add-column .vertical-line::after {
+    content: '';
+    display: block;
+    background: none;
+    border-left: 0.08rem solid var(--vscode-editor-foreground);
+    width: 50%;
+}
+
+.board-add-column .codicon {
+    font-size: 1.5rem !important;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    padding-left: 0.1rem; /* codicon is not perfectly centered */
+}

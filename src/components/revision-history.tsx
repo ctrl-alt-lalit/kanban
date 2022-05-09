@@ -4,10 +4,7 @@ import boardState, { HistoryObject, StateChanges } from '../util/board-state';
 /**
  * React component showing a list of edits the user has made since the board was opened.
  */
-class RevisionHistory extends React.Component<
-    {},
-    { history: HistoryObject[]; open: boolean }
-> {
+class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; open: boolean }> {
     /* Create the component and make it listen for open event */
     constructor(props: never) {
         super(props);
@@ -40,21 +37,15 @@ class RevisionHistory extends React.Component<
         return (
             <div className="history" style={style}>
                 <div className="history-titlebar">
-                    <a
-                        onClick={() => this.setState({ open: false })}
-                        title="Hide Revision History"
-                    >
+                    <a onClick={() => this.setState({ open: false })} title="Hide Revision History">
                         <span className="codicon codicon-chevron-right"></span>
                     </a>
                     <h1> Revision History </h1>
                 </div>
                 <div className="history-scroller">
                     {this.state.history.map((histObj, index) => {
-                        const prevHist =
-                            index > 0 ? this.state.history[index - 1] : null;
-                        const prevChange = prevHist
-                            ? prevHist.change
-                            : StateChanges.BOARD_LOADED;
+                        const prevHist = index > 0 ? this.state.history[index - 1] : null;
+                        const prevChange = prevHist ? prevHist.change : StateChanges.BOARD_LOADED;
                         const prevDetail = prevHist ? prevHist.details : '';
 
                         return (
@@ -62,15 +53,12 @@ class RevisionHistory extends React.Component<
                                 className="history-item"
                                 onClick={() => boardState.undoChange(index)}
                                 key={index}
-                                onMouseEnter={() =>
-                                    boardState.forceReload(histObj.data)
-                                }
+                                onMouseEnter={() => boardState.forceReload(histObj.data)}
                                 onMouseLeave={() => boardState.refreshKanban()}
                             >
                                 <h3>
                                     {' '}
-                                    {`${index + 1}.`}{' '}
-                                    {this.stateChangeName(prevChange)}{' '}
+                                    {`${index + 1}.`} {this.stateChangeName(prevChange)}{' '}
                                 </h3>
                                 <p> {prevDetail} </p>
                             </a>

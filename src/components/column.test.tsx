@@ -2,12 +2,8 @@ import Column from '../components/column';
 import boardState from '../util/board-state';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-    createStrictColumnJson,
-    createStrictKanbanJson,
-    createTaskJson,
-} from '../util/kanban-type-functions';
-import { randomString, rightClick } from '../test-helpers';
+import { createColumnJson, createKanbanJson, createTaskJson } from '../util/kanban-types';
+import { randomString, rightClick } from '../util/test-helpers';
 
 jest.mock('react-beautiful-dnd', () => {
     const dragDropElem = ({ children }: { children: Function }) =>
@@ -28,13 +24,11 @@ jest.mock('react-beautiful-dnd', () => {
     };
 });
 
-const defaultKanban = createStrictKanbanJson('', [createStrictColumnJson()]);
+const defaultKanban = createKanbanJson('', [createColumnJson()]);
 const defaultColumn = defaultKanban.cols[0];
 
 function* columnSetup(index = 0, numCols = 1) {
-    const wrapper = render(
-        <Column data={defaultColumn} numCols={numCols} index={index} />
-    );
+    const wrapper = render(<Column data={defaultColumn} numCols={numCols} index={index} />);
     const column = wrapper.container.firstElementChild as HTMLDivElement;
     yield column;
 
@@ -48,7 +42,7 @@ function clickSettings(column: HTMLDivElement) {
 
 function* settingsSetup(index = 0, numCols = 0) {
     const setup = columnSetup(index, numCols);
-    const column = setup.next().value!;
+    const column = setup.next().value as HTMLDivElement;
     clickSettings(column);
     const settings = column.querySelector('.column-settings') as HTMLDivElement;
     yield settings;
@@ -58,7 +52,7 @@ function* settingsSetup(index = 0, numCols = 0) {
 
 function* colorSetup() {
     const setup = settingsSetup();
-    const settings = setup.next().value!;
+    const settings = setup.next().value as HTMLDivElement;
 
     const colorToggle = settings.querySelector('.column-color')!;
     userEvent.click(colorToggle);
@@ -73,21 +67,12 @@ function* colorSetup() {
 
 describe('<Column />', () => {
     it('renders a column', () => {
-        const columnData = createStrictColumnJson(randomString(), [
-            createTaskJson(),
-            createTaskJson(),
-        ]);
-        const wrapper = render(
-            <Column data={columnData} numCols={1} index={0} />
-        );
+        const columnData = createColumnJson(randomString(), [createTaskJson(), createTaskJson()]);
+        const wrapper = render(<Column data={columnData} numCols={1} index={0} />);
         const column = wrapper.container.firstElementChild as HTMLDivElement;
 
-        const title = column.querySelector(
-            '.column-titlebar input'
-        ) as HTMLInputElement;
-        const taskList = column.querySelector(
-            '.column-tasks'
-        ) as HTMLDivElement;
+        const title = column.querySelector('.column-titlebar input') as HTMLInputElement;
+        const taskList = column.querySelector('.column-tasks') as HTMLDivElement;
 
         expect(title.value).toEqual(columnData.title);
         expect(taskList.childElementCount).toEqual(columnData.tasks.length);
@@ -98,15 +83,14 @@ describe('<Column />', () => {
     describe('titlebar', () => {
         it('has an editable title', () => {
             const setup = columnSetup();
-            const column = setup.next().value!;
+            const column = setup.next().value as HTMLDivElement;
 
-            const title = column.querySelector(
-                '.column-titlebar input'
-            ) as HTMLInputElement;
+            const title = column.querySelector('.column-titlebar input') as HTMLInputElement;
             const editSpy = jest.spyOn(boardState, 'changeColumnTitle');
 
             userEvent.dblClick(title);
             userEvent.type(title, 'blah');
+            title.blur();
 
             expect(editSpy).toHaveBeenCalled();
             setup.next();
@@ -114,11 +98,9 @@ describe('<Column />', () => {
 
         it('can open and close the settings panel', () => {
             const setup = columnSetup();
-            const column = setup.next().value!;
+            const column = setup.next().value as HTMLDivElement;
 
-            const settings = column.querySelector(
-                '.column-settings'
-            ) as HTMLDivElement;
+            const settings = column.querySelector('.column-settings') as HTMLDivElement;
             expect(settings.style.maxHeight).toBe('0');
 
             clickSettings(column);
@@ -133,7 +115,7 @@ describe('<Column />', () => {
     describe('settings panel', () => {
         it('can delete this column', () => {
             const setup = settingsSetup();
-            const settings = setup.next().value!;
+            const settings = setup.next().value as HTMLDivElement;
 
             const deleteButton = settings.querySelector('.column-delete')!;
             const deleteSpy = jest.spyOn(boardState, 'removeColumn');
@@ -147,7 +129,7 @@ describe('<Column />', () => {
         describe('move-column buttons', () => {
             it('can move a column left and right', () => {
                 const setup = settingsSetup(1, 3);
-                const settings = setup.next().value!;
+                const settings = setup.next().value as HTMLDivElement;
 
                 const moveSpy = jest.spyOn(boardState, 'moveColumn');
 
@@ -163,14 +145,10 @@ describe('<Column />', () => {
 
             it('does not show up if a column has no left/right neighbors', () => {
                 const setup = settingsSetup();
-                const settings = setup.next().value!;
+                const settings = setup.next().value as HTMLDivElement;
 
-                const leftButton = settings.querySelector(
-                    '.column-left'
-                ) as HTMLAnchorElement;
-                const rightButton = settings.querySelector(
-                    '.column-right'
-                ) as HTMLAnchorElement;
+                const leftButton = settings.querySelector('.column-left') as HTMLAnchorElement;
+                const rightButton = settings.querySelector('.column-right') as HTMLAnchorElement;
 
                 expect(leftButton.style.display).toBe('none');
                 expect(rightButton.style.display).toBe('none');
@@ -181,7 +159,7 @@ describe('<Column />', () => {
 
         it('can open and close the color picker', () => {
             const setup = settingsSetup();
-            const settings = setup.next().value!;
+            const settings = setup.next().value as HTMLDivElement;
 
             const colorPicker = settings.parentElement!.querySelector(
                 '.column-color-picker'
@@ -201,7 +179,7 @@ describe('<Column />', () => {
     describe('Color picker', () => {
         it("can change a column's color with clickable swatches", () => {
             const setup = colorSetup();
-            const picker = setup.next().value!;
+            const picker = setup.next().value as HTMLDivElement;
 
             const swatch = picker.querySelector('button')!;
             const changeSpy = jest.spyOn(boardState, 'changeColumnColor');
@@ -215,11 +193,9 @@ describe('<Column />', () => {
         describe('text input', () => {
             function* inputSetup() {
                 const setup = colorSetup();
-                const picker = setup.next().value!;
+                const picker = setup.next().value as HTMLDivElement;
 
-                const input = picker.querySelector(
-                    '.text-picker input'
-                ) as HTMLInputElement;
+                const input = picker.querySelector('.text-picker input') as HTMLInputElement;
                 userEvent.clear(input);
                 yield input;
 
@@ -228,7 +204,7 @@ describe('<Column />', () => {
 
             it("can change a column's color", () => {
                 const setup = inputSetup();
-                const input = setup.next().value!;
+                const input = setup.next().value as HTMLInputElement;
 
                 const changeSpy = jest.spyOn(boardState, 'changeColumnColor');
                 changeSpy.mockClear();
@@ -240,7 +216,7 @@ describe('<Column />', () => {
 
             it("does not change color if there's less than 6 characters", () => {
                 const setup = inputSetup();
-                const input = setup.next().value!;
+                const input = setup.next().value as HTMLInputElement;
 
                 const changeSpy = jest.spyOn(boardState, 'changeColumnColor');
                 changeSpy.mockClear();
@@ -254,7 +230,7 @@ describe('<Column />', () => {
 
     it('can add a task', () => {
         const setup = columnSetup();
-        const column = setup.next().value!;
+        const column = setup.next().value as HTMLDivElement;
 
         const addTaskButton = column.querySelector('a.column-add-task')!;
         const addSpy = jest.spyOn(boardState, 'addTask');
@@ -268,7 +244,7 @@ describe('<Column />', () => {
 
     it('can open a custom context menu', () => {
         const setup = columnSetup();
-        const column = setup.next().value!;
+        const column = setup.next().value as HTMLDivElement;
 
         const spy = jest.spyOn(MouseEvent.prototype, 'preventDefault');
         rightClick(column);
@@ -280,12 +256,10 @@ describe('<Column />', () => {
     describe('context menu', () => {
         function* contextSetup() {
             const setup = columnSetup();
-            const column = setup.next().value!;
+            const column = setup.next().value as HTMLDivElement;
             rightClick(column);
 
-            const contextMenu = column.querySelector(
-                '.szh-menu'
-            ) as HTMLUListElement;
+            const contextMenu = column.querySelector('.szh-menu') as HTMLUListElement;
             yield contextMenu;
 
             setup.next();
@@ -293,7 +267,7 @@ describe('<Column />', () => {
 
         it('can add a task', () => {
             const setup = contextSetup();
-            const menu = setup.next().value!;
+            const menu = setup.next().value as HTMLUListElement;
 
             const addButton = menu.firstElementChild!;
             const addSpy = jest.spyOn(boardState, 'addTask');
@@ -306,7 +280,7 @@ describe('<Column />', () => {
 
         it('can delete a column', () => {
             const setup = contextSetup();
-            const menu = setup.next().value!;
+            const menu = setup.next().value as HTMLUListElement;
 
             const deleteButton = menu.children[1]!;
             const deleteSpy = jest.spyOn(boardState, 'removeColumn');

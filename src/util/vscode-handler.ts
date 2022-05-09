@@ -1,6 +1,8 @@
-import { createStrictKanbanJson, toStrictKanbanJson } from './kanban-type-functions';
+import { createKanbanJson, WeakKanbanJson, KanbanJson, toKanbanJson } from './kanban-types';
 
-
+export interface VsCodeApi {
+    postMessage: (message: any) => void;
+}
 
 /**
  * Simpler interface for interacting the VSCode's Extension Host.
@@ -15,9 +17,9 @@ class VsCodeHandler {
 
     /**
      * Tells the Extension Host to save `data`.
-     * @param {StrictKanbanJSON} kanban Kanban Board state to be saved
+     * @param {KanbanJson} kanban Kanban Board state to be saved
      */
-    save(kanban: StrictKanbanJSON) {
+    save(kanban: KanbanJson) {
         kanban.timestamp = Date.now();
         this.vscode.postMessage({ command: 'save', data: kanban });
     }
@@ -25,21 +27,21 @@ class VsCodeHandler {
     /**
      * Makes it so `callback` will be run immediately after
      * receiving a 'load' command from the Extension Host.
-     * 
-     * @param {(data: StrictKanbanJSON) => void} callback function to run after loading data
+     *
+     * @param {(data: KanbanJson) => void} callback function to run after loading data
      */
-    addLoadListener(callback: (kanban: StrictKanbanJSON) => void) {
+    addLoadListener(callback: (kanban: KanbanJson) => void) {
         this.loadCallbacks.push(callback);
     }
 
     /**
      * If 'addLoadListener(`callback`)' was called,
      * removes `callback` from the list of load callbacks.
-     * 
-     * @param {(data: StrictKanbanJSON) => void} callback function to remove
+     *
+     * @param {(data: KanbanJson) => void} callback function to remove
      */
-    removeLoadListener(callback: (kanban: StrictKanbanJSON) => void) {
-        this.loadCallbacks = this.loadCallbacks.filter(cb => cb !== callback);
+    removeLoadListener(callback: (kanban: KanbanJson) => void) {
+        this.loadCallbacks = this.loadCallbacks.filter((cb) => cb !== callback);
     }
 
     /**
@@ -49,13 +51,14 @@ class VsCodeHandler {
     constructor(vscode: VsCodeApi) {
         this.vscode = vscode;
 
-        window.addEventListener('message', event => {
-            let { command, data } = event.data as { command: string, data: any };
+        // VSCode's postMessage API has no way to set target window identity, so no way to verify
+        window.addEventListener('message', (event) => {
+            let { command, data } = event.data as { command: string; data: any };
 
             if (command === 'load') {
-                data ??= createStrictKanbanJson();
-                const kanban = toStrictKanbanJson(data as KanbanJSON);
-                this.loadCallbacks.forEach(cb => cb(kanban));
+                data ??= createKanbanJson();
+                const kanban = toKanbanJson(data as WeakKanbanJson);
+                this.loadCallbacks.forEach((cb) => cb(kanban));
             }
         });
     }
@@ -69,7 +72,7 @@ class VsCodeHandler {
      * List of callbacks to run after receiving
      * the 'load' message from the Extension Host.
      */
-    private loadCallbacks: Array<(kanban: StrictKanbanJSON) => void> = [];
+    private loadCallbacks: Array<(kanban: KanbanJson) => void> = [];
 }
 
 export default VsCodeHandler;
