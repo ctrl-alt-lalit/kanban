@@ -51,6 +51,7 @@ class VsCodeHandler {
     constructor(vscode: VsCodeApi) {
         this.vscode = vscode;
 
+        // VSCode's postMessage API has no way to set target window identity, so no way to verify
         window.addEventListener('message', (event) => {
             let { command, data } = event.data as { command: string; data: any };
 

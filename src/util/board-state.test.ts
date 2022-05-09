@@ -1,7 +1,7 @@
 import clone from 'just-clone';
 import boardState from '../util/board-state';
 import { createColumnJson, createKanbanJson, createTaskJson, KanbanJson } from './kanban-types';
-import { randomInteger, randomString } from '../test-helpers';
+import { randomInteger, randomString } from './test-helpers';
 import VsCodeHandler from './vscode-handler';
 
 jest.useFakeTimers();

@@ -1,5 +1,5 @@
 import * as KT from './kanban-types';
-import { randomBoolean, randomString } from '../test-helpers';
+import { randomBoolean, randomString } from './test-helpers';
 
 describe('Kanban Type Handler', () => {
     describe('createStrictTaskJson()', () => {

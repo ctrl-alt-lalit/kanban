@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import boardState from '../util/board-state';
 import { createColumnJson, createKanbanJson } from '../util/kanban-types';
 import userEvent from '@testing-library/user-event';
-import { randomString } from '../test-helpers';
+import { randomString } from '../util/test-helpers';
 
 function* boardSetup() {
     const defaultKanban = createKanbanJson();

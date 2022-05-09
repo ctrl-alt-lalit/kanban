@@ -7,7 +7,7 @@ const copy = require("copy-webpack-plugin");
 const PROD_BUILD = (process.env.NODE_ENV === 'production');
 
 module.exports = {
-  entry: './src/index.tsx',
+  entry: './src/components/index.tsx',
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'main.js',

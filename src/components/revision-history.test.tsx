@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import boardState from '../util/board-state';
 import { createColumnJson, createKanbanJson } from '../util/kanban-types';
 import clone from 'just-clone';
-import { randomString } from '../test-helpers';
+import { randomString } from '../util/test-helpers';
 
 function* panelSetup() {
     const wrapper = render(<RevisionHistory />);

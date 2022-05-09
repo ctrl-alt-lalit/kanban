@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import toast, { Toaster, useToasterStore } from 'react-hot-toast';
-import Board from './components/board';
-import RevisionHistory from './components/revision-history';
+import Board from './board';
+import RevisionHistory from './revision-history';
 
 function App(): JSX.Element {
     const { toasts } = useToasterStore();
