@@ -3,8 +3,13 @@
 ### 1.6.2
 
 -   Internal Changes:
+
     -   Build times are now twice as fast in development mode
     -   Github Actions caches the node_modules folder
+
+-   Bugfixes:
+    -   Task edit no longer shows up in history if it was previously empty
+    -   Long task text is now shortened in history
 
 ### 1.6.1
 

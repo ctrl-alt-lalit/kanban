@@ -445,11 +445,27 @@ class BoardState {
             const copy = clone(this.currentKanban);
             copy.cols[columnIdx].tasks[taskIdx].text = oldText;
 
-            this.history.push({
-                change: StateChanges.TASK_TEXT,
-                data: copy,
-                details: `"${oldText}" changed to "${newText}"`,
-            });
+            let oldTextDisplay = oldText;
+            if (oldText.length > 20) {
+                oldTextDisplay = `${oldText.slice(0, 9)}...${oldText.slice(
+                    -9
+                )}`;
+            }
+
+            let newTextDisplay = newText;
+            if (newText.length > 20) {
+                newTextDisplay = `${newText.slice(0, 9)}...${newText.slice(
+                    -9
+                )}`;
+            }
+
+            if (oldText !== '') {
+                this.history.push({
+                    change: StateChanges.TASK_TEXT,
+                    data: copy,
+                    details: `"${oldTextDisplay}" changed to "${newTextDisplay}"`,
+                });
+            }
 
             this.previousText.delete(taskId);
         }, 'history-push');
