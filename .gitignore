@@ -3,5 +3,4 @@ node_modules
 build
 coverage
 *.vsix
-yarn.lock
 yarn-error.log
