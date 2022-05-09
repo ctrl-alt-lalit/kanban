@@ -3,6 +3,7 @@ import TextAreaAutosize from 'react-textarea-autosize';
 import ReactMarkdown from 'react-markdown';
 import { Draggable } from 'react-beautiful-dnd';
 import boardState from '../util/board-state';
+import { TaskJSON } from '../util/kanban-type-functions';
 
 let previousFocusedTaskId = '';
 let anyTaskIsFocused = false;
@@ -17,14 +18,10 @@ window.addEventListener('keypress', (event) => {
     }
 
     if (anyTaskIsFocused) {
-        const taskEditor = document.getElementById(
-            `${previousFocusedTaskId}-edit`
-        );
+        const taskEditor = document.getElementById(`${previousFocusedTaskId}-edit`);
         taskEditor?.blur();
     } else {
-        const taskDisplay = document.getElementById(
-            `${previousFocusedTaskId}-display`
-        );
+        const taskDisplay = document.getElementById(`${previousFocusedTaskId}-display`);
         taskDisplay?.click();
     }
 });
@@ -41,11 +38,13 @@ function Task({
     index,
     columnId,
     defaultToEdit,
+    columnIndex,
 }: {
     data: TaskJSON;
     index: number;
     columnId: string;
     defaultToEdit: boolean;
+    columnIndex: number;
 }): JSX.Element {
     const [editing, setEditing] = React.useState(defaultToEdit);
 
@@ -56,9 +55,7 @@ function Task({
                 <div
                     ref={provided.innerRef}
                     {...provided.draggableProps}
-                    className={['task', snapshot.isDragging ? 'drag' : ''].join(
-                        ' '
-                    )}
+                    className={['task', snapshot.isDragging ? 'drag' : ''].join(' ')}
                     onContextMenu={(event) => event.stopPropagation()}
                 >
                     {/* 'Handle' user must click on to move the whole Task (react-beautiful-dnd) */}
@@ -70,16 +67,11 @@ function Task({
                         <a
                             className="task-delete"
                             title="Delete Task"
-                            onClick={() =>
-                                boardState.removeTask(columnId, data.id)
-                            }
+                            onClick={() => boardState.removeTask(columnId, data.id)}
                         >
                             <span className="codicon codicon-close" />
                         </a>
-                        <span
-                            className="codicon codicon-gripper"
-                            style={{ opacity: 0.25 }}
-                        />
+                        <span className="codicon codicon-gripper" style={{ opacity: 0.25 }} />
                     </div>
 
                     {/* Main content. Autosizing textbox or text rendered as markdown */}
@@ -88,16 +80,23 @@ function Task({
                         id={`${data.id}-edit`}
                         value={data.text}
                         onChange={(event) => {
-                            const text = event.target.value;
-                            boardState.changeTaskText(columnId, data.id, text);
+                            boardState.changeTaskText(
+                                columnId,
+                                columnIndex,
+                                data.id,
+                                index,
+                                event.target.value
+                            );
                         }}
                         onFocus={() => {
                             previousFocusedTaskId = data.id;
                             anyTaskIsFocused = true;
+                            boardState.rememberText(data.id, data.text);
                         }}
                         onBlur={() => {
                             setEditing(false);
                             anyTaskIsFocused = false;
+                            boardState.recordTaskChange(columnId, columnIndex, data.id, index);
                         }}
                         style={{ display: editing ? 'block' : 'none' }}
                     />

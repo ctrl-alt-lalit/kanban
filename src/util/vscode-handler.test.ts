@@ -1,4 +1,4 @@
-import { createStrictKanbanJson } from '../util/kanban-type-functions';
+import { createStrictKanbanJson, StrictKanbanJSON } from '../util/kanban-type-functions';
 import VsCodeHandler from '../util/vscode-handler';
 
 const VsCodeApiMock = () => {

@@ -2,6 +2,8 @@ import {
     createStrictColumnJson,
     createStrictKanbanJson,
     createTaskJson,
+    StrictKanbanJSON,
+    TaskJSON,
 } from './kanban-type-functions';
 import VsCodeHandler from './vscode-handler';
 import DelayedUpdater from './delayed-updater';
@@ -70,9 +72,7 @@ class BoardState {
      *
      * @param listener callback to be added
      */
-    public addKanbanChangeListener(
-        listener: (kanban: StrictKanbanJSON) => void
-    ) {
+    public addKanbanChangeListener(listener: (kanban: StrictKanbanJSON) => void) {
         this.kanbanChangeListeners.push(listener);
     }
 
@@ -81,21 +81,15 @@ class BoardState {
      *
      * @param listener callback to be removed
      */
-    public removeKanbanChangeListener(
-        listener: (kanban: StrictKanbanJSON) => void
-    ) {
-        this.kanbanChangeListeners = this.kanbanChangeListeners.filter(
-            (l) => l !== listener
-        );
+    public removeKanbanChangeListener(listener: (kanban: StrictKanbanJSON) => void) {
+        this.kanbanChangeListeners = this.kanbanChangeListeners.filter((l) => l !== listener);
     }
 
     /**
      * Run all kanban-change listeners.
      */
     public refreshKanban() {
-        this.kanbanChangeListeners.forEach((listener) =>
-            listener(this.currentKanban)
-        );
+        this.kanbanChangeListeners.forEach((listener) => listener(this.currentKanban));
     }
 
     /**
@@ -103,9 +97,7 @@ class BoardState {
      *
      * @param listener callback to be added
      */
-    public addHistoryUpdateListener(
-        listener: (history: HistoryObject) => void
-    ) {
+    public addHistoryUpdateListener(listener: (history: HistoryObject) => void) {
         this.historyUpdateListeners.push(listener);
     }
 
@@ -114,12 +106,8 @@ class BoardState {
      *
      * @param listener callback to be removed
      */
-    public removeHistoryUpdateListener(
-        listener: (history: HistoryObject) => void
-    ) {
-        this.historyUpdateListeners = this.historyUpdateListeners.filter(
-            (l) => l !== listener
-        );
+    public removeHistoryUpdateListener(listener: (history: HistoryObject) => void) {
+        this.historyUpdateListeners = this.historyUpdateListeners.filter((l) => l !== listener);
     }
 
     /**
@@ -380,27 +368,16 @@ class BoardState {
             return;
         }
 
-        const numSourceTasks =
-            this.currentKanban.cols[sourceColIdx].tasks.length;
+        const numSourceTasks = this.currentKanban.cols[sourceColIdx].tasks.length;
         const numDestTasks = this.currentKanban.cols[destColIdx].tasks.length;
 
         const destTooBig = // if destCol === sourceCol then task cannot be appended to end of list
-            destCol === sourceCol
-                ? destIndex >= numDestTasks
-                : destIndex > numDestTasks;
-        if (
-            sourceIndex < 0 ||
-            sourceIndex >= numSourceTasks ||
-            destIndex < 0 ||
-            destTooBig
-        ) {
+            destCol === sourceCol ? destIndex >= numDestTasks : destIndex > numDestTasks;
+        if (sourceIndex < 0 || sourceIndex >= numSourceTasks || destIndex < 0 || destTooBig) {
             return;
         }
 
-        const [task] = this.currentKanban.cols[sourceColIdx].tasks.splice(
-            sourceIndex,
-            1
-        );
+        const [task] = this.currentKanban.cols[sourceColIdx].tasks.splice(sourceIndex, 1);
         this.currentKanban.cols[destColIdx].tasks.splice(destIndex, 0, task);
 
         this.endChange(false);
@@ -416,63 +393,46 @@ class BoardState {
      * @param taskId ID of task to edit
      * @param newText desired text of the task
      */
-    public changeTaskText(
+    public recordTaskChange(
         columnId: string,
+        columnIndex: number,
         taskId: string,
-        newText: string
-    ): void {
-        const columnIdx = this.getColumnIndex(columnId);
-        if (columnIdx === -1) {
-            return;
+        taskIndex: number
+    ): boolean {
+        const task = this.validateTaskInput(columnId, columnIndex, taskId, taskIndex);
+        if (!task) {
+            return false;
         }
 
-        const taskIdx = this.currentKanban.cols[columnIdx].tasks.findIndex(
-            (task) => task.id === taskId
-        );
-        if (taskIdx === -1) {
-            return;
-        }
-
-        if (!this.previousText.has(taskId)) {
-            this.previousText.set(
-                taskId,
-                this.currentKanban.cols[columnIdx].tasks[taskIdx].text
-            );
-        }
         const oldText = this.previousText.get(taskId)!;
 
-        this.taskTextUpdater.tryUpdate(() => {
-            const copy = clone(this.currentKanban);
-            copy.cols[columnIdx].tasks[taskIdx].text = oldText;
+        const copy = clone(this.currentKanban);
+        copy.cols[columnIndex].tasks[taskIndex].text = oldText;
 
-            let oldTextDisplay = oldText;
-            if (oldText.length > 20) {
-                oldTextDisplay = `${oldText.slice(0, 9)}...${oldText.slice(
-                    -9
-                )}`;
-            }
+        let oldTextDisplay = oldText;
+        if (oldText.length > 20) {
+            oldTextDisplay = `${oldText.slice(0, 9)}...${oldText.slice(-9)}`;
+        }
 
-            let newTextDisplay = newText;
-            if (newText.length > 20) {
-                newTextDisplay = `${newText.slice(0, 9)}...${newText.slice(
-                    -9
-                )}`;
-            }
+        const newText = task.text;
+        let newTextDisplay = newText;
+        if (newText.length > 20) {
+            newTextDisplay = `${newText.slice(0, 9)}...${newText.slice(-9)}`;
+        }
 
-            if (oldText !== '') {
-                this.history.push({
-                    change: StateChanges.TASK_TEXT,
-                    data: copy,
-                    details: `"${oldTextDisplay}" changed to "${newTextDisplay}"`,
-                });
-            }
+        const updateHistory = oldText.length !== 0;
+        if (updateHistory) {
+            this.history.push({
+                change: StateChanges.TASK_TEXT,
+                data: copy,
+                details: `"${oldTextDisplay}" changed to "${newTextDisplay}"`,
+            });
+        }
 
-            this.previousText.delete(taskId);
-        }, 'history-push');
-
-        this.currentKanban.cols[columnIdx].tasks[taskIdx].text = newText;
-
-        this.endChange(true, this.taskTextUpdater);
+        this.previousText.delete(taskId);
+        task.text = newText;
+        this.endChange(updateHistory);
+        return true;
     }
 
     /**
@@ -538,17 +498,35 @@ class BoardState {
         return this.hasChangedSinceSave;
     }
 
+    public rememberText(id: string, text: string) {
+        this.previousText.set(id, text);
+    }
+
+    public changeTaskText(
+        columnId: string,
+        columnIndex: number,
+        taskId: string,
+        taskIndex: number,
+        text: string
+    ) {
+        const task = this.validateTaskInput(columnId, columnIndex, taskId, taskIndex);
+        if (!task) {
+            return false;
+        }
+
+        task.text = text;
+        this.refreshKanban();
+        return true;
+    }
+
     /*******************
      * Private Methods *
      *******************/
 
     private vscodeHandler;
     private currentKanban = createStrictKanbanJson();
-    private kanbanChangeListeners: Array<(kanban: StrictKanbanJSON) => void> =
-        [];
-    private historyUpdateListeners: Array<
-        (historyStep: HistoryObject) => void
-    > = [];
+    private kanbanChangeListeners: Array<(kanban: StrictKanbanJSON) => void> = [];
+    private historyUpdateListeners: Array<(historyStep: HistoryObject) => void> = [];
 
     private history: HistoryObject[] = [];
 
@@ -561,13 +539,8 @@ class BoardState {
         return this.currentKanban.cols.findIndex((col) => col.id === columnId);
     }
 
-    private endChange(
-        updateHistory: boolean,
-        updater: DelayedUpdater | null = null
-    ) {
-        const maybeSave = this.currentKanban.autosave
-            ? () => this.save()
-            : () => undefined;
+    private endChange(updateHistory: boolean, updater: DelayedUpdater | null = null) {
+        const maybeSave = this.currentKanban.autosave ? () => this.save() : () => undefined;
 
         const maybeUpdateHistory = updateHistory
             ? () =>
@@ -592,7 +565,30 @@ class BoardState {
         }
     }
 
-    private taskTextUpdater = new DelayedUpdater(3000);
+    private validateTaskInput(
+        columnId: string,
+        columnIndex: number,
+        taskId: string,
+        taskIndex: number
+    ): TaskJSON | null {
+        if (columnIndex < 0 || columnIndex >= this.currentKanban.cols.length) {
+            return null;
+        }
+        const column = this.currentKanban.cols[columnIndex];
+
+        if (column.id !== columnId || taskIndex < 0 || taskIndex >= column.tasks.length) {
+            return null;
+        }
+
+        const task = column.tasks[taskIndex];
+
+        if (task.id !== taskId) {
+            return null;
+        }
+
+        return task;
+    }
+
     private boardTextUpdater = new DelayedUpdater(1000);
     private columnTextUpdater = new DelayedUpdater(1000);
 

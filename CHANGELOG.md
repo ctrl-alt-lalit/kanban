@@ -10,6 +10,7 @@
 -   Bugfixes:
     -   Task edit no longer shows up in history if it was previously empty
     -   Long task text is now shortened in history
+    -   Task editing is significantly less performance intensive
 
 ### 1.6.1
 

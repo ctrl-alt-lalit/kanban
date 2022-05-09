@@ -1,10 +1,7 @@
 import Board from '../components/board';
 import { render } from '@testing-library/react';
 import boardState from '../util/board-state';
-import {
-    createStrictColumnJson,
-    createStrictKanbanJson,
-} from '../util/kanban-type-functions';
+import { createStrictColumnJson, createStrictKanbanJson } from '../util/kanban-type-functions';
 import userEvent from '@testing-library/user-event';
 import { randomString } from '../test-helpers';
 
@@ -30,15 +27,11 @@ describe('<Board />', () => {
         const wrapper = render(<Board />);
         const board = wrapper.container.firstElementChild as HTMLDivElement;
 
-        const title = board.querySelector(
-            'input.board-title'
-        ) as HTMLInputElement;
+        const title = board.querySelector('input.board-title') as HTMLInputElement;
         expect(title.value).toEqual(kanbanData.title);
 
         const columnList = board.querySelector('.board-content')!;
-        expect(columnList.childElementCount).toEqual(
-            kanbanData.cols.length + 1
-        ); //add 1 for add-col btn
+        expect(columnList.childElementCount).toEqual(kanbanData.cols.length + 1); //add 1 for add-col btn
     });
 
     describe('titlebar', () => {
@@ -46,9 +39,7 @@ describe('<Board />', () => {
             const setup = boardSetup();
             const board = setup.next().value!;
 
-            const title = board.querySelector(
-                'input.board-title'
-            ) as HTMLInputElement;
+            const title = board.querySelector('input.board-title') as HTMLInputElement;
             const spy = jest.spyOn(boardState, 'changeBoardTitle');
 
             userEvent.type(title, 'blah');
@@ -61,9 +52,7 @@ describe('<Board />', () => {
             const board = setup.next().value!;
 
             //make a change so save button is enabled
-            const addButton = board.querySelector(
-                'a.board-add-column'
-            ) as HTMLAnchorElement;
+            const addButton = board.querySelector('a.board-add-column') as HTMLAnchorElement;
             userEvent.click(addButton);
 
             const saveButton = board.querySelector('a.board-save')!;
@@ -92,12 +81,8 @@ describe('<Board />', () => {
             const setup = boardSetup();
             const board = setup.next().value!;
 
-            const settingsButton = board.querySelector(
-                'a.board-settings-toggle'
-            )!;
-            const settingsPanel = board.querySelector(
-                '.board-settings'
-            ) as HTMLDivElement;
+            const settingsButton = board.querySelector('a.board-settings-toggle')!;
+            const settingsPanel = board.querySelector('.board-settings') as HTMLDivElement;
 
             expect(settingsPanel.style.opacity).toEqual('0');
 
@@ -115,14 +100,10 @@ describe('<Board />', () => {
             const setup = boardSetup();
             const board = setup.next().value!;
 
-            const settingsButton = board.querySelector(
-                'a.board-settings-toggle'
-            )!;
+            const settingsButton = board.querySelector('a.board-settings-toggle')!;
             userEvent.click(settingsButton);
 
-            const settingsPanel = board.querySelector(
-                '.board-settings'
-            ) as HTMLDivElement;
+            const settingsPanel = board.querySelector('.board-settings') as HTMLDivElement;
             yield settingsPanel;
 
             setup.next();

@@ -2,10 +2,7 @@ import RevisionHistory from '../components/revision-history';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import boardState from '../util/board-state';
-import {
-    createStrictColumnJson,
-    createStrictKanbanJson,
-} from '../util/kanban-type-functions';
+import { createStrictColumnJson, createStrictKanbanJson } from '../util/kanban-type-functions';
 import clone from 'just-clone';
 import { randomString } from '../test-helpers';
 
@@ -24,21 +21,18 @@ function* panelSetup() {
     const histPanel = wrapper.container.firstElementChild as HTMLDivElement;
     yield histPanel;
 
-    const histScroller = histPanel.querySelector(
-        '.history-scroller'
-    ) as HTMLDivElement;
+    const histScroller = histPanel.querySelector('.history-scroller') as HTMLDivElement;
     yield histScroller;
 
     wrapper.unmount();
 }
 
-const togglePanel = () =>
-    window.dispatchEvent(new CustomEvent('toggle-history'));
+const togglePanel = () => window.dispatchEvent(new CustomEvent('toggle-history'));
 
 describe('Revision History', () => {
     it('can open and close', () => {
         const it = panelSetup();
-        const histPanel = it.next().value!;
+        const histPanel = it.next().value as HTMLDivElement;
 
         expect(parseInt(histPanel.style.maxWidth)).toBe(0);
 
@@ -71,7 +65,7 @@ describe('Revision History', () => {
             boardState.undoChange(1);
         }
 
-        const histScroller = it.next().value!;
+        const histScroller = it.next().value as HTMLDivElement;
 
         const numHistItems = histScroller.childElementCount;
         expect(numHistItems).toBe(boardState.getHistory().length);
@@ -102,26 +96,17 @@ describe('Revision History', () => {
         boardState.changeColumnTitle(colId, randomString());
         boardState.changeColumnColor(colId, 'red');
         boardState.addTask(colId);
-        boardState.removeTask(
-            colId,
-            boardState.getCurrentState().cols[0].tasks[0].id
-        );
+        boardState.removeTask(colId, boardState.getCurrentState().cols[0].tasks[0].id);
         boardState.addTask(colId);
 
         const taskId = boardState.getCurrentState().cols[0].tasks[0].id;
-        boardState.changeTaskText(colId, taskId, randomString());
-
-        boardState.changeTaskText(colId, taskId, randomString());
-
         boardState.removeTask(colId, taskId);
         boardState.removeColumn(colId);
 
         boardState.undoChange(0);
 
-        const histScroller = it.next().value!;
-        expect(histScroller.childElementCount).toBe(
-            boardState.getHistory().length
-        );
+        const histScroller = it.next().value as HTMLDivElement;
+        expect(histScroller.childElementCount).toBe(boardState.getHistory().length);
 
         it.return();
     });
@@ -129,7 +114,7 @@ describe('Revision History', () => {
     it('previews a previous state on hover', () => {
         const it = panelSetup();
         it.next();
-        const histScroller = it.next().value!;
+        const histScroller = it.next().value as HTMLDivElement;
         togglePanel();
 
         const fakeRefreshSpy = jest.spyOn(boardState, 'forceReload');

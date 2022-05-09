@@ -1,6 +1,9 @@
-import { createStrictKanbanJson, toStrictKanbanJson } from './kanban-type-functions';
-
-
+import {
+    createStrictKanbanJson,
+    KanbanJSON,
+    StrictKanbanJSON,
+    toStrictKanbanJson,
+} from './kanban-type-functions';
 
 /**
  * Simpler interface for interacting the VSCode's Extension Host.
@@ -25,7 +28,7 @@ class VsCodeHandler {
     /**
      * Makes it so `callback` will be run immediately after
      * receiving a 'load' command from the Extension Host.
-     * 
+     *
      * @param {(data: StrictKanbanJSON) => void} callback function to run after loading data
      */
     addLoadListener(callback: (kanban: StrictKanbanJSON) => void) {
@@ -35,11 +38,11 @@ class VsCodeHandler {
     /**
      * If 'addLoadListener(`callback`)' was called,
      * removes `callback` from the list of load callbacks.
-     * 
+     *
      * @param {(data: StrictKanbanJSON) => void} callback function to remove
      */
     removeLoadListener(callback: (kanban: StrictKanbanJSON) => void) {
-        this.loadCallbacks = this.loadCallbacks.filter(cb => cb !== callback);
+        this.loadCallbacks = this.loadCallbacks.filter((cb) => cb !== callback);
     }
 
     /**
@@ -49,13 +52,13 @@ class VsCodeHandler {
     constructor(vscode: VsCodeApi) {
         this.vscode = vscode;
 
-        window.addEventListener('message', event => {
-            let { command, data } = event.data as { command: string, data: any };
+        window.addEventListener('message', (event) => {
+            let { command, data } = event.data as { command: string; data: any };
 
             if (command === 'load') {
                 data ??= createStrictKanbanJson();
                 const kanban = toStrictKanbanJson(data as KanbanJSON);
-                this.loadCallbacks.forEach(cb => cb(kanban));
+                this.loadCallbacks.forEach((cb) => cb(kanban));
             }
         });
     }
