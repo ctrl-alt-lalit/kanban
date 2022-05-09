@@ -12,6 +12,7 @@
     -   Task edit no longer shows up in history if it was previously empty
     -   Long task text is now shortened in history
     -   Text editing is _significantly_ less performance intensive
+    -   Save checkmark no longer moves around a bunch when resizing window
 
 ### 1.6.1
 

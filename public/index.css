@@ -89,9 +89,10 @@ body {
 
 .board-save .codicon.codicon-pass-filled {
     position: absolute;
-    bottom: -0.1rem;
+    top: 0.7rem;
     right: -0.3rem;
     font-size: 1rem !important;
+    background: radial-gradient(var(--vscode-editor-background) 28%, transparent 28%)
 }
 
 .board-content {
