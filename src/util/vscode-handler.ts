@@ -1,5 +1,9 @@
 import { createKanbanJson, WeakKanbanJson, KanbanJson, toKanbanJson } from './kanban-types';
 
+export interface VsCodeApi {
+    postMessage: (message: any) => void;
+}
+
 /**
  * Simpler interface for interacting the VSCode's Extension Host.
  */

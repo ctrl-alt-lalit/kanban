@@ -1,5 +1,5 @@
 import { createColumnJson, createKanbanJson, createTaskJson, KanbanJson } from './kanban-types';
-import VsCodeHandler from './vscode-handler';
+import VsCodeHandler, { VsCodeApi } from './vscode-handler';
 import clone from 'just-clone';
 declare var acquireVsCodeApi: () => VsCodeApi;
 
