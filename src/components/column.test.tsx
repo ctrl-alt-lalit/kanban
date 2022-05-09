@@ -90,6 +90,7 @@ describe('<Column />', () => {
 
             userEvent.dblClick(title);
             userEvent.type(title, 'blah');
+            title.blur();
 
             expect(editSpy).toHaveBeenCalled();
             setup.next();

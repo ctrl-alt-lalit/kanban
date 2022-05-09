@@ -6,11 +6,12 @@
 
     -   Build times are now twice as fast in development mode
     -   Github Actions caches the node_modules folder
+    -   Removed DelayedUpdater class
 
 -   Bugfixes:
     -   Task edit no longer shows up in history if it was previously empty
     -   Long task text is now shortened in history
-    -   Task editing is significantly less performance intensive
+    -   Text editing is _significantly_ less performance intensive
 
 ### 1.6.1
 

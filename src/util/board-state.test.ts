@@ -1,6 +1,5 @@
 import clone from 'just-clone';
 import boardState from '../util/board-state';
-import DelayedUpdater from '../util/delayed-updater';
 import { createColumnJson, createKanbanJson, createTaskJson, KanbanJson } from './kanban-types';
 import { randomInteger, randomString } from '../test-helpers';
 import VsCodeHandler from './vscode-handler';
@@ -115,13 +114,6 @@ describe('Board State', () => {
             expect(boardState.getCurrentState().title).toEqual(newTitle);
         });
 
-        it('uses a delayed updater', () => {
-            const spy = jest.spyOn(DelayedUpdater.prototype, 'tryUpdate');
-            boardState.changeBoardTitle(randomString());
-            expect(spy).toHaveBeenCalled();
-            spy.mockClear();
-        });
-
         it('adds to revision history', () => {
             const oldHistoryLength = histLen();
             jest.clearAllTimers();
@@ -177,13 +169,6 @@ describe('Board State', () => {
 
             boardState.changeColumnTitle(originalColumn.id, newTitle);
             expect(boardState.getCurrentState().cols[0].title).toEqual(newTitle);
-        });
-
-        it('uses a DelayedUpdater', () => {
-            const spy = jest.spyOn(DelayedUpdater.prototype, 'tryUpdate');
-            boardState.changeColumnTitle(originalColumn.id, randomString());
-            expect(spy).toHaveBeenCalled();
-            spy.mockClear();
         });
 
         it('adds to revision history', () => {

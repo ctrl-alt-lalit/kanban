@@ -8,7 +8,7 @@ import boardState from '../util/board-state';
 /**
  * A kanban board containing multiple Columns and Tasks that can be dragged to each column.
  */
-class Board extends React.Component<{}, { data: KanbanJson }> {
+class Board extends React.Component<{}, { data: KanbanJson; title: string }> {
     /**
      * Creates the Board and loads a StrictKanbanJSON from the Extension Host
      */
@@ -16,6 +16,7 @@ class Board extends React.Component<{}, { data: KanbanJson }> {
         super(props);
         this.state = {
             data: createKanbanJson(),
+            title: 'Kanban',
         };
     }
 
@@ -91,11 +92,11 @@ class Board extends React.Component<{}, { data: KanbanJson }> {
                 <input
                     className="board-title"
                     maxLength={18}
-                    value={this.state.data.title}
+                    value={this.state.title}
                     onChange={(event) => {
-                        const title = event.target.value;
-                        boardState.changeBoardTitle(title);
+                        this.setState({ title: event.target.value });
                     }}
+                    onBlur={() => boardState.changeBoardTitle(this.state.title)}
                 />
                 <a
                     className="board-save"
@@ -202,7 +203,9 @@ class Board extends React.Component<{}, { data: KanbanJson }> {
         </a>
     );
 
-    private loadCallback = (data: KanbanJson) => this.setState({ data: data });
+    private loadCallback = (data: KanbanJson) => {
+        this.setState({ data: data, title: data.title });
+    };
 
     private saveBoard() {
         toast('Board Saved', { duration: 1000 });

@@ -43,6 +43,8 @@ describe('<Board />', () => {
             const spy = jest.spyOn(boardState, 'changeBoardTitle');
 
             userEvent.type(title, 'blah');
+            title.blur();
+
             expect(spy).toHaveBeenCalled();
             setup.next();
         });

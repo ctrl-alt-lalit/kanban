@@ -6,16 +6,6 @@ import { createColumnJson, createKanbanJson } from '../util/kanban-types';
 import clone from 'just-clone';
 import { randomString } from '../test-helpers';
 
-jest.mock('../util/delayed-updater');
-import DelayedUpdater from '../util/delayed-updater';
-(DelayedUpdater as any).mockImplementation(() => {
-    return {
-        tryUpdate: (callback: () => void) => {
-            callback();
-        },
-    };
-});
-
 function* panelSetup() {
     const wrapper = render(<RevisionHistory />);
     const histPanel = wrapper.container.firstElementChild as HTMLDivElement;

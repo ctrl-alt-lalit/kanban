@@ -25,6 +25,7 @@ function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; i
         x: 0,
         y: 0,
     });
+    const [title, setTitle] = React.useState(data.title);
 
     // hooks to open and close settings and color picker
     const [colorPickerOpen, setColorPickerOpen] = React.useState(false);
@@ -136,14 +137,12 @@ function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; i
             {/* Contains the column's title this column's buttons (add task, delete column, show/hide color picker) */}
             <div className="column-titlebar">
                 <input
-                    value={data.title}
+                    value={title}
                     maxLength={12}
                     className="column-title"
                     style={{ color: data.color, outlineColor: data.color }}
-                    onChange={(event) => {
-                        const title = event.target.value;
-                        boardState.changeColumnTitle(data.id, title);
-                    }}
+                    onChange={(event) => setTitle(event.target.value)}
+                    onBlur={() => boardState.changeColumnTitle(data.id, title)}
                 />
                 <a
                     className="column-settings-toggle"

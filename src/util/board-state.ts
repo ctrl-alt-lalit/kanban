@@ -1,12 +1,5 @@
-import {
-    createColumnJson,
-    createKanbanJson,
-    createTaskJson,
-    KanbanJson,
-    TaskJson,
-} from './kanban-types';
+import { createColumnJson, createKanbanJson, createTaskJson, KanbanJson } from './kanban-types';
 import VsCodeHandler from './vscode-handler';
-import DelayedUpdater from './delayed-updater';
 import clone from 'just-clone';
 declare var acquireVsCodeApi: () => VsCodeApi;
 
@@ -146,26 +139,20 @@ class BoardState {
      * @param newTitle desired title for current board state
      */
     public changeBoardTitle(newTitle: string): void {
-        if (!this.previousText.has('board')) {
-            this.previousText.set('board', this.currentKanban.title);
-        }
-        const oldTitle = this.previousText.get('board')!;
+        const oldTitle = this.currentKanban.title;
 
-        this.boardTextUpdater.tryUpdate(() => {
-            const copy = clone(this.currentKanban);
-            copy.title = oldTitle;
+        const updateHistory = oldTitle !== newTitle;
 
+        if (updateHistory) {
             this.history.push({
                 change: StateChanges.BOARD_TITLE,
-                data: copy,
+                data: clone(this.currentKanban),
                 details: `From "${oldTitle}" to "${newTitle}"`,
             });
-
-            this.previousText.delete('board');
-        }, 'history-push');
+        }
 
         this.currentKanban.title = newTitle;
-        this.endChange(true, this.boardTextUpdater);
+        this.endChange(updateHistory);
     }
 
     /**
@@ -216,28 +203,20 @@ class BoardState {
         }
 
         const column = this.currentKanban.cols[columnIdx];
+        const oldTitle = column.title;
 
-        if (!this.previousText.has(column.id)) {
-            this.previousText.set(column.id, column.title);
-        }
-        const oldTitle = this.previousText.get(column.id)!;
+        const updateHistory = oldTitle !== newTitle;
 
-        this.columnTextUpdater.tryUpdate(() => {
-            const copy = clone(this.currentKanban);
-            copy.cols[columnIdx].title = oldTitle;
-
+        if (updateHistory) {
             this.history.push({
                 change: StateChanges.COLUMN_TITLE,
-                data: copy,
+                data: clone(this.currentKanban),
                 details: `From "${oldTitle}" to "${newTitle}"`,
             });
+        }
 
-            this.previousText.delete(column.id);
-        }, 'history-push');
-
-        this.currentKanban.cols[columnIdx].title = newTitle;
-
-        this.endChange(true, this.columnTextUpdater);
+        column.title = newTitle;
+        this.endChange(true);
     }
 
     /**
@@ -499,7 +478,6 @@ class BoardState {
             });
         }
 
-        this.previousText.delete(taskId);
         task.text = newText;
         this.endChange(updateHistory);
         return true;
@@ -525,36 +503,21 @@ class BoardState {
         return this.currentKanban.cols.findIndex((col) => col.id === columnId);
     }
 
-    private endChange(updateHistory: boolean, updater: DelayedUpdater | null = null) {
-        const maybeSave = this.currentKanban.autosave ? () => this.save() : () => undefined;
-
-        const maybeUpdateHistory = updateHistory
-            ? () =>
-                  this.historyUpdateListeners.forEach((listener) =>
-                      listener(this.history[this.history.length - 1])
-                  )
-            : () => undefined;
-
+    private endChange(updateHistory: boolean) {
         this.hasChangedSinceSave = true;
 
-        const commitChange = () => {
-            maybeUpdateHistory();
-            maybeSave();
-            this.refreshKanban();
-        };
-
-        if (updater) {
-            updater.tryUpdate(commitChange, 'history');
-            this.refreshKanban(); //show change immediately even if it isn't saved yet
-        } else {
-            commitChange();
+        if (this.currentKanban.autosave) {
+            this.save();
         }
+
+        if (updateHistory) {
+            this.historyUpdateListeners.forEach((listener) =>
+                listener(this.history[this.history.length - 1])
+            );
+        }
+
+        this.refreshKanban();
     }
-
-    private boardTextUpdater = new DelayedUpdater(1000);
-    private columnTextUpdater = new DelayedUpdater(1000);
-
-    private previousText: Map<string, string> = new Map();
 
     private hasChangedSinceSave = false;
 }
