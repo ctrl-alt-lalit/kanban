@@ -2,8 +2,9 @@
 
 ### 1.6.2
 
--   Internal Change: Revamped build process. Development-mode build times are now about twice as fast.
-    -   Removed "create-react-app" dependency
+-   Internal Changes:
+    -   Build times are now twice as fast in development mode
+    -   Github Actions caches the node_modules folder
 
 ### 1.6.1
 
