@@ -384,58 +384,6 @@ class BoardState {
     }
 
     /**
-     * Change a task's text.
-     *
-     * By design, it takes a second for this change to register in
-     * the BoardState's change history.
-     *
-     * @param columnId ID of column containing task to edit
-     * @param taskId ID of task to edit
-     * @param newText desired text of the task
-     */
-    public recordTaskChange(
-        columnId: string,
-        columnIndex: number,
-        taskId: string,
-        taskIndex: number
-    ): boolean {
-        const task = this.validateTaskInput(columnId, columnIndex, taskId, taskIndex);
-        if (!task) {
-            return false;
-        }
-
-        const oldText = this.previousText.get(taskId)!;
-
-        const copy = clone(this.currentKanban);
-        copy.cols[columnIndex].tasks[taskIndex].text = oldText;
-
-        let oldTextDisplay = oldText;
-        if (oldText.length > 20) {
-            oldTextDisplay = `${oldText.slice(0, 9)}...${oldText.slice(-9)}`;
-        }
-
-        const newText = task.text;
-        let newTextDisplay = newText;
-        if (newText.length > 20) {
-            newTextDisplay = `${newText.slice(0, 9)}...${newText.slice(-9)}`;
-        }
-
-        const updateHistory = oldText.length !== 0;
-        if (updateHistory) {
-            this.history.push({
-                change: StateChanges.TASK_TEXT,
-                data: copy,
-                details: `"${oldTextDisplay}" changed to "${newTextDisplay}"`,
-            });
-        }
-
-        this.previousText.delete(taskId);
-        task.text = newText;
-        this.endChange(updateHistory);
-        return true;
-    }
-
-    /**
      * Rolls back the current state to the state found at changeHistory[index].
      * @param index index into BoardState's change history that the current state should be rolled back to
      */
@@ -498,24 +446,62 @@ class BoardState {
         return this.hasChangedSinceSave;
     }
 
-    public rememberText(id: string, text: string) {
-        this.previousText.set(id, text);
-    }
-
+    /**
+     * Change a task's text.
+     *
+     * By design, it takes a second for this change to register in
+     * the BoardState's change history.
+     *
+     * @param columnId ID of column containing task to edit
+     * @param taskId ID of task to edit
+     * @param newText desired text of the task
+     */
     public changeTaskText(
         columnId: string,
         columnIndex: number,
         taskId: string,
         taskIndex: number,
-        text: string
+        newText: string
     ) {
-        const task = this.validateTaskInput(columnId, columnIndex, taskId, taskIndex);
-        if (!task) {
+        if (columnIndex < 0 || columnIndex >= this.currentKanban.cols.length) {
+            return false;
+        }
+        const column = this.currentKanban.cols[columnIndex];
+
+        if (column.id !== columnId || taskIndex < 0 || taskIndex >= column.tasks.length) {
             return false;
         }
 
-        task.text = text;
-        this.refreshKanban();
+        const task = column.tasks[taskIndex];
+
+        if (task.id !== taskId) {
+            return false;
+        }
+        const copy = clone(this.currentKanban);
+
+        const oldText = task.text;
+        let oldTextDisplay = oldText;
+        if (oldText.length > 20) {
+            oldTextDisplay = `${oldText.slice(0, 9)}...${oldText.slice(-9)}`;
+        }
+
+        let newTextDisplay = newText;
+        if (newText.length > 20) {
+            newTextDisplay = `${newText.slice(0, 9)}...${newText.slice(-9)}`;
+        }
+
+        const updateHistory = oldText.length !== 0 && oldText !== newText;
+        if (updateHistory) {
+            this.history.push({
+                change: StateChanges.TASK_TEXT,
+                data: copy,
+                details: `"${oldTextDisplay}" changed to "${newTextDisplay}"`,
+            });
+        }
+
+        this.previousText.delete(taskId);
+        task.text = newText;
+        this.endChange(updateHistory);
         return true;
     }
 
@@ -563,30 +549,6 @@ class BoardState {
         } else {
             commitChange();
         }
-    }
-
-    private validateTaskInput(
-        columnId: string,
-        columnIndex: number,
-        taskId: string,
-        taskIndex: number
-    ): TaskJSON | null {
-        if (columnIndex < 0 || columnIndex >= this.currentKanban.cols.length) {
-            return null;
-        }
-        const column = this.currentKanban.cols[columnIndex];
-
-        if (column.id !== columnId || taskIndex < 0 || taskIndex >= column.tasks.length) {
-            return null;
-        }
-
-        const task = column.tasks[taskIndex];
-
-        if (task.id !== taskId) {
-            return null;
-        }
-
-        return task;
     }
 
     private boardTextUpdater = new DelayedUpdater(1000);

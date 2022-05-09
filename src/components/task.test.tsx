@@ -123,6 +123,7 @@ describe('<Task>', () => {
 
             const editSpy = jest.spyOn(boardState, 'changeTaskText');
             userEvent.type(textarea, 'blah blah');
+            textarea.blur();
 
             expect(editSpy).toHaveBeenCalled();
             setup.next();

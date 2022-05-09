@@ -47,6 +47,7 @@ function Task({
     columnIndex: number;
 }): JSX.Element {
     const [editing, setEditing] = React.useState(defaultToEdit);
+    const [text, setText] = React.useState(data.text);
 
     return (
         <Draggable key={data.id} draggableId={data.id} index={index}>
@@ -78,25 +79,18 @@ function Task({
                     <TextAreaAutosize
                         className="task-edit task-section"
                         id={`${data.id}-edit`}
-                        value={data.text}
+                        value={text}
                         onChange={(event) => {
-                            boardState.changeTaskText(
-                                columnId,
-                                columnIndex,
-                                data.id,
-                                index,
-                                event.target.value
-                            );
+                            setText(event.target.value);
                         }}
                         onFocus={() => {
                             previousFocusedTaskId = data.id;
                             anyTaskIsFocused = true;
-                            boardState.rememberText(data.id, data.text);
                         }}
                         onBlur={() => {
                             setEditing(false);
                             anyTaskIsFocused = false;
-                            boardState.recordTaskChange(columnId, columnIndex, data.id, index);
+                            boardState.changeTaskText(columnId, columnIndex, data.id, index, text);
                         }}
                         style={{ display: editing ? 'block' : 'none' }}
                     />
