@@ -37,7 +37,7 @@ describe('<Board />', () => {
     describe('titlebar', () => {
         it('has an editable title', () => {
             const setup = boardSetup();
-            const board = setup.next().value!;
+            const board = setup.next().value as HTMLDivElement;
 
             const title = board.querySelector('input.board-title') as HTMLInputElement;
             const spy = jest.spyOn(boardState, 'changeBoardTitle');
@@ -49,7 +49,7 @@ describe('<Board />', () => {
 
         it('can save the board', () => {
             const setup = boardSetup();
-            const board = setup.next().value!;
+            const board = setup.next().value as HTMLDivElement;
 
             //make a change so save button is enabled
             const addButton = board.querySelector('a.board-add-column') as HTMLAnchorElement;
@@ -67,7 +67,7 @@ describe('<Board />', () => {
 
         it('can open revision history', () => {
             const setup = boardSetup();
-            const board = setup.next().value!;
+            const board = setup.next().value as HTMLDivElement;
 
             const historyButton = board.querySelector('a.board-history-open')!;
             const spy = jest.spyOn(window, 'dispatchEvent');
@@ -79,7 +79,7 @@ describe('<Board />', () => {
 
         it('can open and close the settings panel', () => {
             const setup = boardSetup();
-            const board = setup.next().value!;
+            const board = setup.next().value as HTMLDivElement;
 
             const settingsButton = board.querySelector('a.board-settings-toggle')!;
             const settingsPanel = board.querySelector('.board-settings') as HTMLDivElement;
@@ -98,7 +98,7 @@ describe('<Board />', () => {
     describe('settings panel', () => {
         function* settingsSetup() {
             const setup = boardSetup();
-            const board = setup.next().value!;
+            const board = setup.next().value as HTMLDivElement;
 
             const settingsButton = board.querySelector('a.board-settings-toggle')!;
             userEvent.click(settingsButton);
@@ -111,7 +111,7 @@ describe('<Board />', () => {
 
         it('can toggle autosave', () => {
             const setup = settingsSetup();
-            const settings = setup.next().value!;
+            const settings = setup.next().value as HTMLDivElement;
 
             const autosaveToggle = settings.querySelector('a.board-autosave')!;
             const spy = jest.spyOn(boardState, 'changeAutosave');
@@ -123,7 +123,7 @@ describe('<Board />', () => {
 
         it('can toggle save-to-file', () => {
             const setup = settingsSetup();
-            const settings = setup.next().value!;
+            const settings = setup.next().value as HTMLDivElement;
 
             const saveFileToggle = settings.querySelector('a.board-save-file')!;
             const spy = jest.spyOn(boardState, 'changeSaveToFile');
@@ -136,7 +136,7 @@ describe('<Board />', () => {
 
     it('can add a column', () => {
         const setup = boardSetup();
-        const board = setup.next().value!;
+        const board = setup.next().value as HTMLDivElement;
 
         const addButton = board.querySelector('a.board-add-column')!;
         const spy = jest.spyOn(boardState, 'addColumn');
