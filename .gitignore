@@ -4,3 +4,4 @@ build
 coverage
 *.vsix
 yarn-error.log
+yarn.lock
