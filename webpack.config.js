@@ -1,7 +1,6 @@
 'use strict'
 
 const path = require('path');
-const copy = require("copy-webpack-plugin");
 const miniCss = require('mini-css-extract-plugin');
 
 

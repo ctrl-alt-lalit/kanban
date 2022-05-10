@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.0
+
+-   Revision History shows current board state
+
 ### 1.6.2
 
 -   Internal Changes:

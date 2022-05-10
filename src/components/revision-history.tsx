@@ -28,7 +28,7 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; op
 
     render(): JSX.Element {
         const style = {
-            // CSS styles so that this panel will "swipe" open and closed
+            // CSS styles so that this panel will 'swipe' open and closed
             maxWidth: this.state.open ? '25%' : 0,
             transition: 'max-width 0.3s ease 0s',
             pointerEvents: this.state.open ? 'all' : 'none',
@@ -56,14 +56,22 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; op
                                 onMouseEnter={() => boardState.forceReload(histObj.data)}
                                 onMouseLeave={() => boardState.refreshKanban()}
                             >
-                                <h3>
-                                    {' '}
-                                    {`${index + 1}.`} {this.stateChangeName(prevChange)}{' '}
-                                </h3>
+                                <h3>{` ${index + 1}. ${this.stateChangeName(prevChange)}`}</h3>
                                 <p> {prevDetail} </p>
                             </a>
                         );
                     })}
+
+                    {
+                        <a
+                            className="history-item"
+                            key={this.state.history.length + 1}
+                            onMouseEnter={() => boardState.refreshKanban()}
+                            onMouseLeave={() => boardState.refreshKanban()}
+                        >
+                            <h3> {` ${this.state.history.length + 1}. Current Kanban`}</h3>
+                        </a>
+                    }
                 </div>
             </div>
         );
