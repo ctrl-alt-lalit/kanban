@@ -3,6 +3,8 @@
 ## 1.7.0
 
 -   Revision History shows current board state
+-   You can change which file to save to (if you choose to save to a file)
+    -   This is done with a new extension setting `kanban.saveFiles.pathPreferences`. Usage is detailed in the [readme.](README.md)
 
 ### 1.6.2
 

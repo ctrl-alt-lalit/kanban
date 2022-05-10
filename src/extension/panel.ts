@@ -22,7 +22,13 @@ export default class Panel {
     private constructor(context: vscode.ExtensionContext, column: vscode.ViewColumn) {
         this.extensionPath = context.extensionPath;
         const workspaceFolders = vscode.workspace.workspaceFolders ?? [undefined];
-        this.storage = new Storage(context.workspaceState, workspaceFolders[0]?.uri.fsPath);
+        const savePaths = vscode.workspace.getConfiguration('kanban').saveFiles
+            .pathPreferences as unknown as string[];
+        this.storage = new Storage(
+            context.workspaceState,
+            workspaceFolders[0]?.uri.fsPath,
+            savePaths
+        );
         this.webviewPanel = vscode.window.createWebviewPanel('kanban', 'Kanban', column, {
             enableScripts: true,
             localResourceRoots: [vscode.Uri.file(this.extensionPath)],

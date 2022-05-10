@@ -48,6 +48,11 @@
           "type": "number",
           "default": 100,
           "description": "Where the Kanban button should be in relation to other buttons. A higher value means further left."
+        },
+        "kanban.saveFiles.pathPreferences": {
+          "type": "array",
+          "default": [".vscode/kanban.json", "kanban.json"],
+          "description": "When attempting to load from a file, check these paths from left to right, stopping at first success."
         }
       }
     },
