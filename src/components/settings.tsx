@@ -47,24 +47,29 @@ class SettingsPanel extends React.Component<
                     </a>
                 </div>
 
-                <a onClick={() => boardState.changeAutosave(!this.state.autosave)} title="autosave">
-                    <span
-                        className={`codicon ${
-                            this.state.autosave ? 'codicon-sync' : 'codicon-sync-ignored'
-                        }`}
-                    ></span>
-                </a>
+                <h2>
+                    <ToggleSwitch
+                        isToggled={this.state.autosave}
+                        onToggle={() => {
+                            boardState.changeAutosave(!this.state.autosave);
+                            this.setState({ autosave: !this.state.autosave });
+                        }}
+                        id="settings-autosave"
+                    />{' '}
+                    <span style={{ marginLeft: '2rem' }}> Autosave </span>
+                </h2>
 
-                <a
-                    onClick={() => boardState.changeSaveToFile(!this.state.saveToFile)}
-                    title="save to file"
-                >
-                    <span
-                        className={`codicon ${
-                            this.state.saveToFile ? 'codicon-folder-active' : 'codicon-folder'
-                        }`}
-                    ></span>
-                </a>
+                <h2>
+                    <ToggleSwitch
+                        isToggled={this.state.saveToFile}
+                        onToggle={() => {
+                            boardState.changeSaveToFile(!this.state.saveToFile);
+                            this.setState({ saveToFile: !this.state.saveToFile });
+                        }}
+                        id="settings-saveToFile"
+                    />
+                    <span style={{ marginLeft: '2rem' }}> Save to File </span>
+                </h2>
             </div>
         );
     }
@@ -80,3 +85,31 @@ class SettingsPanel extends React.Component<
 }
 
 export default SettingsPanel;
+
+function ToggleSwitch({
+    isToggled,
+    onToggle,
+    id,
+}: {
+    isToggled: boolean;
+    onToggle: () => void;
+    id: string;
+}): JSX.Element {
+    const bgColor = isToggled
+        ? 'var(--vscode-editor-selectionBackground)'
+        : 'var(--vscode-scrollbarSlider-background)';
+    return (
+        <>
+            <input
+                checked={isToggled}
+                onChange={onToggle}
+                id={id}
+                className="toggle-switch"
+                type="checkbox"
+            />
+            <label className="toggle-switch-label" htmlFor={id} style={{ background: bgColor }}>
+                <span className={'toggle-switch-button'} />
+            </label>
+        </>
+    );
+}

@@ -8,7 +8,13 @@
     align-items: center;
     display: flex;
     overflow-x: hidden;
-    width: 25%;
+    width: 15%;
+}
+
+.settings h2 {
+    font-weight: normal;
+    display: flex;
+    width: 90%;
 }
 
 .settings-titlebar {
@@ -16,7 +22,7 @@
     flex-direction: row;
     align-items: center;
     width: 100%;
-    min-width: 15vw;
+    margin-left: auto;
 }
 
 .settings-titlebar a {
@@ -40,3 +46,47 @@
     color: var(--vscode-editor-background) !important;
     background-color: var(--vscode-editor-foreground) !important;
 }
+
+/*****************************
+  Toggle Switch
+*****************************/
+
+.toggle-switch {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+}
+
+.toggle-switch-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    width: 4rem;
+    height: 2rem;
+    border-radius: 4rem;
+    position: relative;
+    transition: background-color 0.2s;
+}
+
+.toggle-switch-label .toggle-switch-button {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 1.6rem;
+    transition: 0.2s;
+    background-color: var(--vscode-editor-foreground);
+    box-shadow: 0 0 2px 0 rgba(10, 10, 10, 0.29);
+}
+
+.toggle-switch:checked + .toggle-switch-label .toggle-switch-button {
+    left: calc(100% - 2px);
+    transform: translateX(-100%);
+  }
+
+  .toggle-switch-label:active .toggle-switch-button {
+    width: 2.4rem;
+  }
