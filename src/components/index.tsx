@@ -5,6 +5,7 @@ import Board from './board';
 import RevisionHistory from './revision-history';
 
 import './index.css';
+import SettingsPanel from './settings';
 
 function App(): JSX.Element {
     const { toasts } = useToasterStore();
@@ -18,6 +19,7 @@ function App(): JSX.Element {
 
     return (
         <>
+            <SettingsPanel />
             <Board />
             <RevisionHistory />
             <Toaster

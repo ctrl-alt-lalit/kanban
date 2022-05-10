@@ -1,0 +1,42 @@
+/* Imported by index.css, do NOT import manually */
+
+.settings {
+    background-color: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    display: flex;
+    overflow-x: hidden;
+    width: 25%;
+}
+
+.settings-titlebar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    min-width: 15vw;
+}
+
+.settings-titlebar a {
+    cursor: pointer;
+    color: var(--vscode-editor-foreground) !important;
+    font-size: 2.5rem !important;
+    margin-right: -0.5rem;
+    margin-left: 0.5rem;
+}
+
+.settings-titlebar a .codicon {
+    margin-top: 0.5rem !important;
+    font-size: 2rem !important;
+    transition: color 0.2s;
+    font-weight: bold;
+}
+
+.settings-titlebar a:hover .codicon,
+.settings-titlebar a:focus .codicon,
+.settings-titlebar a:active .codicon {
+    color: var(--vscode-editor-background) !important;
+    background-color: var(--vscode-editor-foreground) !important;
+}

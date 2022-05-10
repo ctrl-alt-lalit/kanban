@@ -78,14 +78,6 @@ class Board extends React.Component<{}, { data: KanbanJson; title: string }> {
      * React component containing the title of this Board and all its buttons (save, toggle autosave, settings)
      */
     private Titlebar = (): JSX.Element => {
-        const [settingsVisible, setSettingsVisible] = React.useState(false);
-
-        const settingsStyle = {
-            opacity: settingsVisible ? 1 : 0,
-            pointerEvents: settingsVisible ? 'all' : 'none',
-            transition: 'opacity 0.3s',
-        } as const;
-
         return (
             <div className="board-titlebar">
                 {/*Title and Buttons*/}
@@ -116,78 +108,19 @@ class Board extends React.Component<{}, { data: KanbanJson; title: string }> {
                     />
                 </a>
                 <a
+                    className="board-settings-toggle"
+                    title="Show/Hide Settings"
+                    onClick={() => window.dispatchEvent(new CustomEvent('toggle-settings'))}
+                >
+                    <span className="codicon codicon-gear" />
+                </a>
+                <a
                     className="board-history-open"
                     title="Show/Hide Revision History"
                     onClick={() => window.dispatchEvent(new CustomEvent('toggle-history'))}
                 >
                     <span className="codicon codicon-discard"></span>
                 </a>
-                <a
-                    className="board-settings-toggle"
-                    title="Show/Hide Settings"
-                    onClick={() => setSettingsVisible(!settingsVisible)}
-                >
-                    <span className="codicon codicon-gear" />
-                </a>
-
-                {/*Settings Panel*/}
-                <div className="board-settings" style={settingsStyle}>
-                    <a
-                        className="board-autosave"
-                        onClick={() => {
-                            const autosave = !this.state.data.autosave;
-                            toast(`Autosave ${autosave ? 'Enabled' : 'Disabled'}`, {
-                                duration: 1000,
-                            });
-                            boardState.changeAutosave(autosave);
-                        }}
-                    >
-                        <span
-                            className={[
-                                'codicon',
-                                this.state.data.autosave ? 'codicon-sync' : 'codicon-sync-ignored',
-                            ].join(' ')}
-                        />
-                    </a>
-                    <p
-                        style={{
-                            textDecoration: this.state.data.autosave ? 'none' : 'line-through',
-                        }}
-                    >
-                        {' '}
-                        Autosave{' '}
-                    </p>
-                    <a
-                        className="board-save-file"
-                        onClick={() => {
-                            const saveToFile = !this.state.data.saveToFile;
-                            toast(
-                                `Will save to ${
-                                    saveToFile ? '.vscode/kanban.json' : 'workspace metadata'
-                                }.`,
-                                { duration: 2000 }
-                            );
-                            boardState.changeSaveToFile(saveToFile);
-                        }}
-                    >
-                        <span
-                            className={[
-                                'codicon',
-                                this.state.data.saveToFile
-                                    ? 'codicon-folder-active'
-                                    : 'codicon-folder',
-                            ].join(' ')}
-                        />
-                    </a>
-                    <p
-                        style={{
-                            textDecoration: this.state.data.saveToFile ? 'none' : 'line-through',
-                        }}
-                    >
-                        {' '}
-                        Save to File{' '}
-                    </p>
-                </div>
             </div>
         );
     };
