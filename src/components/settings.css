@@ -13,13 +13,12 @@
 
 .settings h2 {
     font-weight: normal;
-    display: flex;
     width: 90%;
 }
 
 .settings-titlebar {
     display: flex;
-    flex-direction: row;
+    flex-direction: row-reverse;
     align-items: center;
     width: 100%;
     margin-left: auto;
@@ -29,7 +28,6 @@
     cursor: pointer;
     color: var(--vscode-editor-foreground) !important;
     font-size: 2.5rem !important;
-    margin-right: -0.5rem;
     margin-left: 0.5rem;
 }
 
@@ -43,8 +41,7 @@
 .settings-titlebar a:hover .codicon,
 .settings-titlebar a:focus .codicon,
 .settings-titlebar a:active .codicon {
-    color: var(--vscode-editor-background) !important;
-    background-color: var(--vscode-editor-foreground) !important;
+    color: var(--vscode-editor-selectionBackground) !important;
 }
 
 /*****************************
@@ -58,6 +55,7 @@
 }
 
 .toggle-switch-label {
+    flex-shrink: 0;
     display: inline-flex;
     align-items: center;
     justify-content: space-between;
@@ -67,6 +65,8 @@
     border-radius: 4rem;
     position: relative;
     transition: background-color 0.2s;
+    margin-right: 1rem;
+    margin-bottom: -0.5rem;
 }
 
 .toggle-switch-label .toggle-switch-button {

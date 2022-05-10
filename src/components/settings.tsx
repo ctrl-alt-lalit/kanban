@@ -41,10 +41,10 @@ class SettingsPanel extends React.Component<
         return (
             <div className="settings" style={style}>
                 <div className="settings-titlebar">
-                    <h1> Settings </h1>
                     <a onClick={() => this.setState({ open: false })} title="Hide Revision History">
                         <span className="codicon codicon-chevron-left"></span>
                     </a>
+                    <h1> Settings </h1>
                 </div>
 
                 <h2>
@@ -56,7 +56,7 @@ class SettingsPanel extends React.Component<
                         }}
                         id="settings-autosave"
                     />{' '}
-                    <span style={{ marginLeft: '2rem' }}> Autosave </span>
+                    <span style={{ whiteSpace: 'nowrap' }}> Autosave </span>
                 </h2>
 
                 <h2>
@@ -68,7 +68,7 @@ class SettingsPanel extends React.Component<
                         }}
                         id="settings-saveToFile"
                     />
-                    <span style={{ marginLeft: '2rem' }}> Save to File </span>
+                    <span style={{ whiteSpace: 'nowrap' }}> Save to File </span>
                 </h2>
             </div>
         );
