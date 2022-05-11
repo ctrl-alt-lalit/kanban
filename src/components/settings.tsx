@@ -43,7 +43,7 @@ class SettingsPanel extends React.Component<
             <div className="settings" style={style}>
                 <div className="settings-titlebar">
                     <a onClick={() => this.setState({ open: false })} title="Hide Revision History">
-                        <span className="codicon codicon-chevron-left"></span>
+                        <span className="codicon codicon-chevron-left" />
                     </a>
                     <h1> Settings </h1>
                 </div>
@@ -56,7 +56,7 @@ class SettingsPanel extends React.Component<
                             this.setState({ autosave: !this.state.autosave });
                         }}
                         id="settings-autosave"
-                    />{' '}
+                    />
                     <span className="label"> Autosave </span>
                 </h2>
 
@@ -73,7 +73,14 @@ class SettingsPanel extends React.Component<
                 </h2>
 
                 <h2>
-                    <a onClick={vscodeHandler.openExtensionSettings}> Global Settings </a>
+                    <a
+                        className="settings-link"
+                        id="global-settings-link"
+                        onClick={() => vscodeHandler.openExtensionSettings()}
+                    >
+                        <span className="codicon codicon-globe" />
+                        Global Settings
+                    </a>
                 </h2>
             </div>
         );

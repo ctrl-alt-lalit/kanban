@@ -5,6 +5,7 @@ import boardState from '../util/board-state';
 import { createColumnJson, createKanbanJson } from '../util/kanban-types';
 import clone from 'just-clone';
 import { randomString } from '../util/test-helpers';
+import vscodeHandler from '../util/vscode-handler';
 
 function* panelSetup() {
     const wrapper = render(<SettingsPanel />);
@@ -60,6 +61,19 @@ describe('SettingsPanel', () => {
         const spy = jest.spyOn(boardState, 'setSaveToFile');
 
         userEvent.click(fileToggle);
+        expect(spy).toHaveBeenCalled();
+        setup.return();
+    });
+
+    it('can open global extension settings', () => {
+        const setup = panelSetup();
+        const settings = setup.next().value as HTMLDivElement;
+        togglePanel();
+
+        const link = settings.querySelector('#global-settings-link') as HTMLAnchorElement;
+        const spy = jest.spyOn(vscodeHandler, 'openExtensionSettings');
+
+        userEvent.click(link);
         expect(spy).toHaveBeenCalled();
         setup.return();
     });

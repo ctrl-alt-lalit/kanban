@@ -25,6 +25,7 @@
     margin-left: 0.5rem;
 }
 
+
 .settings-titlebar {
     display: flex;
     flex-direction: row-reverse;
@@ -52,6 +53,31 @@
 .settings-titlebar a:active .codicon {
     color: var(--vscode-editor-selectionBackground) !important;
 }
+
+
+a.settings-link {
+    cursor: pointer;
+    color: var(--vscode-editor-foreground) !important;
+    /* border-bottom: 1px var(--vscode-editor-foreground) solid; */
+    padding: 3px;
+    padding-right: 5px;
+    transition: 0.2s;
+    display: inline-flex;
+    margin-left: 4px;
+}
+
+a.settings-link .codicon {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+}
+
+a.settings-link:hover,
+a.settings-link:focus,
+a.settings-link:active {
+    color: var(--vscode-editor-selectionBackground) !important;
+    /* border-color: var(--vscode-editor-selectionBackground); */
+}
+
 
 /*****************************
   Toggle Switch
@@ -94,8 +120,8 @@
 .toggle-switch:checked + .toggle-switch-label .toggle-switch-button {
     left: calc(100% - 2px);
     transform: translateX(-100%);
-  }
+}
 
-  .toggle-switch-label:active .toggle-switch-button {
+.toggle-switch-label:active .toggle-switch-button {
     width: 2.4rem;
-  }
+}
