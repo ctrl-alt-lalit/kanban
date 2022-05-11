@@ -1,8 +1,9 @@
 import { createKanbanJson, WeakKanbanJson, KanbanJson, toKanbanJson } from './kanban-types';
+import { ApiMessage } from '../extension/panel';
 declare var acquireVsCodeApi: () => VsCodeApi;
 
 interface VsCodeApi {
-    postMessage: (message: any) => void;
+    postMessage: (message: ApiMessage) => void;
 }
 
 let dummyVscode: VsCodeApi = {
@@ -35,14 +36,10 @@ class VsCodeHandler {
     }
 
     /**
-     * Opens VS Code's settings for this extension.
-     * @see https://www.eliostruyf.com/devhack-open-vscode-extension-settings-code/
+     * Tells VsCode to open settings for this extension.
      */
     openExtensionSettings() {
-        (vscode as any).commands.executeCommand(
-            'workbench.action.openSettings',
-            '@ext:lbauskar.kanban'
-        );
+        vscode.postMessage({ command: 'open-settings', data: null });
     }
 
     /**

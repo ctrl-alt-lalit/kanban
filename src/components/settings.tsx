@@ -1,6 +1,7 @@
 import React from 'react';
 import boardState from '../util/board-state';
 import { KanbanJson } from '../util/kanban-types';
+import vscodeHandler from '../util/vscode-handler';
 
 /**
  * React component showing a list of edits the user has made since the board was opened.
@@ -69,6 +70,10 @@ class SettingsPanel extends React.Component<
                         id="settings-savefile"
                     />
                     <span style={{ whiteSpace: 'nowrap' }}> Save to File </span>
+                </h2>
+
+                <h2>
+                    <a onClick={vscodeHandler.openExtensionSettings}> Open Global Settings </a>
                 </h2>
             </div>
         );

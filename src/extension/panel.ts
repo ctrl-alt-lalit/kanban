@@ -1,6 +1,12 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import Storage from './storage';
+import { KanbanJson } from '../util/kanban-types';
+
+export type ApiMessage = {
+    command: string;
+    data: KanbanJson | null;
+};
 
 export default class Panel {
     static show(context: vscode.ExtensionContext) {
@@ -114,6 +120,8 @@ export default class Panel {
                 command: 'load',
                 data: savedData,
             });
+        } else if (command === 'open-settings') {
+            vscode.commands.executeCommand('workbench.action.openSettings', '@ext:lbauskar.kanban');
         }
     }
 }
