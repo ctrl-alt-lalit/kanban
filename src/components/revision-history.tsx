@@ -13,11 +13,10 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; op
             history: boardState.getHistory(),
             open: false,
         };
-
-        window.addEventListener('toggle-history', this.toggleListener);
     }
 
     componentDidMount() {
+        window.addEventListener('toggle-history', this.toggleListener);
         boardState.addHistoryUpdateListener(this.historyUpdater);
     }
 
