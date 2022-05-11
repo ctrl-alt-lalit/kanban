@@ -115,7 +115,7 @@ class BoardState {
      *
      * @param newAutosave desired autosave value for current board state
      */
-    public changeAutosave(newAutosave: boolean): void {
+    public setAutosave(newAutosave: boolean): void {
         this.currentKanban.autosave = newAutosave;
         this.endChange(false);
     }
@@ -125,7 +125,7 @@ class BoardState {
      *
      * @param newSaveToFile desired saveToFile value for current board state
      */
-    public changeSaveToFile(newSaveToFile: boolean): void {
+    public setSaveToFile(newSaveToFile: boolean): void {
         this.currentKanban.saveToFile = newSaveToFile;
         this.endChange(false);
     }
@@ -138,7 +138,7 @@ class BoardState {
      *
      * @param newTitle desired title for current board state
      */
-    public changeBoardTitle(newTitle: string): void {
+    public setBoardTitle(newTitle: string): void {
         const oldTitle = this.currentKanban.title;
 
         const updateHistory = oldTitle !== newTitle;
@@ -196,7 +196,7 @@ class BoardState {
      * @param id ID of column to edit
      * @param newTitle desired title of column
      */
-    public changeColumnTitle(id: string, newTitle: string) {
+    public setColumnTitle(id: string, newTitle: string) {
         const columnIdx = this.getColumnIndex(id);
         if (columnIdx === -1) {
             return;
@@ -225,7 +225,7 @@ class BoardState {
      * @param id ID of column to edit
      * @param newColor desired color  of column
      */
-    public changeColumnColor(id: string, newColor: string) {
+    public setColumnColor(id: string, newColor: string) {
         const columnIdx = this.getColumnIndex(id);
         if (columnIdx === -1) {
             return;
@@ -366,7 +366,7 @@ class BoardState {
      * Rolls back the current state to the state found at changeHistory[index].
      * @param index index into BoardState's change history that the current state should be rolled back to
      */
-    public undoChange(index: number) {
+    public rollBackHistory(index: number) {
         if (index < 0 || index >= this.history.length) {
             return;
         }
@@ -417,7 +417,7 @@ class BoardState {
      * Make the kanban-change listeners load a given StrictKanbanJSON
      * @param kanban StrictKanbanJSON to load
      */
-    public forceReload(kanban: KanbanJson) {
+    public displayKanban(kanban: KanbanJson) {
         this.kanbanChangeListeners.forEach((listener) => listener(kanban));
     }
 
@@ -435,7 +435,7 @@ class BoardState {
      * @param taskId ID of task to edit
      * @param newText desired text of the task
      */
-    public changeTaskText(
+    public setTaskText(
         columnId: string,
         columnIndex: number,
         taskId: string,

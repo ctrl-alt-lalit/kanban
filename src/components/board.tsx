@@ -88,7 +88,7 @@ class Board extends React.Component<{}, { data: KanbanJson; title: string }> {
                     onChange={(event) => {
                         this.setState({ title: event.target.value });
                     }}
-                    onBlur={() => boardState.changeBoardTitle(this.state.title)}
+                    onBlur={() => boardState.setBoardTitle(this.state.title)}
                 />
                 <a
                     className="board-save"

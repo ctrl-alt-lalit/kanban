@@ -51,9 +51,9 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; op
                         return (
                             <a
                                 className="history-item"
-                                onClick={() => boardState.undoChange(index)}
+                                onClick={() => boardState.rollBackHistory(index)}
                                 key={index}
-                                onMouseEnter={() => boardState.forceReload(histObj.data)}
+                                onMouseEnter={() => boardState.displayKanban(histObj.data)}
                                 onMouseLeave={() => boardState.refreshKanban()}
                             >
                                 <h3>{` ${index + 1}. ${this.stateChangeName(prevChange)}`}</h3>

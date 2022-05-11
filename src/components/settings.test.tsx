@@ -44,7 +44,7 @@ describe('SettingsPanel', () => {
         togglePanel();
 
         const autosaveToggle = settings.querySelector('#settings-autosave') as HTMLAnchorElement;
-        const spy = jest.spyOn(boardState, 'changeAutosave');
+        const spy = jest.spyOn(boardState, 'setAutosave');
 
         userEvent.click(autosaveToggle);
         expect(spy).toHaveBeenCalled();
@@ -57,7 +57,7 @@ describe('SettingsPanel', () => {
         togglePanel();
 
         const fileToggle = settings.querySelector('#settings-savefile') as HTMLAnchorElement;
-        const spy = jest.spyOn(boardState, 'changeSaveToFile');
+        const spy = jest.spyOn(boardState, 'setSaveToFile');
 
         userEvent.click(fileToggle);
         expect(spy).toHaveBeenCalled();

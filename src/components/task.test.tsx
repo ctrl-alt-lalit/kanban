@@ -115,7 +115,7 @@ describe('<Task>', () => {
             const clicker = displayClicking(task);
             const textarea = clicker.next().value as HTMLTextAreaElement;
 
-            const editSpy = jest.spyOn(boardState, 'changeTaskText');
+            const editSpy = jest.spyOn(boardState, 'setTaskText');
             userEvent.type(textarea, 'blah blah');
             textarea.blur();
 

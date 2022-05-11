@@ -90,7 +90,7 @@ function Task({
                         onBlur={() => {
                             setEditing(false);
                             anyTaskIsFocused = false;
-                            boardState.changeTaskText(columnId, columnIndex, data.id, index, text);
+                            boardState.setTaskText(columnId, columnIndex, data.id, index, text);
                         }}
                         style={{ display: editing ? 'block' : 'none' }}
                     />

@@ -51,7 +51,7 @@ class SettingsPanel extends React.Component<
                     <ToggleSwitch
                         isToggled={this.state.autosave}
                         onToggle={() => {
-                            boardState.changeAutosave(!this.state.autosave);
+                            boardState.setAutosave(!this.state.autosave);
                             this.setState({ autosave: !this.state.autosave });
                         }}
                         id="settings-autosave"
@@ -63,7 +63,7 @@ class SettingsPanel extends React.Component<
                     <ToggleSwitch
                         isToggled={this.state.saveToFile}
                         onToggle={() => {
-                            boardState.changeSaveToFile(!this.state.saveToFile);
+                            boardState.setSaveToFile(!this.state.saveToFile);
                             this.setState({ saveToFile: !this.state.saveToFile });
                         }}
                         id="settings-savefile"

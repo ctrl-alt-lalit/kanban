@@ -50,7 +50,7 @@ function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; i
         if (color.length < 6) {
             return;
         }
-        boardState.changeColumnColor(data.id, color);
+        boardState.setColumnColor(data.id, color);
     };
 
     const colorPickerStyle = {
@@ -142,7 +142,7 @@ function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; i
                     className="column-title"
                     style={{ color: data.color, outlineColor: data.color }}
                     onChange={(event) => setTitle(event.target.value)}
-                    onBlur={() => boardState.changeColumnTitle(data.id, title)}
+                    onBlur={() => boardState.setColumnTitle(data.id, title)}
                 />
                 <a
                     className="column-settings-toggle"

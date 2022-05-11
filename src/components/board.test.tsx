@@ -40,7 +40,7 @@ describe('<Board />', () => {
             const board = setup.next().value as HTMLDivElement;
 
             const title = board.querySelector('input.board-title') as HTMLInputElement;
-            const spy = jest.spyOn(boardState, 'changeBoardTitle');
+            const spy = jest.spyOn(boardState, 'setBoardTitle');
 
             userEvent.type(title, 'blah');
             title.blur();

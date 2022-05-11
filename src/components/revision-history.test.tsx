@@ -49,7 +49,7 @@ describe('Revision History', () => {
 
         const numUndos = Math.ceil(Math.random() * 15 + 10);
         for (let i = 0; i < numUndos; ++i) {
-            boardState.undoChange(1);
+            boardState.rollBackHistory(1);
         }
 
         const histScroller = it.next().value as HTMLDivElement;
@@ -77,11 +77,11 @@ describe('Revision History', () => {
         boardState.save(createKanbanJson());
         boardState.addColumn();
 
-        boardState.changeBoardTitle(randomString());
+        boardState.setBoardTitle(randomString());
 
         const colId = boardState.getCurrentState().cols[0].id;
-        boardState.changeColumnTitle(colId, randomString());
-        boardState.changeColumnColor(colId, 'red');
+        boardState.setColumnTitle(colId, randomString());
+        boardState.setColumnColor(colId, 'red');
         boardState.addTask(colId);
         boardState.removeTask(colId, boardState.getCurrentState().cols[0].tasks[0].id);
         boardState.addTask(colId);
@@ -90,7 +90,7 @@ describe('Revision History', () => {
         boardState.removeTask(colId, taskId);
         boardState.removeColumn(colId);
 
-        boardState.undoChange(0);
+        boardState.rollBackHistory(0);
 
         const histScroller = it.next().value as HTMLDivElement;
         expect(histScroller.childElementCount).toBe(boardState.getHistory().length + 1);
@@ -104,7 +104,7 @@ describe('Revision History', () => {
         const histScroller = it.next().value as HTMLDivElement;
         togglePanel();
 
-        const fakeRefreshSpy = jest.spyOn(boardState, 'forceReload');
+        const fakeRefreshSpy = jest.spyOn(boardState, 'displayKanban');
         const refreshSpy = jest.spyOn(boardState, 'refreshKanban');
 
         boardState.addColumn();
