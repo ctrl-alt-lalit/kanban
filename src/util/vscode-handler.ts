@@ -7,13 +7,9 @@ interface VsCodeApi {
 }
 
 let dummyVscode: VsCodeApi = {
-    postMessage: () => {
-        return;
-    },
+    postMessage: () => null,
 };
 const vscode = typeof acquireVsCodeApi === 'undefined' ? dummyVscode : acquireVsCodeApi();
-
-console.log(typeof acquireVsCodeApi);
 
 /**
  * Simpler interface for interacting the VSCode's Extension Host.
