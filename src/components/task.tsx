@@ -39,12 +39,14 @@ function Task({
     columnId,
     defaultToEdit,
     columnIndex,
+    colorFilter,
 }: {
     data: TaskJson;
     index: number;
     columnId: string;
     defaultToEdit: boolean;
     columnIndex: number;
+    colorFilter: string;
 }): JSX.Element {
     const [editing, setEditing] = React.useState(defaultToEdit);
     const [text, setText] = React.useState(data.text);
@@ -64,6 +66,9 @@ function Task({
                         className="task-handle"
                         {...provided.dragHandleProps}
                         onMouseDown={() => setEditing(false)}
+                        style={{
+                            backgroundColor: snapshot.isDragging ? 'rgba(0,0,0,0)' : colorFilter,
+                        }}
                     >
                         <a
                             className="task-delete"

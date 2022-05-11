@@ -13,6 +13,7 @@
     display: inline-flex;
     flex-direction: row-reverse;
     justify-content: space-between;
+    transition: background-color 0.2s;
 }
 
 .task-handle .codicon[class*='codicon-'] {

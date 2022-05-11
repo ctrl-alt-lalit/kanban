@@ -98,6 +98,8 @@ function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; i
             (event.currentTarget.style.backgroundColor = 'inherit'),
     } as const;
 
+    const colorFilter = data.color + '40';
+
     return (
         <div
             className="column"
@@ -255,6 +257,7 @@ function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; i
                                 columnId={data.id}
                                 columnIndex={index}
                                 defaultToEdit={IdOfTaskJustAdded === task.id}
+                                colorFilter={colorFilter}
                             />
                         ))}
                         {provided.placeholder}
