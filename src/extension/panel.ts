@@ -4,7 +4,7 @@ import Storage from './storage';
 import { KanbanJson } from '../util/kanban-types';
 
 export type ApiMessage = {
-    command: string;
+    command: 'save' | 'load' | 'open-settings';
     data: KanbanJson | null;
 };
 
@@ -110,7 +110,7 @@ export default class Panel {
 			`;
     }
 
-    private async receiveMessage(message: { command: string; data: any }): Promise<void> {
+    private async receiveMessage(message: ApiMessage): Promise<void> {
         const { command, data } = message;
         if (command === 'save') {
             this.storage.saveKanban(data);
