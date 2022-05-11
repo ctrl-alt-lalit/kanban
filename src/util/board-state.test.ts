@@ -4,8 +4,6 @@ import { createColumnJson, createKanbanJson, createTaskJson, KanbanJson } from '
 import { randomInteger, randomString } from './test-helpers';
 import VsCodeHandler from './vscode-handler';
 
-jest.useFakeTimers();
-
 function histLen() {
     return boardState.getHistory().length;
 }
@@ -116,9 +114,7 @@ describe('Board State', () => {
 
         it('adds to revision history', () => {
             const oldHistoryLength = histLen();
-            jest.clearAllTimers();
             boardState.setBoardTitle(randomString());
-            jest.runAllTimers();
             expect(histLen()).toEqual(oldHistoryLength + 1);
         });
     });
@@ -174,7 +170,6 @@ describe('Board State', () => {
         it('adds to revision history', () => {
             const oldHistoryLength = histLen();
             boardState.setColumnTitle(originalColumn.id, randomString());
-            jest.runAllTimers();
             expect(histLen()).toEqual(oldHistoryLength + 1);
         });
 
