@@ -1,7 +1,6 @@
 import { createColumnJson, createKanbanJson, createTaskJson, KanbanJson } from './kanban-types';
-import VsCodeHandler, { VsCodeApi } from './vscode-handler';
+import VsCodeHandler from './vscode-handler';
 import clone from 'just-clone';
-declare var acquireVsCodeApi: () => VsCodeApi;
 
 /**
  * Enumeration of possible board state changes that can occur.
@@ -44,20 +43,8 @@ class BoardState {
      * Instantiate Object and load VsCode API if it's available.
      */
     constructor() {
-        let vscodeApi: VsCodeApi | null = null;
-        if (typeof acquireVsCodeApi === 'undefined') {
-            vscodeApi = {
-                postMessage: () => {
-                    return;
-                },
-            };
-        } else {
-            vscodeApi = acquireVsCodeApi();
-        }
-
-        this.vscodeHandler = new VsCodeHandler(vscodeApi);
-        this.vscodeHandler.addLoadListener(this.loadFromVscode);
-        this.vscodeHandler.load();
+        VsCodeHandler.addLoadListener(this.loadFromVscode);
+        VsCodeHandler.load();
     }
 
     /**
@@ -403,7 +390,7 @@ class BoardState {
         }
 
         this.hasChangedSinceSave = false;
-        this.vscodeHandler.save(this.currentKanban);
+        VsCodeHandler.save(this.currentKanban);
     }
 
     /**
@@ -486,8 +473,6 @@ class BoardState {
     /*******************
      * Private Methods *
      *******************/
-
-    private vscodeHandler;
     private currentKanban = createKanbanJson();
     private kanbanChangeListeners: Array<(kanban: KanbanJson) => void> = [];
     private historyUpdateListeners: Array<(historyStep: HistoryObject) => void> = [];

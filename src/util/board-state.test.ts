@@ -373,7 +373,7 @@ describe('Board State', () => {
 
     describe('save()', () => {
         it('saves the board to VsCode', () => {
-            const spy = jest.spyOn(VsCodeHandler.prototype as any, 'save');
+            const spy = jest.spyOn(VsCodeHandler, 'save');
 
             boardState.save();
             expect(spy).toHaveBeenCalled();

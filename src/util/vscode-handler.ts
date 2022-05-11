@@ -1,8 +1,18 @@
 import { createKanbanJson, WeakKanbanJson, KanbanJson, toKanbanJson } from './kanban-types';
+declare var acquireVsCodeApi: () => VsCodeApi;
 
-export interface VsCodeApi {
+interface VsCodeApi {
     postMessage: (message: any) => void;
 }
+
+let dummyVscode: VsCodeApi = {
+    postMessage: () => {
+        return;
+    },
+};
+const vscode = typeof acquireVsCodeApi === 'undefined' ? dummyVscode : acquireVsCodeApi();
+
+console.log(typeof acquireVsCodeApi);
 
 /**
  * Simpler interface for interacting the VSCode's Extension Host.
@@ -12,7 +22,7 @@ class VsCodeHandler {
      * Tells the Extension Host to send previously saved data.
      */
     load() {
-        this.vscode.postMessage({ command: 'load', data: null });
+        vscode.postMessage({ command: 'load', data: null });
     }
 
     /**
@@ -21,7 +31,18 @@ class VsCodeHandler {
      */
     save(kanban: KanbanJson) {
         kanban.timestamp = Date.now();
-        this.vscode.postMessage({ command: 'save', data: kanban });
+        vscode.postMessage({ command: 'save', data: kanban });
+    }
+
+    /**
+     * Opens VS Code's settings for this extension.
+     * @see https://www.eliostruyf.com/devhack-open-vscode-extension-settings-code/
+     */
+    openExtensionSettings() {
+        (vscode as any).commands.executeCommand(
+            'workbench.action.openSettings',
+            '@ext:lbauskar.kanban'
+        );
     }
 
     /**
@@ -48,9 +69,7 @@ class VsCodeHandler {
      * Only call the constructor once in the lifetime of the extension.
      * Using multiple VscodeHandlers has not been tested and is unsupported.
      */
-    constructor(vscode: VsCodeApi) {
-        this.vscode = vscode;
-
+    constructor() {
         // VSCode's postMessage API has no way to set target window identity, so no way to verify
         window.addEventListener('message', (event) => {
             let { command, data } = event.data as { command: string; data: any };
@@ -64,15 +83,10 @@ class VsCodeHandler {
     }
 
     /**
-     * Connects the webview to the Extension Host.
-     */
-    private vscode: VsCodeApi;
-
-    /**
      * List of callbacks to run after receiving
      * the 'load' message from the Extension Host.
      */
     private loadCallbacks: Array<(kanban: KanbanJson) => void> = [];
 }
 
-export default VsCodeHandler;
+export default new VsCodeHandler();
