@@ -57,7 +57,7 @@ class SettingsPanel extends React.Component<
                         }}
                         id="settings-autosave"
                     />{' '}
-                    <span style={{ whiteSpace: 'nowrap' }}> Autosave </span>
+                    <span className="label"> Autosave </span>
                 </h2>
 
                 <h2>
@@ -69,11 +69,11 @@ class SettingsPanel extends React.Component<
                         }}
                         id="settings-savefile"
                     />
-                    <span style={{ whiteSpace: 'nowrap' }}> Save to File </span>
+                    <span className="label"> Save to File </span>
                 </h2>
 
                 <h2>
-                    <a onClick={vscodeHandler.openExtensionSettings}> Open Global Settings </a>
+                    <a onClick={vscodeHandler.openExtensionSettings}> Global Settings </a>
                 </h2>
             </div>
         );

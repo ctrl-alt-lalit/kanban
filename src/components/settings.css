@@ -14,6 +14,15 @@
 .settings h2 {
     font-weight: normal;
     width: 90%;
+    font-size: 1rem;;
+}
+
+
+.settings h2 .label {
+    white-space: nowrap;
+    margin-top: 0.5rem;
+    display: inline-block;
+    margin-left: 0.5rem;
 }
 
 .settings-titlebar {
@@ -65,7 +74,7 @@
     border-radius: 4rem;
     position: relative;
     transition: background-color 0.2s;
-    margin-right: 1rem;
+    margin-right: 0.5rem;
     margin-bottom: -0.5rem;
 }
 
