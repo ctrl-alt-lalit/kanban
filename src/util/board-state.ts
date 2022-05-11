@@ -28,7 +28,6 @@ export enum StateChanges {
     // Board-wide kanban changes
     HISTORY_REVERSED,
     BOARD_LOADED,
-    NO_CHANGE_YET,
 }
 
 export type HistoryObject = {

@@ -66,7 +66,7 @@ class SettingsPanel extends React.Component<
                             boardState.changeSaveToFile(!this.state.saveToFile);
                             this.setState({ saveToFile: !this.state.saveToFile });
                         }}
-                        id="settings-saveToFile"
+                        id="settings-savefile"
                     />
                     <span style={{ whiteSpace: 'nowrap' }}> Save to File </span>
                 </h2>
