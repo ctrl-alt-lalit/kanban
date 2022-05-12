@@ -5,6 +5,12 @@ import { createColumnJson, createKanbanJson } from '../util/kanban-types';
 import userEvent from '@testing-library/user-event';
 import { randomString } from '../util/test-helpers';
 
+jest.mock('react-markdown', () => (props: any) => {
+    return <>{props.children}</>;
+});
+
+jest.mock('remark-gfm', () => () => {});
+
 function* boardSetup() {
     const defaultKanban = createKanbanJson();
     boardState.save(defaultKanban);

@@ -45,6 +45,12 @@ jest.mock('react-beautiful-dnd', () => {
     };
 });
 
+jest.mock('react-markdown', () => (props: any) => {
+    return <>{props.children}</>;
+});
+
+jest.mock('remark-gfm', () => () => {});
+
 describe('<Task>', () => {
     it('Renders a task', () => {
         const taskData = createTaskJson(randomString());

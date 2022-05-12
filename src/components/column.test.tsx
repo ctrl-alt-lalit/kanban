@@ -24,6 +24,12 @@ jest.mock('react-beautiful-dnd', () => {
     };
 });
 
+jest.mock('react-markdown', () => (props: any) => {
+    return <>{props.children}</>;
+});
+
+jest.mock('remark-gfm', () => () => {});
+
 const defaultKanban = createKanbanJson('', [createColumnJson()]);
 const defaultColumn = defaultKanban.cols[0];
 

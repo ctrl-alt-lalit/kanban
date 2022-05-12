@@ -70,9 +70,6 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; op
                             ? `${this.stateChangeName(mostRecent.change)} (Current Kanban)`
                             : 'Current Kanban';
                         const mostRecentDetail = mostRecent ? mostRecent.details : '';
-                        console.log(this.state.history);
-                        console.log(mostRecent);
-
                         return (
                             <a
                                 className="history-item"
