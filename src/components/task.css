@@ -20,6 +20,11 @@
     vertical-align: bottom;
 }
 
+.task-handle .codicon-gripper {
+    color: var(--vscode-activityBar-foreground);
+    opacity: 0.25;
+}
+
 .task-delete {
     transition: background-color 0.3s, color 0.3s;
     color: var(--vscode-activityBar-foreground);
