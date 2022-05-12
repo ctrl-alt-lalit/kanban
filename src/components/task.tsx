@@ -46,7 +46,7 @@ function Task({
     columnId: string;
     defaultToEdit: boolean;
     columnIndex: number;
-    colorFilter: string;
+    colorFilter: string; //#RRGGBB40
 }): JSX.Element {
     const [editing, setEditing] = React.useState(defaultToEdit);
     const [text, setText] = React.useState(data.text);
