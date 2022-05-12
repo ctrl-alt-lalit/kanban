@@ -17,12 +17,11 @@
 }
 
 .task-handle .codicon[class*='codicon-'] {
-    color: var(--vscode-activityBar-foreground);
     vertical-align: bottom;
 }
 
 .task-delete {
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, color 0.3s;
     color: var(--vscode-activityBar-foreground);
     cursor: pointer;
 }
@@ -30,8 +29,8 @@
 .task-delete:hover,
 .task-delete:focus,
 .task-delete:active {
-    color: var(--vscode-activityBar-foreground);
-    background-color: var(--vscode-charts-red);
+    color: var(--vscode-activityBar-background);
+    background-color: var(--vscode-activityBar-foreground);
 }
 
 .task-section {
