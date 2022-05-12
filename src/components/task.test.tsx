@@ -17,6 +17,7 @@ function* taskSetup() {
             columnId={defaultColumn.id}
             columnIndex={0}
             defaultToEdit={false}
+            colorFilter={'#ffffff40'}
         />
     );
     const task = wrapper.container.firstElementChild as HTMLDivElement;
@@ -49,7 +50,14 @@ describe('<Task>', () => {
         const taskData = createTaskJson(randomString());
 
         const wrapper = render(
-            <Task data={taskData} index={0} columnId={''} columnIndex={0} defaultToEdit={false} />
+            <Task
+                data={taskData}
+                index={0}
+                columnId={''}
+                columnIndex={0}
+                defaultToEdit={false}
+                colorFilter={'#ffffff40'}
+            />
         );
         const task = wrapper.container.firstElementChild as HTMLDivElement;
 
@@ -71,6 +79,7 @@ describe('<Task>', () => {
                 columnId={''}
                 columnIndex={0}
                 defaultToEdit={true}
+                colorFilter={'#ffffff40'}
             />
         );
 

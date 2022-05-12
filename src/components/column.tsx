@@ -114,6 +114,7 @@ function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; i
                 toggleMenu(true);
                 event.stopPropagation();
             }}
+            id={data.id}
         >
             {/* Customize context menu */}
             <ControlledMenu

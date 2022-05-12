@@ -40,14 +40,14 @@
     color: var(--vscode-editor-foreground);
     margin: 0 !important;
     width: 100% !important;
-    border: 1px solid var(--vscode-activityBar-background) !important;
+    border: 1px solid var(--vscode-activityBar-background);
     box-sizing: border-box !important;
     cursor: text;
+    transition: border-color 0.2s;
 }
 
 .task-edit {
     padding: 0;
-    border-width: 0;
 }
 
 .task-edit:focus {
@@ -58,4 +58,19 @@
     margin-block-start: 0;
     margin-block-end: 0;
     overflow-wrap: break-word;
+}
+
+.task-dropping {
+    animation-name: drop-bg-transition;
+    animation-duration: 2s;
+}
+
+@keyframes drop-bg-transition {
+    from {
+        background-color: rgba(0,0,0,0);
+    }
+
+    to {
+        background-color: '';
+    }
 }
