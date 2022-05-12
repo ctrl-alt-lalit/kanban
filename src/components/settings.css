@@ -115,6 +115,7 @@ a.settings-link:active {
     transition: 0.2s;
     background-color: var(--vscode-editor-foreground);
     box-shadow: 0 0 2px 0 rgba(10, 10, 10, 0.29);
+    text-align: center;
 }
 
 .toggle-switch:checked + .toggle-switch-label .toggle-switch-button {
@@ -122,6 +123,10 @@ a.settings-link:active {
     transform: translateX(-100%);
 }
 
-.toggle-switch-label:active .toggle-switch-button {
-    width: 2.4rem;
+.toggle-switch-button .codicon {
+    font-size: 1.5rem !important;
+    color: var(--vscode-editor-background);
+    margin-top: 0.15rem;
+    margin-left: 0.05rem;
+    transition: color 0.3s;
 }

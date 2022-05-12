@@ -120,7 +120,9 @@ function ToggleSwitch({
                 type="checkbox"
             />
             <label className="toggle-switch-label" htmlFor={id} style={{ background: bgColor }}>
-                <span className={'toggle-switch-button'} />
+                <span className="toggle-switch-button">
+                    <span className={`codicon ${isToggled ? 'codicon-pass' : 'codicon-error'}`} />
+                </span>
             </label>
         </>
     );
