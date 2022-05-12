@@ -99,6 +99,7 @@ describe('<Task>', () => {
         const removeTaskSpy = jest.spyOn(boardState, 'removeTask');
 
         userEvent.click(deleteButton);
+        jest.runAllTimers();
         expect(removeTaskSpy).toHaveBeenCalled();
 
         setup.next();

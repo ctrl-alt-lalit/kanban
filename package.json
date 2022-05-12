@@ -71,7 +71,7 @@
   "scripts": {
     "vscode:prepublish": "(webpack --config webpack.config.js --mode=production) && (webpack --config webpack-extension.config.js --mode=production)",
     "build": "(webpack --config webpack.config.js --mode=development) && (webpack --config webpack-extension.config.js --mode=development)",
-    "test": "jest --env=jsdom",
+    "test": "jest",
     "package": "vsce package"
   },
   "devDependencies": {
