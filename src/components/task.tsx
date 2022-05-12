@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import { Draggable } from 'react-beautiful-dnd';
 import boardState from '../util/board-state';
 import { TaskJson } from '../util/kanban-types';
+import remarkGfm from 'remark-gfm';
 
 let previousFocusedTaskId = '';
 let anyTaskIsFocused = false;
@@ -149,7 +150,7 @@ function Task({
                             }}
                             id={`${data.id}-display`}
                         >
-                            <ReactMarkdown>
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                 {data.text || '_enter text or markdown here_'}
                             </ReactMarkdown>
                         </div>
