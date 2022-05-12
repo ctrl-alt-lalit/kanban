@@ -55,22 +55,36 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; op
                                 onMouseEnter={() => boardState.displayKanban(histObj.data)}
                                 onMouseLeave={() => boardState.refreshKanban()}
                             >
-                                <h3>{` ${index + 1}. ${this.stateChangeName(prevChange)}`}</h3>
+                                <h3>{`${index + 1}. ${this.stateChangeName(prevChange)}`}</h3>
                                 <p> {prevDetail} </p>
                             </a>
                         );
                     })}
 
-                    {
-                        <a
-                            className="history-item"
-                            key={this.state.history.length + 1}
-                            onMouseEnter={() => boardState.refreshKanban()}
-                            onMouseLeave={() => boardState.refreshKanban()}
-                        >
-                            <h3> {` ${this.state.history.length + 1}. Current Kanban`}</h3>
-                        </a>
-                    }
+                    {(() => {
+                        const mostRecent =
+                            this.state.history.length > 0
+                                ? this.state.history[this.state.history.length - 1]
+                                : null;
+                        const mostRecentChange = mostRecent
+                            ? `${this.stateChangeName(mostRecent.change)} (Current Kanban)`
+                            : 'Current Kanban';
+                        const mostRecentDetail = mostRecent ? mostRecent.details : '';
+                        console.log(this.state.history);
+                        console.log(mostRecent);
+
+                        return (
+                            <a
+                                className="history-item"
+                                key={this.state.history.length + 1}
+                                onMouseEnter={() => boardState.refreshKanban()}
+                                onMouseLeave={() => boardState.refreshKanban()}
+                            >
+                                <h3> {`${this.state.history.length + 1}. ${mostRecentChange}`}</h3>
+                                <p> {mostRecentDetail} </p>
+                            </a>
+                        );
+                    })()}
                 </div>
             </div>
         );
