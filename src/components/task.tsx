@@ -37,7 +37,7 @@ function Task({
     data,
     index,
     columnId,
-    defaultToEdit,
+    defaultToEdit, // aka Task just added
     columnIndex,
     colorFilter,
 }: {
@@ -50,6 +50,7 @@ function Task({
 }): JSX.Element {
     const [editing, setEditing] = React.useState(defaultToEdit);
     const [text, setText] = React.useState(data.text);
+    const [beingDeleted, setBeingDeleted] = React.useState(false);
 
     return (
         <Draggable key={data.id} draggableId={data.id} index={index}>
@@ -75,7 +76,12 @@ function Task({
                     <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
-                        className={['task', snapshot.isDragging ? 'drag' : ''].join(' ')}
+                        className={[
+                            'task',
+                            defaultToEdit ? 'task-added' : '',
+                            beingDeleted ? 'task-deleted' : '',
+                            snapshot.isDragging ? 'drag' : '',
+                        ].join(' ')}
                         onContextMenu={(event) => event.stopPropagation()}
                         id={data.id}
                     >
@@ -91,7 +97,10 @@ function Task({
                             <a
                                 className="task-delete"
                                 title="Delete Task"
-                                onClick={() => boardState.removeTask(columnId, data.id)}
+                                onClick={() => {
+                                    setBeingDeleted(true);
+                                    setTimeout(() => boardState.removeTask(columnId, data.id), 180);
+                                }}
                             >
                                 <span className="codicon codicon-close" />
                             </a>

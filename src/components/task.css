@@ -63,3 +63,29 @@
     margin-block-end: 0;
     overflow-wrap: break-word;
 }
+
+.task-added {
+    animation: grow-task;
+    animation-duration: 0.2s;
+    animation-timing-function: ease-out;
+    overflow: hidden;
+}
+
+@keyframes grow-task {
+    from {
+        max-height: 0;
+    }
+
+    to {
+        max-height: 5vh;
+    }
+}
+
+.task-deleted {
+    animation: grow-task;
+    animation-duration: 0.2s;
+    animation-timing-function: ease-in;
+    overflow: hidden;
+    animation-direction: reverse;
+    pointer-events: none;
+}
