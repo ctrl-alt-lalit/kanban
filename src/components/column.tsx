@@ -109,10 +109,13 @@ function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; i
                 width: `${100 / numCols}%`,
             }}
             onContextMenu={(event) => {
-                event.preventDefault();
-                setMenuAnchorPoint({ x: event.clientX, y: event.clientY });
-                toggleMenu(true);
-                event.stopPropagation();
+                if (event.cancelable) {
+                    //menu on task will set cancellable false
+                    event.preventDefault();
+                    setMenuAnchorPoint({ x: event.clientX, y: event.clientY });
+                    toggleMenu(true);
+                    event.stopPropagation();
+                }
             }}
             id={data.id}
         >

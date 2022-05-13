@@ -14,6 +14,7 @@
 
 -   Bugfixes:
     -   Column title edits don't show up in history if text wasn't changed
+    -   Default context menu now appears on tasks
 
 ### 1.6.2
 

@@ -83,7 +83,7 @@ function Task({
                             beingDeleted ? 'task-deleted' : '',
                             snapshot.isDragging ? 'drag' : '',
                         ].join(' ')}
-                        onContextMenu={(event) => event.stopPropagation()}
+                        onContextMenu={(event) => (event.cancelable = false)} //tells column not to make menu
                         id={data.id}
                     >
                         {/* 'Handle' user must click on to move the whole Task (react-beautiful-dnd) */}
