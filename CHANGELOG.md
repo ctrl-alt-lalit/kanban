@@ -10,6 +10,7 @@
     -   "Autosave" and "Save to File" settings are now toggle switches in the panel
     -   Can open global extension settings from the panel
 -   Tasks now inherit the colors of their column
+-   Settings changes are recorded in revision history
 
 -   Bugfixes:
     -   Column title edits don't show up in history if text wasn't changed

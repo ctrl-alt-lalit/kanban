@@ -124,6 +124,9 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; op
                 return 'Loaded Kanban';
             case StateChanges.COLUMN_MOVED:
                 return 'Moved Column';
+            case StateChanges.AUTOSAVE:
+            case StateChanges.SAVE_TO_FILE:
+                return 'Settings Changed';
             default:
                 return 'ERROR';
         }

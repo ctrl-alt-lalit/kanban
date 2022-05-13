@@ -94,6 +94,7 @@ class BoardState {
      * @returns a copy of this BoardState's history list
      */
     public getHistory() {
+        //TODO: change to readonly reference
         return clone(this.history);
     }
 
@@ -103,8 +104,17 @@ class BoardState {
      * @param newAutosave desired autosave value for current board state
      */
     public setAutosave(newAutosave: boolean): void {
+        if (newAutosave === this.currentKanban.autosave) {
+            return;
+        }
+
+        this.history.push({
+            change: StateChanges.AUTOSAVE,
+            data: clone(this.currentKanban),
+            details: `Autosave turned ${newAutosave ? 'on' : 'off'}.`,
+        });
         this.currentKanban.autosave = newAutosave;
-        this.endChange(false);
+        this.endChange(true);
     }
 
     /**
@@ -113,8 +123,17 @@ class BoardState {
      * @param newSaveToFile desired saveToFile value for current board state
      */
     public setSaveToFile(newSaveToFile: boolean): void {
+        if (newSaveToFile === this.currentKanban.saveToFile) {
+            return;
+        }
+
+        this.history.push({
+            change: StateChanges.SAVE_TO_FILE,
+            data: clone(this.currentKanban),
+            details: `Will save to ${newSaveToFile ? 'file' : 'workspace'}.`,
+        });
         this.currentKanban.saveToFile = newSaveToFile;
-        this.endChange(false);
+        this.endChange(true);
     }
 
     /**
@@ -127,19 +146,16 @@ class BoardState {
      */
     public setBoardTitle(newTitle: string): void {
         const oldTitle = this.currentKanban.title;
-
-        const updateHistory = oldTitle !== newTitle;
-
-        if (updateHistory) {
-            this.history.push({
-                change: StateChanges.BOARD_TITLE,
-                data: clone(this.currentKanban),
-                details: `From "${oldTitle}" to "${newTitle}"`,
-            });
+        if (oldTitle === newTitle) {
+            return;
         }
-
+        this.history.push({
+            change: StateChanges.BOARD_TITLE,
+            data: clone(this.currentKanban),
+            details: `From "${oldTitle}" to "${newTitle}"`,
+        });
         this.currentKanban.title = newTitle;
-        this.endChange(updateHistory);
+        this.endChange(true);
     }
 
     /**
@@ -192,18 +208,17 @@ class BoardState {
         const column = this.currentKanban.cols[columnIdx];
         const oldTitle = column.title;
 
-        const updateHistory = oldTitle !== newTitle;
-
-        if (updateHistory) {
-            this.history.push({
-                change: StateChanges.COLUMN_TITLE,
-                data: clone(this.currentKanban),
-                details: `From "${oldTitle}" to "${newTitle}"`,
-            });
+        if (oldTitle === newTitle) {
+            return;
         }
 
+        this.history.push({
+            change: StateChanges.COLUMN_TITLE,
+            data: clone(this.currentKanban),
+            details: `From "${oldTitle}" to "${newTitle}"`,
+        });
         column.title = newTitle;
-        this.endChange(updateHistory);
+        this.endChange(true);
     }
 
     /**
@@ -443,7 +458,6 @@ class BoardState {
         if (task.id !== taskId) {
             return false;
         }
-        const copy = clone(this.currentKanban);
 
         const oldText = task.text;
         let oldTextDisplay = oldText;
@@ -460,7 +474,7 @@ class BoardState {
         if (updateHistory) {
             this.history.push({
                 change: StateChanges.TASK_TEXT,
-                data: copy,
+                data: clone(this.currentKanban),
                 details: `"${oldTextDisplay}" changed to "${newTextDisplay}"`,
             });
         }

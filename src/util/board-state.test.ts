@@ -83,12 +83,6 @@ describe('Board State', () => {
             boardState.setAutosave(newAutosave);
             expect(boardState.getCurrentState().autosave).toEqual(newAutosave);
         });
-
-        it('does not add anything to revision history', () => {
-            const oldHistoryLength = histLen();
-            boardState.setAutosave(!boardState.getCurrentState().autosave);
-            expect(histLen()).toEqual(oldHistoryLength);
-        });
     });
 
     describe('changeSaveToFile()', () => {
@@ -96,12 +90,6 @@ describe('Board State', () => {
             const newSTF = !boardState.getCurrentState().saveToFile;
             boardState.setSaveToFile(newSTF);
             expect(boardState.getCurrentState().saveToFile).toEqual(newSTF);
-        });
-
-        it('does not add anything to revision history', () => {
-            const oldHistoryLength = histLen();
-            boardState.setSaveToFile(!boardState.getCurrentState().saveToFile);
-            expect(histLen()).toEqual(oldHistoryLength);
         });
     });
 
@@ -111,12 +99,6 @@ describe('Board State', () => {
             boardState.setBoardTitle(newTitle);
             expect(boardState.getCurrentState().title).toEqual(newTitle);
         });
-
-        it('adds to revision history', () => {
-            const oldHistoryLength = histLen();
-            boardState.setBoardTitle(randomString());
-            expect(histLen()).toEqual(oldHistoryLength + 1);
-        });
     });
 
     describe('addColumn()', () => {
@@ -124,15 +106,8 @@ describe('Board State', () => {
             const oldNumCols = boardState.getCurrentState().cols.length;
             boardState.addColumn();
             expect(boardState.getCurrentState().cols.length).toEqual(oldNumCols + 1);
+            boardState.save(originalKanban);
         });
-
-        it('does not add to revision history', () => {
-            const oldHistoryLength = histLen();
-            boardState.addColumn();
-            expect(histLen()).toEqual(oldHistoryLength);
-        });
-
-        afterAll(() => boardState.save(originalKanban));
     });
 
     describe('removeColumn()', () => {
@@ -150,12 +125,6 @@ describe('Board State', () => {
             expect(boardState.getCurrentState()).toEqual(oldState);
         });
 
-        it('adds to revision history', () => {
-            const oldHistoryLength = histLen();
-            boardState.removeColumn(boardState.getCurrentState().cols[0].id);
-            expect(histLen()).toEqual(oldHistoryLength + 1);
-        });
-
         afterAll(() => boardState.save(originalKanban));
     });
 
@@ -165,12 +134,6 @@ describe('Board State', () => {
 
             boardState.setColumnTitle(originalColumn.id, newTitle);
             expect(boardState.getCurrentState().cols[0].title).toEqual(newTitle);
-        });
-
-        it('adds to revision history', () => {
-            const oldHistoryLength = histLen();
-            boardState.setColumnTitle(originalColumn.id, randomString());
-            expect(histLen()).toEqual(oldHistoryLength + 1);
         });
 
         it("does nothing if the column doesn't exist", () => {
@@ -201,12 +164,6 @@ describe('Board State', () => {
 
             boardState.setColumnColor(originalColumn.id, oldColor);
             expect(boardState.getCurrentState()).toEqual(oldState);
-        });
-
-        it('adds to revision history', () => {
-            const oldHistoryLength = histLen();
-            boardState.setColumnColor(originalColumn.id, randomString());
-            expect(histLen()).toEqual(oldHistoryLength + 1);
         });
 
         afterAll(() => boardState.save(originalKanban));
@@ -253,12 +210,6 @@ describe('Board State', () => {
             expect(boardState.getCurrentState()).toEqual(oldState);
         });
 
-        it('does not add to revision history', () => {
-            const oldHistoryLength = histLen();
-            boardState.addTask(originalColumn.id);
-            expect(histLen()).toEqual(oldHistoryLength);
-        });
-
         afterAll(() => boardState.save(originalKanban));
     });
 
@@ -280,18 +231,6 @@ describe('Board State', () => {
         it("does not remove a task if the columnId doesn't exist", () => {
             boardState.removeTask('bad', originalTask.id);
             kbEqual(boardState.getCurrentState(), originalKanban);
-        });
-
-        it('adds to revision history if a task has text', () => {
-            const oldHistoryLength = histLen();
-            boardState.removeTask(originalColumn.id, originalTask.id);
-            expect(histLen()).toEqual(oldHistoryLength + 1);
-        });
-
-        it('does not add to revision history if the task has no text', () => {
-            const oldHistoryLength = histLen();
-            boardState.removeTask(originalColumn.id, originalColumn.tasks[1].id);
-            expect(histLen()).toEqual(oldHistoryLength);
         });
     });
 
