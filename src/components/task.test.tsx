@@ -158,15 +158,4 @@ describe('<Task>', () => {
     });
 
     // Userevent not working with keyboard shortcuts for some reason
-
-    it('Does not propagate a contextmenu event', () => {
-        const setup = taskSetup();
-        const task = setup.next().value as HTMLDivElement;
-
-        const propagateSpy = jest.spyOn(MouseEvent.prototype, 'stopPropagation');
-        rightClick(task);
-
-        expect(propagateSpy).toHaveBeenCalled();
-        setup.next();
-    });
 });
