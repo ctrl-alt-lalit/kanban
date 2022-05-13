@@ -203,7 +203,7 @@ class BoardState {
         }
 
         column.title = newTitle;
-        this.endChange(true);
+        this.endChange(updateHistory);
     }
 
     /**

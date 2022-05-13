@@ -5,11 +5,14 @@
 -   Revision History shows current board state
 -   Changed Revision history icon
 -   You can change which file to save to (if you choose to save to a file)
-    -   This is done with a new extension setting `kanban.saveFiles.pathPreferences`. Usage is detailed in the [readme.](README.md)
+    -   This is done with a new extension setting, `kanban.saveFiles.pathPreferences`. Usage is detailed in the [readme.](README.md)
 -   Added a new settings panel!
     -   "Autosave" and "Save to File" settings are now toggle switches in the panel
     -   Can open global extension settings from the panel
 -   Tasks now inherit the colors of their column
+
+-   Bugfixes:
+    -   Column title edits don't show up in history if text wasn't changed
 
 ### 1.6.2
 
@@ -28,7 +31,7 @@
 
 ### 1.6.1
 
--   Bugfixes
+-   Bugfixes:
     -   Board saves on `Ctrl` + `S` again
     -   Coverage directory no longer included in extension
     -   `Ctrl` + `S` shows the "Board Saved" toast
