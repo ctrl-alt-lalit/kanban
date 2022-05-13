@@ -17,6 +17,7 @@ function* taskSetup() {
             columnId={defaultColumn.id}
             columnIndex={0}
             defaultToEdit={false}
+            colorFilter={'#ffffff40'}
         />
     );
     const task = wrapper.container.firstElementChild as HTMLDivElement;
@@ -44,12 +45,25 @@ jest.mock('react-beautiful-dnd', () => {
     };
 });
 
+jest.mock('react-markdown', () => (props: any) => {
+    return <>{props.children}</>;
+});
+
+jest.mock('remark-gfm', () => () => {});
+
 describe('<Task>', () => {
     it('Renders a task', () => {
         const taskData = createTaskJson(randomString());
 
         const wrapper = render(
-            <Task data={taskData} index={0} columnId={''} columnIndex={0} defaultToEdit={false} />
+            <Task
+                data={taskData}
+                index={0}
+                columnId={''}
+                columnIndex={0}
+                defaultToEdit={false}
+                colorFilter={'#ffffff40'}
+            />
         );
         const task = wrapper.container.firstElementChild as HTMLDivElement;
 
@@ -71,6 +85,7 @@ describe('<Task>', () => {
                 columnId={''}
                 columnIndex={0}
                 defaultToEdit={true}
+                colorFilter={'#ffffff40'}
             />
         );
 
@@ -90,6 +105,7 @@ describe('<Task>', () => {
         const removeTaskSpy = jest.spyOn(boardState, 'removeTask');
 
         userEvent.click(deleteButton);
+        jest.runAllTimers();
         expect(removeTaskSpy).toHaveBeenCalled();
 
         setup.next();
@@ -115,7 +131,7 @@ describe('<Task>', () => {
             const clicker = displayClicking(task);
             const textarea = clicker.next().value as HTMLTextAreaElement;
 
-            const editSpy = jest.spyOn(boardState, 'changeTaskText');
+            const editSpy = jest.spyOn(boardState, 'setTaskText');
             userEvent.type(textarea, 'blah blah');
             textarea.blur();
 
@@ -142,15 +158,4 @@ describe('<Task>', () => {
     });
 
     // Userevent not working with keyboard shortcuts for some reason
-
-    it('Does not propagate a contextmenu event', () => {
-        const setup = taskSetup();
-        const task = setup.next().value as HTMLDivElement;
-
-        const propagateSpy = jest.spyOn(MouseEvent.prototype, 'stopPropagation');
-        rightClick(task);
-
-        expect(propagateSpy).toHaveBeenCalled();
-        setup.next();
-    });
 });

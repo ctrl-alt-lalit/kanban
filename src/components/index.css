@@ -19,6 +19,7 @@ body {
 @import 'column.css';
 @import 'task.css';
 @import 'revision-history.css';
+@import 'settings.css';
 
 /*****************************
   CONTEXT MENU

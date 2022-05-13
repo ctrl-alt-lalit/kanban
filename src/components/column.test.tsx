@@ -24,6 +24,12 @@ jest.mock('react-beautiful-dnd', () => {
     };
 });
 
+jest.mock('react-markdown', () => (props: any) => {
+    return <>{props.children}</>;
+});
+
+jest.mock('remark-gfm', () => () => {});
+
 const defaultKanban = createKanbanJson('', [createColumnJson()]);
 const defaultColumn = defaultKanban.cols[0];
 
@@ -86,7 +92,7 @@ describe('<Column />', () => {
             const column = setup.next().value as HTMLDivElement;
 
             const title = column.querySelector('.column-titlebar input') as HTMLInputElement;
-            const editSpy = jest.spyOn(boardState, 'changeColumnTitle');
+            const editSpy = jest.spyOn(boardState, 'setColumnTitle');
 
             userEvent.dblClick(title);
             userEvent.type(title, 'blah');
@@ -182,7 +188,7 @@ describe('<Column />', () => {
             const picker = setup.next().value as HTMLDivElement;
 
             const swatch = picker.querySelector('button')!;
-            const changeSpy = jest.spyOn(boardState, 'changeColumnColor');
+            const changeSpy = jest.spyOn(boardState, 'setColumnColor');
             changeSpy.mockClear();
 
             userEvent.click(swatch);
@@ -206,7 +212,7 @@ describe('<Column />', () => {
                 const setup = inputSetup();
                 const input = setup.next().value as HTMLInputElement;
 
-                const changeSpy = jest.spyOn(boardState, 'changeColumnColor');
+                const changeSpy = jest.spyOn(boardState, 'setColumnColor');
                 changeSpy.mockClear();
                 userEvent.type(input, 'aaaaaa');
 
@@ -218,7 +224,7 @@ describe('<Column />', () => {
                 const setup = inputSetup();
                 const input = setup.next().value as HTMLInputElement;
 
-                const changeSpy = jest.spyOn(boardState, 'changeColumnColor');
+                const changeSpy = jest.spyOn(boardState, 'setColumnColor');
                 changeSpy.mockClear();
                 userEvent.type(input, 'aaa');
 

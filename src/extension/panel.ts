@@ -1,6 +1,12 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import Storage from './storage';
+import { KanbanJson } from '../util/kanban-types';
+
+export type ApiMessage = {
+    command: 'save' | 'load' | 'open-settings';
+    data: KanbanJson | null;
+};
 
 export default class Panel {
     static show(context: vscode.ExtensionContext) {
@@ -22,7 +28,13 @@ export default class Panel {
     private constructor(context: vscode.ExtensionContext, column: vscode.ViewColumn) {
         this.extensionPath = context.extensionPath;
         const workspaceFolders = vscode.workspace.workspaceFolders ?? [undefined];
-        this.storage = new Storage(context.workspaceState, workspaceFolders[0]?.uri.fsPath);
+        const savePaths = vscode.workspace.getConfiguration('kanban').saveFiles
+            .pathPreferences as unknown as string[];
+        this.storage = new Storage(
+            context.workspaceState,
+            workspaceFolders[0]?.uri.fsPath,
+            savePaths
+        );
         this.webviewPanel = vscode.window.createWebviewPanel('kanban', 'Kanban', column, {
             enableScripts: true,
             localResourceRoots: [vscode.Uri.file(this.extensionPath)],
@@ -98,7 +110,7 @@ export default class Panel {
 			`;
     }
 
-    private async receiveMessage(message: { command: string; data: any }): Promise<void> {
+    private async receiveMessage(message: ApiMessage): Promise<void> {
         const { command, data } = message;
         if (command === 'save') {
             this.storage.saveKanban(data);
@@ -108,6 +120,8 @@ export default class Panel {
                 command: 'load',
                 data: savedData,
             });
+        } else if (command === 'open-settings') {
+            vscode.commands.executeCommand('workbench.action.openSettings', '@ext:lbauskar.kanban');
         }
     }
 }

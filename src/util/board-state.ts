@@ -1,7 +1,6 @@
 import { createColumnJson, createKanbanJson, createTaskJson, KanbanJson } from './kanban-types';
-import VsCodeHandler, { VsCodeApi } from './vscode-handler';
+import VsCodeHandler from './vscode-handler';
 import clone from 'just-clone';
-declare var acquireVsCodeApi: () => VsCodeApi;
 
 /**
  * Enumeration of possible board state changes that can occur.
@@ -44,20 +43,8 @@ class BoardState {
      * Instantiate Object and load VsCode API if it's available.
      */
     constructor() {
-        let vscodeApi: VsCodeApi | null = null;
-        if (typeof acquireVsCodeApi === 'undefined') {
-            vscodeApi = {
-                postMessage: () => {
-                    return;
-                },
-            };
-        } else {
-            vscodeApi = acquireVsCodeApi();
-        }
-
-        this.vscodeHandler = new VsCodeHandler(vscodeApi);
-        this.vscodeHandler.addLoadListener(this.loadFromVscode);
-        this.vscodeHandler.load();
+        VsCodeHandler.addLoadListener(this.loadFromVscode);
+        VsCodeHandler.load();
     }
 
     /**
@@ -106,8 +93,8 @@ class BoardState {
     /**
      * @returns a copy of this BoardState's history list
      */
-    public getHistory() {
-        return clone(this.history);
+    public get history(): readonly HistoryObject[] {
+        return this.boardHistory;
     }
 
     /**
@@ -115,9 +102,18 @@ class BoardState {
      *
      * @param newAutosave desired autosave value for current board state
      */
-    public changeAutosave(newAutosave: boolean): void {
+    public setAutosave(newAutosave: boolean): void {
+        if (newAutosave === this.currentKanban.autosave) {
+            return;
+        }
+
+        this.boardHistory.push({
+            change: StateChanges.AUTOSAVE,
+            data: clone(this.currentKanban),
+            details: `Autosave turned ${newAutosave ? 'on' : 'off'}.`,
+        });
         this.currentKanban.autosave = newAutosave;
-        this.endChange(false);
+        this.endChange(true);
     }
 
     /**
@@ -125,9 +121,18 @@ class BoardState {
      *
      * @param newSaveToFile desired saveToFile value for current board state
      */
-    public changeSaveToFile(newSaveToFile: boolean): void {
+    public setSaveToFile(newSaveToFile: boolean): void {
+        if (newSaveToFile === this.currentKanban.saveToFile) {
+            return;
+        }
+
+        this.boardHistory.push({
+            change: StateChanges.SAVE_TO_FILE,
+            data: clone(this.currentKanban),
+            details: `Will save to ${newSaveToFile ? 'file' : 'workspace'}.`,
+        });
         this.currentKanban.saveToFile = newSaveToFile;
-        this.endChange(false);
+        this.endChange(true);
     }
 
     /**
@@ -138,21 +143,18 @@ class BoardState {
      *
      * @param newTitle desired title for current board state
      */
-    public changeBoardTitle(newTitle: string): void {
+    public setBoardTitle(newTitle: string): void {
         const oldTitle = this.currentKanban.title;
-
-        const updateHistory = oldTitle !== newTitle;
-
-        if (updateHistory) {
-            this.history.push({
-                change: StateChanges.BOARD_TITLE,
-                data: clone(this.currentKanban),
-                details: `From "${oldTitle}" to "${newTitle}"`,
-            });
+        if (oldTitle === newTitle) {
+            return;
         }
-
+        this.boardHistory.push({
+            change: StateChanges.BOARD_TITLE,
+            data: clone(this.currentKanban),
+            details: `From "${oldTitle}" to "${newTitle}"`,
+        });
         this.currentKanban.title = newTitle;
-        this.endChange(updateHistory);
+        this.endChange(true);
     }
 
     /**
@@ -177,7 +179,7 @@ class BoardState {
             return;
         }
 
-        this.history.push({
+        this.boardHistory.push({
             change: StateChanges.COLUMN_DELETED,
             data: clone(this.currentKanban),
             details: `Deleted "${this.currentKanban.cols[columnIdx].title}"`,
@@ -196,7 +198,7 @@ class BoardState {
      * @param id ID of column to edit
      * @param newTitle desired title of column
      */
-    public changeColumnTitle(id: string, newTitle: string) {
+    public setColumnTitle(id: string, newTitle: string) {
         const columnIdx = this.getColumnIndex(id);
         if (columnIdx === -1) {
             return;
@@ -205,16 +207,15 @@ class BoardState {
         const column = this.currentKanban.cols[columnIdx];
         const oldTitle = column.title;
 
-        const updateHistory = oldTitle !== newTitle;
-
-        if (updateHistory) {
-            this.history.push({
-                change: StateChanges.COLUMN_TITLE,
-                data: clone(this.currentKanban),
-                details: `From "${oldTitle}" to "${newTitle}"`,
-            });
+        if (oldTitle === newTitle) {
+            return;
         }
 
+        this.boardHistory.push({
+            change: StateChanges.COLUMN_TITLE,
+            data: clone(this.currentKanban),
+            details: `From "${oldTitle}" to "${newTitle}"`,
+        });
         column.title = newTitle;
         this.endChange(true);
     }
@@ -225,7 +226,7 @@ class BoardState {
      * @param id ID of column to edit
      * @param newColor desired color  of column
      */
-    public changeColumnColor(id: string, newColor: string) {
+    public setColumnColor(id: string, newColor: string) {
         const columnIdx = this.getColumnIndex(id);
         if (columnIdx === -1) {
             return;
@@ -236,7 +237,7 @@ class BoardState {
             return;
         }
 
-        this.history.push({
+        this.boardHistory.push({
             change: StateChanges.COLUMN_COLOR,
             data: clone(this.currentKanban),
             details: `"${column.title}" color changed`,
@@ -264,7 +265,7 @@ class BoardState {
             return;
         }
 
-        this.history.push({
+        this.boardHistory.push({
             change: StateChanges.COLUMN_MOVED,
             data: clone(this.currentKanban),
             details: `"${this.currentKanban.cols[columnIdx].title}" moved`,
@@ -314,7 +315,7 @@ class BoardState {
         const taskEmpty = task.text === '';
 
         if (!taskEmpty) {
-            this.history.push({
+            this.boardHistory.push({
                 change: StateChanges.TASK_DELETED,
                 data: clone(this.currentKanban),
                 details: `"${task.text}" removed from "${column.title}"`,
@@ -366,18 +367,18 @@ class BoardState {
      * Rolls back the current state to the state found at changeHistory[index].
      * @param index index into BoardState's change history that the current state should be rolled back to
      */
-    public undoChange(index: number) {
-        if (index < 0 || index >= this.history.length) {
+    public rollBackHistory(index: number) {
+        if (index < 0 || index >= this.boardHistory.length) {
             return;
         }
 
-        this.history.push({
+        this.boardHistory.push({
             change: StateChanges.HISTORY_REVERSED,
             data: clone(this.currentKanban),
             details: `Changes reversed to item ${index + 1}`,
         });
 
-        const newKanban = clone(this.history[index].data);
+        const newKanban = clone(this.boardHistory[index].data);
         this.currentKanban = newKanban;
 
         this.endChange(true);
@@ -389,7 +390,7 @@ class BoardState {
      */
     public save(kanban: KanbanJson | null = null) {
         if (kanban) {
-            this.history.push({
+            this.boardHistory.push({
                 change: StateChanges.BOARD_LOADED,
                 data: clone(this.currentKanban),
                 details: '',
@@ -397,13 +398,13 @@ class BoardState {
 
             this.currentKanban = clone(kanban);
             this.historyUpdateListeners.forEach((listener) =>
-                listener(this.history[this.history.length - 1])
+                listener(this.boardHistory[this.boardHistory.length - 1])
             );
             this.refreshKanban();
         }
 
         this.hasChangedSinceSave = false;
-        this.vscodeHandler.save(this.currentKanban);
+        VsCodeHandler.save(this.currentKanban);
     }
 
     /**
@@ -417,7 +418,7 @@ class BoardState {
      * Make the kanban-change listeners load a given StrictKanbanJSON
      * @param kanban StrictKanbanJSON to load
      */
-    public forceReload(kanban: KanbanJson) {
+    public displayKanban(kanban: KanbanJson) {
         this.kanbanChangeListeners.forEach((listener) => listener(kanban));
     }
 
@@ -435,7 +436,7 @@ class BoardState {
      * @param taskId ID of task to edit
      * @param newText desired text of the task
      */
-    public changeTaskText(
+    public setTaskText(
         columnId: string,
         columnIndex: number,
         taskId: string,
@@ -456,7 +457,6 @@ class BoardState {
         if (task.id !== taskId) {
             return false;
         }
-        const copy = clone(this.currentKanban);
 
         const oldText = task.text;
         let oldTextDisplay = oldText;
@@ -471,9 +471,9 @@ class BoardState {
 
         const updateHistory = oldText.length !== 0 && oldText !== newText;
         if (updateHistory) {
-            this.history.push({
+            this.boardHistory.push({
                 change: StateChanges.TASK_TEXT,
-                data: copy,
+                data: clone(this.currentKanban),
                 details: `"${oldTextDisplay}" changed to "${newTextDisplay}"`,
             });
         }
@@ -486,13 +486,11 @@ class BoardState {
     /*******************
      * Private Methods *
      *******************/
-
-    private vscodeHandler;
     private currentKanban = createKanbanJson();
     private kanbanChangeListeners: Array<(kanban: KanbanJson) => void> = [];
     private historyUpdateListeners: Array<(historyStep: HistoryObject) => void> = [];
 
-    private history: HistoryObject[] = [];
+    private boardHistory: HistoryObject[] = [];
 
     private loadFromVscode = (kanban: KanbanJson) => {
         this.currentKanban = kanban;
@@ -512,7 +510,7 @@ class BoardState {
 
         if (updateHistory) {
             this.historyUpdateListeners.forEach((listener) =>
-                listener(this.history[this.history.length - 1])
+                listener(this.boardHistory[this.boardHistory.length - 1])
             );
         }
 

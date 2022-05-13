@@ -50,7 +50,7 @@ function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; i
         if (color.length < 6) {
             return;
         }
-        boardState.changeColumnColor(data.id, color);
+        boardState.setColumnColor(data.id, color);
     };
 
     const colorPickerStyle = {
@@ -98,6 +98,8 @@ function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; i
             (event.currentTarget.style.backgroundColor = 'inherit'),
     } as const;
 
+    const colorFilter = data.color + '40';
+
     return (
         <div
             className="column"
@@ -107,11 +109,15 @@ function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; i
                 width: `${100 / numCols}%`,
             }}
             onContextMenu={(event) => {
-                event.preventDefault();
-                setMenuAnchorPoint({ x: event.clientX, y: event.clientY });
-                toggleMenu(true);
-                event.stopPropagation();
+                if (event.cancelable) {
+                    //menu on task will set cancellable false
+                    event.preventDefault();
+                    setMenuAnchorPoint({ x: event.clientX, y: event.clientY });
+                    toggleMenu(true);
+                    event.stopPropagation();
+                }
             }}
+            id={data.id}
         >
             {/* Customize context menu */}
             <ControlledMenu
@@ -142,7 +148,7 @@ function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; i
                     className="column-title"
                     style={{ color: data.color, outlineColor: data.color }}
                     onChange={(event) => setTitle(event.target.value)}
-                    onBlur={() => boardState.changeColumnTitle(data.id, title)}
+                    onBlur={() => boardState.setColumnTitle(data.id, title)}
                 />
                 <a
                     className="column-settings-toggle"
@@ -255,6 +261,7 @@ function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; i
                                 columnId={data.id}
                                 columnIndex={index}
                                 defaultToEdit={IdOfTaskJustAdded === task.id}
+                                colorFilter={colorFilter}
                             />
                         ))}
                         {provided.placeholder}

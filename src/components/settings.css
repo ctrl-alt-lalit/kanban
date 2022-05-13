@@ -1,0 +1,132 @@
+/* Imported by index.css, do NOT import manually */
+
+.settings {
+    background-color: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    display: flex;
+    overflow-x: hidden;
+    width: 15%;
+}
+
+.settings h2 {
+    font-weight: normal;
+    width: 90%;
+    font-size: 1rem;;
+}
+
+
+.settings h2 .label {
+    white-space: nowrap;
+    margin-top: 0.5rem;
+    display: inline-block;
+    margin-left: 0.5rem;
+}
+
+
+.settings-titlebar {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    width: 100%;
+    margin-left: auto;
+}
+
+.settings-titlebar a {
+    cursor: pointer;
+    color: var(--vscode-editor-foreground) !important;
+    font-size: 2.5rem !important;
+    margin-left: 0.5rem;
+}
+
+.settings-titlebar a .codicon {
+    margin-top: 0.5rem !important;
+    font-size: 2rem !important;
+    transition: color 0.2s;
+    font-weight: bold;
+}
+
+.settings-titlebar a:hover .codicon,
+.settings-titlebar a:focus .codicon,
+.settings-titlebar a:active .codicon {
+    color: var(--vscode-editor-selectionBackground) !important;
+}
+
+
+a.settings-link {
+    cursor: pointer;
+    color: var(--vscode-editor-foreground) !important;
+    /* border-bottom: 1px var(--vscode-editor-foreground) solid; */
+    padding: 3px;
+    padding-right: 5px;
+    transition: 0.2s;
+    display: inline-flex;
+    margin-left: 4px;
+}
+
+a.settings-link .codicon {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+}
+
+a.settings-link:hover,
+a.settings-link:focus,
+a.settings-link:active {
+    color: var(--vscode-editor-selectionBackground) !important;
+    /* border-color: var(--vscode-editor-selectionBackground); */
+}
+
+
+/*****************************
+  Toggle Switch
+*****************************/
+
+.toggle-switch {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+}
+
+.toggle-switch-label {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    width: 4rem;
+    height: 2rem;
+    border-radius: 4rem;
+    position: relative;
+    transition: background-color 0.2s;
+    margin-right: 0.5rem;
+    margin-bottom: -0.5rem;
+}
+
+.toggle-switch-label .toggle-switch-button {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 1.6rem;
+    transition: 0.2s;
+    background-color: var(--vscode-editor-foreground);
+    box-shadow: 0 0 2px 0 rgba(10, 10, 10, 0.29);
+    text-align: center;
+}
+
+.toggle-switch:checked + .toggle-switch-label .toggle-switch-button {
+    left: calc(100% - 2px);
+    transform: translateX(-100%);
+}
+
+.toggle-switch-button .codicon {
+    font-size: 1.5rem !important;
+    color: var(--vscode-editor-background);
+    margin-top: 0.15rem;
+    margin-left: 0.05rem;
+    transition: color 0.3s;
+}

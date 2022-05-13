@@ -1,3 +1,4 @@
+import clone from 'just-clone';
 import React from 'react';
 import boardState, { HistoryObject, StateChanges } from '../util/board-state';
 
@@ -10,14 +11,13 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; op
         super(props);
 
         this.state = {
-            history: boardState.getHistory(),
+            history: clone(boardState.history) as HistoryObject[],
             open: false,
         };
-
-        window.addEventListener('toggle-history', this.toggleListener);
     }
 
     componentDidMount() {
+        window.addEventListener('toggle-history', this.toggleListener);
         boardState.addHistoryUpdateListener(this.historyUpdater);
     }
 
@@ -28,7 +28,7 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; op
 
     render(): JSX.Element {
         const style = {
-            // CSS styles so that this panel will "swipe" open and closed
+            // CSS styles so that this panel will 'swipe' open and closed
             maxWidth: this.state.open ? '25%' : 0,
             transition: 'max-width 0.3s ease 0s',
             pointerEvents: this.state.open ? 'all' : 'none',
@@ -51,19 +51,38 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; op
                         return (
                             <a
                                 className="history-item"
-                                onClick={() => boardState.undoChange(index)}
+                                onClick={() => boardState.rollBackHistory(index)}
                                 key={index}
-                                onMouseEnter={() => boardState.forceReload(histObj.data)}
+                                onMouseEnter={() => boardState.displayKanban(histObj.data)}
                                 onMouseLeave={() => boardState.refreshKanban()}
                             >
-                                <h3>
-                                    {' '}
-                                    {`${index + 1}.`} {this.stateChangeName(prevChange)}{' '}
-                                </h3>
+                                <h3>{`${index + 1}. ${this.stateChangeName(prevChange)}`}</h3>
                                 <p> {prevDetail} </p>
                             </a>
                         );
                     })}
+
+                    {(() => {
+                        const mostRecent =
+                            this.state.history.length > 0
+                                ? this.state.history[this.state.history.length - 1]
+                                : null;
+                        const mostRecentChange = mostRecent
+                            ? `${this.stateChangeName(mostRecent.change)} (Current Kanban)`
+                            : 'Current Kanban';
+                        const mostRecentDetail = mostRecent ? mostRecent.details : '';
+                        return (
+                            <a
+                                className="history-item"
+                                key={this.state.history.length + 1}
+                                onMouseEnter={() => boardState.refreshKanban()}
+                                onMouseLeave={() => boardState.refreshKanban()}
+                            >
+                                <h3> {`${this.state.history.length + 1}. ${mostRecentChange}`}</h3>
+                                <p> {mostRecentDetail} </p>
+                            </a>
+                        );
+                    })()}
                 </div>
             </div>
         );
@@ -106,6 +125,9 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; op
                 return 'Loaded Kanban';
             case StateChanges.COLUMN_MOVED:
                 return 'Moved Column';
+            case StateChanges.AUTOSAVE:
+            case StateChanges.SAVE_TO_FILE:
+                return 'Settings Changed';
             default:
                 return 'ERROR';
         }

@@ -4,10 +4,8 @@ import { createColumnJson, createKanbanJson, createTaskJson, KanbanJson } from '
 import { randomInteger, randomString } from './test-helpers';
 import VsCodeHandler from './vscode-handler';
 
-jest.useFakeTimers();
-
 function histLen() {
-    return boardState.getHistory().length;
+    return boardState.history.length;
 }
 
 function kbEqual(actual: any, expected: any) {
@@ -82,44 +80,24 @@ describe('Board State', () => {
     describe('changeAutosave()', () => {
         it("changes a board's autosave state", () => {
             const newAutosave = !boardState.getCurrentState().autosave;
-            boardState.changeAutosave(newAutosave);
+            boardState.setAutosave(newAutosave);
             expect(boardState.getCurrentState().autosave).toEqual(newAutosave);
-        });
-
-        it('does not add anything to revision history', () => {
-            const oldHistoryLength = histLen();
-            boardState.changeAutosave(!boardState.getCurrentState().autosave);
-            expect(histLen()).toEqual(oldHistoryLength);
         });
     });
 
     describe('changeSaveToFile()', () => {
         it("changes a board's save-to-file status", () => {
             const newSTF = !boardState.getCurrentState().saveToFile;
-            boardState.changeSaveToFile(newSTF);
+            boardState.setSaveToFile(newSTF);
             expect(boardState.getCurrentState().saveToFile).toEqual(newSTF);
-        });
-
-        it('does not add anything to revision history', () => {
-            const oldHistoryLength = histLen();
-            boardState.changeSaveToFile(!boardState.getCurrentState().saveToFile);
-            expect(histLen()).toEqual(oldHistoryLength);
         });
     });
 
     describe('changeBoardTitle()', () => {
         it("changes a board's title", () => {
             const newTitle = randomString();
-            boardState.changeBoardTitle(newTitle);
+            boardState.setBoardTitle(newTitle);
             expect(boardState.getCurrentState().title).toEqual(newTitle);
-        });
-
-        it('adds to revision history', () => {
-            const oldHistoryLength = histLen();
-            jest.clearAllTimers();
-            boardState.changeBoardTitle(randomString());
-            jest.runAllTimers();
-            expect(histLen()).toEqual(oldHistoryLength + 1);
         });
     });
 
@@ -128,15 +106,8 @@ describe('Board State', () => {
             const oldNumCols = boardState.getCurrentState().cols.length;
             boardState.addColumn();
             expect(boardState.getCurrentState().cols.length).toEqual(oldNumCols + 1);
+            boardState.save(originalKanban);
         });
-
-        it('does not add to revision history', () => {
-            const oldHistoryLength = histLen();
-            boardState.addColumn();
-            expect(histLen()).toEqual(oldHistoryLength);
-        });
-
-        afterAll(() => boardState.save(originalKanban));
     });
 
     describe('removeColumn()', () => {
@@ -154,12 +125,6 @@ describe('Board State', () => {
             expect(boardState.getCurrentState()).toEqual(oldState);
         });
 
-        it('adds to revision history', () => {
-            const oldHistoryLength = histLen();
-            boardState.removeColumn(boardState.getCurrentState().cols[0].id);
-            expect(histLen()).toEqual(oldHistoryLength + 1);
-        });
-
         afterAll(() => boardState.save(originalKanban));
     });
 
@@ -167,20 +132,13 @@ describe('Board State', () => {
         it("changes a column's title", () => {
             const newTitle = randomString();
 
-            boardState.changeColumnTitle(originalColumn.id, newTitle);
+            boardState.setColumnTitle(originalColumn.id, newTitle);
             expect(boardState.getCurrentState().cols[0].title).toEqual(newTitle);
-        });
-
-        it('adds to revision history', () => {
-            const oldHistoryLength = histLen();
-            boardState.changeColumnTitle(originalColumn.id, randomString());
-            jest.runAllTimers();
-            expect(histLen()).toEqual(oldHistoryLength + 1);
         });
 
         it("does nothing if the column doesn't exist", () => {
             const oldState = boardState.getCurrentState();
-            boardState.changeColumnTitle('bad', randomString());
+            boardState.setColumnTitle('bad', randomString());
             expect(oldState).toEqual(boardState.getCurrentState());
         });
 
@@ -190,13 +148,13 @@ describe('Board State', () => {
     describe('changeColumnColor()', () => {
         it("changes a column's color", () => {
             const newColor = randomString();
-            boardState.changeColumnColor(originalColumn.id, newColor);
+            boardState.setColumnColor(originalColumn.id, newColor);
             expect(boardState.getCurrentState().cols[0].color).toEqual(newColor);
         });
 
         it("does nothing if the column doesn't exist", () => {
             const oldState = boardState.getCurrentState();
-            boardState.changeColumnColor('bad', randomString());
+            boardState.setColumnColor('bad', randomString());
             expect(boardState.getCurrentState()).toEqual(oldState);
         });
 
@@ -204,14 +162,8 @@ describe('Board State', () => {
             const oldState = boardState.getCurrentState();
             const oldColor = oldState.cols[0].color;
 
-            boardState.changeColumnColor(originalColumn.id, oldColor);
+            boardState.setColumnColor(originalColumn.id, oldColor);
             expect(boardState.getCurrentState()).toEqual(oldState);
-        });
-
-        it('adds to revision history', () => {
-            const oldHistoryLength = histLen();
-            boardState.changeColumnColor(originalColumn.id, randomString());
-            expect(histLen()).toEqual(oldHistoryLength + 1);
         });
 
         afterAll(() => boardState.save(originalKanban));
@@ -258,12 +210,6 @@ describe('Board State', () => {
             expect(boardState.getCurrentState()).toEqual(oldState);
         });
 
-        it('does not add to revision history', () => {
-            const oldHistoryLength = histLen();
-            boardState.addTask(originalColumn.id);
-            expect(histLen()).toEqual(oldHistoryLength);
-        });
-
         afterAll(() => boardState.save(originalKanban));
     });
 
@@ -285,18 +231,6 @@ describe('Board State', () => {
         it("does not remove a task if the columnId doesn't exist", () => {
             boardState.removeTask('bad', originalTask.id);
             kbEqual(boardState.getCurrentState(), originalKanban);
-        });
-
-        it('adds to revision history if a task has text', () => {
-            const oldHistoryLength = histLen();
-            boardState.removeTask(originalColumn.id, originalTask.id);
-            expect(histLen()).toEqual(oldHistoryLength + 1);
-        });
-
-        it('does not add to revision history if the task has no text', () => {
-            const oldHistoryLength = histLen();
-            boardState.removeTask(originalColumn.id, originalColumn.tasks[1].id);
-            expect(histLen()).toEqual(oldHistoryLength);
         });
     });
 
@@ -333,28 +267,26 @@ describe('Board State', () => {
         it('checks for valid IDs and Indices', () => {
             //bad column index
             expect(
-                boardState.changeTaskText(originalColumn.id, -1, originalTask.id, 0, 'blah')
+                boardState.setTaskText(originalColumn.id, -1, originalTask.id, 0, 'blah')
             ).toEqual(false);
 
             //bad task index
             expect(
-                boardState.changeTaskText(originalColumn.id, 0, originalTask.id, -1, 'blah')
+                boardState.setTaskText(originalColumn.id, 0, originalTask.id, -1, 'blah')
             ).toEqual(false);
 
             //bad column id
-            expect(boardState.changeTaskText('bad', 0, originalTask.id, 0, 'blah')).toEqual(false);
+            expect(boardState.setTaskText('bad', 0, originalTask.id, 0, 'blah')).toEqual(false);
 
             //bad task id
-            expect(boardState.changeTaskText(originalColumn.id, 0, 'bad', 0, 'blah')).toEqual(
-                false
-            );
+            expect(boardState.setTaskText(originalColumn.id, 0, 'bad', 0, 'blah')).toEqual(false);
         });
 
         it("changes the task's text", () => {
             const newText = randomString();
 
             expect(
-                boardState.changeTaskText(originalColumn.id, 0, originalTask.id, 0, newText)
+                boardState.setTaskText(originalColumn.id, 0, originalTask.id, 0, newText)
             ).toEqual(true);
 
             expect(boardState.getCurrentState().cols[0].tasks[0].text).toEqual(newText);
@@ -366,21 +298,21 @@ describe('Board State', () => {
 
         it('reverts a kanban to a previous point in revision history', () => {
             const index = randomInteger(histLen());
-            const oldState = boardState.getHistory()[index].data;
-            boardState.undoChange(index);
+            const oldState = boardState.history[index].data;
+            boardState.rollBackHistory(index);
             kbEqual(boardState.getCurrentState(), oldState);
         });
 
         it('does nothing if the provided index is out of bounds', () => {
-            boardState.undoChange(-1);
-            boardState.undoChange(histLen());
+            boardState.rollBackHistory(-1);
+            boardState.rollBackHistory(histLen());
             kbEqual(boardState.getCurrentState(), originalKanban);
         });
     });
 
     describe('save()', () => {
         it('saves the board to VsCode', () => {
-            const spy = jest.spyOn(VsCodeHandler.prototype as any, 'save');
+            const spy = jest.spyOn(VsCodeHandler, 'save');
 
             boardState.save();
             expect(spy).toHaveBeenCalled();
@@ -395,7 +327,7 @@ describe('Board State', () => {
             boardState.addKanbanChangeListener(listener);
 
             const newData = createKanbanJson();
-            boardState.forceReload(newData);
+            boardState.displayKanban(newData);
 
             expect(result).toEqual(newData);
         });

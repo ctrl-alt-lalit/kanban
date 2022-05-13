@@ -13,15 +13,20 @@
     display: inline-flex;
     flex-direction: row-reverse;
     justify-content: space-between;
+    transition: background-color 0.2s;
 }
 
 .task-handle .codicon[class*='codicon-'] {
-    color: var(--vscode-activityBar-foreground);
     vertical-align: bottom;
 }
 
+.task-handle .codicon-gripper {
+    color: var(--vscode-activityBar-foreground);
+    opacity: 0.25;
+}
+
 .task-delete {
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, color 0.3s;
     color: var(--vscode-activityBar-foreground);
     cursor: pointer;
 }
@@ -29,8 +34,8 @@
 .task-delete:hover,
 .task-delete:focus,
 .task-delete:active {
-    color: var(--vscode-activityBar-foreground);
-    background-color: var(--vscode-charts-red);
+    color: var(--vscode-activityBar-background);
+    background-color: var(--vscode-activityBar-foreground);
 }
 
 .task-section {
@@ -39,14 +44,14 @@
     color: var(--vscode-editor-foreground);
     margin: 0 !important;
     width: 100% !important;
-    border: 1px solid var(--vscode-activityBar-background) !important;
+    border: 1px solid var(--vscode-activityBar-background);
     box-sizing: border-box !important;
     cursor: text;
+    transition: border-color 0.2s;
 }
 
 .task-edit {
     padding: 0;
-    border-width: 0;
 }
 
 .task-edit:focus {
@@ -57,4 +62,30 @@
     margin-block-start: 0;
     margin-block-end: 0;
     overflow-wrap: break-word;
+}
+
+.task-added {
+    animation: grow-task;
+    animation-duration: 0.2s;
+    animation-timing-function: ease-out;
+    overflow: hidden;
+}
+
+@keyframes grow-task {
+    from {
+        max-height: 0;
+    }
+
+    to {
+        max-height: 5vh;
+    }
+}
+
+.task-deleted {
+    animation: grow-task;
+    animation-duration: 0.2s;
+    animation-timing-function: ease-in;
+    overflow: hidden;
+    animation-direction: reverse;
+    pointer-events: none;
 }

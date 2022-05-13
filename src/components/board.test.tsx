@@ -5,6 +5,12 @@ import { createColumnJson, createKanbanJson } from '../util/kanban-types';
 import userEvent from '@testing-library/user-event';
 import { randomString } from '../util/test-helpers';
 
+jest.mock('react-markdown', () => (props: any) => {
+    return <>{props.children}</>;
+});
+
+jest.mock('remark-gfm', () => () => {});
+
 function* boardSetup() {
     const defaultKanban = createKanbanJson();
     boardState.save(defaultKanban);
@@ -40,7 +46,7 @@ describe('<Board />', () => {
             const board = setup.next().value as HTMLDivElement;
 
             const title = board.querySelector('input.board-title') as HTMLInputElement;
-            const spy = jest.spyOn(boardState, 'changeBoardTitle');
+            const spy = jest.spyOn(boardState, 'setBoardTitle');
 
             userEvent.type(title, 'blah');
             title.blur();
@@ -83,20 +89,16 @@ describe('<Board />', () => {
             const setup = boardSetup();
             const board = setup.next().value as HTMLDivElement;
 
-            const settingsButton = board.querySelector('a.board-settings-toggle')!;
-            const settingsPanel = board.querySelector('.board-settings') as HTMLDivElement;
+            const historyButton = board.querySelector('a.board-settings-toggle')!;
+            const spy = jest.spyOn(window, 'dispatchEvent');
 
-            expect(settingsPanel.style.opacity).toEqual('0');
-
-            userEvent.click(settingsButton);
-            expect(settingsPanel.style.opacity).toEqual('1');
-
-            userEvent.click(settingsButton);
-            expect(settingsPanel.style.opacity).toEqual('0');
+            userEvent.click(historyButton);
+            expect(spy).toHaveBeenCalled();
             setup.next();
         });
     });
 
+    /*
     describe('settings panel', () => {
         function* settingsSetup() {
             const setup = boardSetup();
@@ -135,6 +137,7 @@ describe('<Board />', () => {
             setup.next();
         });
     });
+    */
 
     it('can add a column', () => {
         const setup = boardSetup();
