@@ -1,3 +1,4 @@
+import clone from 'just-clone';
 import React from 'react';
 import boardState, { HistoryObject, StateChanges } from '../util/board-state';
 
@@ -10,7 +11,7 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; op
         super(props);
 
         this.state = {
-            history: boardState.getHistory(),
+            history: clone(boardState.history) as HistoryObject[],
             open: false,
         };
     }

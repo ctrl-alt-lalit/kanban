@@ -5,7 +5,7 @@ import { randomInteger, randomString } from './test-helpers';
 import VsCodeHandler from './vscode-handler';
 
 function histLen() {
-    return boardState.getHistory().length;
+    return boardState.history.length;
 }
 
 function kbEqual(actual: any, expected: any) {
@@ -298,7 +298,7 @@ describe('Board State', () => {
 
         it('reverts a kanban to a previous point in revision history', () => {
             const index = randomInteger(histLen());
-            const oldState = boardState.getHistory()[index].data;
+            const oldState = boardState.history[index].data;
             boardState.rollBackHistory(index);
             kbEqual(boardState.getCurrentState(), oldState);
         });

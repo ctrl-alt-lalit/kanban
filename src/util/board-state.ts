@@ -93,9 +93,8 @@ class BoardState {
     /**
      * @returns a copy of this BoardState's history list
      */
-    public getHistory() {
-        //TODO: change to readonly reference
-        return clone(this.history);
+    public get history(): readonly HistoryObject[] {
+        return this.boardHistory;
     }
 
     /**
@@ -108,7 +107,7 @@ class BoardState {
             return;
         }
 
-        this.history.push({
+        this.boardHistory.push({
             change: StateChanges.AUTOSAVE,
             data: clone(this.currentKanban),
             details: `Autosave turned ${newAutosave ? 'on' : 'off'}.`,
@@ -127,7 +126,7 @@ class BoardState {
             return;
         }
 
-        this.history.push({
+        this.boardHistory.push({
             change: StateChanges.SAVE_TO_FILE,
             data: clone(this.currentKanban),
             details: `Will save to ${newSaveToFile ? 'file' : 'workspace'}.`,
@@ -149,7 +148,7 @@ class BoardState {
         if (oldTitle === newTitle) {
             return;
         }
-        this.history.push({
+        this.boardHistory.push({
             change: StateChanges.BOARD_TITLE,
             data: clone(this.currentKanban),
             details: `From "${oldTitle}" to "${newTitle}"`,
@@ -180,7 +179,7 @@ class BoardState {
             return;
         }
 
-        this.history.push({
+        this.boardHistory.push({
             change: StateChanges.COLUMN_DELETED,
             data: clone(this.currentKanban),
             details: `Deleted "${this.currentKanban.cols[columnIdx].title}"`,
@@ -212,7 +211,7 @@ class BoardState {
             return;
         }
 
-        this.history.push({
+        this.boardHistory.push({
             change: StateChanges.COLUMN_TITLE,
             data: clone(this.currentKanban),
             details: `From "${oldTitle}" to "${newTitle}"`,
@@ -238,7 +237,7 @@ class BoardState {
             return;
         }
 
-        this.history.push({
+        this.boardHistory.push({
             change: StateChanges.COLUMN_COLOR,
             data: clone(this.currentKanban),
             details: `"${column.title}" color changed`,
@@ -266,7 +265,7 @@ class BoardState {
             return;
         }
 
-        this.history.push({
+        this.boardHistory.push({
             change: StateChanges.COLUMN_MOVED,
             data: clone(this.currentKanban),
             details: `"${this.currentKanban.cols[columnIdx].title}" moved`,
@@ -316,7 +315,7 @@ class BoardState {
         const taskEmpty = task.text === '';
 
         if (!taskEmpty) {
-            this.history.push({
+            this.boardHistory.push({
                 change: StateChanges.TASK_DELETED,
                 data: clone(this.currentKanban),
                 details: `"${task.text}" removed from "${column.title}"`,
@@ -369,17 +368,17 @@ class BoardState {
      * @param index index into BoardState's change history that the current state should be rolled back to
      */
     public rollBackHistory(index: number) {
-        if (index < 0 || index >= this.history.length) {
+        if (index < 0 || index >= this.boardHistory.length) {
             return;
         }
 
-        this.history.push({
+        this.boardHistory.push({
             change: StateChanges.HISTORY_REVERSED,
             data: clone(this.currentKanban),
             details: `Changes reversed to item ${index + 1}`,
         });
 
-        const newKanban = clone(this.history[index].data);
+        const newKanban = clone(this.boardHistory[index].data);
         this.currentKanban = newKanban;
 
         this.endChange(true);
@@ -391,7 +390,7 @@ class BoardState {
      */
     public save(kanban: KanbanJson | null = null) {
         if (kanban) {
-            this.history.push({
+            this.boardHistory.push({
                 change: StateChanges.BOARD_LOADED,
                 data: clone(this.currentKanban),
                 details: '',
@@ -399,7 +398,7 @@ class BoardState {
 
             this.currentKanban = clone(kanban);
             this.historyUpdateListeners.forEach((listener) =>
-                listener(this.history[this.history.length - 1])
+                listener(this.boardHistory[this.boardHistory.length - 1])
             );
             this.refreshKanban();
         }
@@ -472,7 +471,7 @@ class BoardState {
 
         const updateHistory = oldText.length !== 0 && oldText !== newText;
         if (updateHistory) {
-            this.history.push({
+            this.boardHistory.push({
                 change: StateChanges.TASK_TEXT,
                 data: clone(this.currentKanban),
                 details: `"${oldTextDisplay}" changed to "${newTextDisplay}"`,
@@ -491,7 +490,7 @@ class BoardState {
     private kanbanChangeListeners: Array<(kanban: KanbanJson) => void> = [];
     private historyUpdateListeners: Array<(historyStep: HistoryObject) => void> = [];
 
-    private history: HistoryObject[] = [];
+    private boardHistory: HistoryObject[] = [];
 
     private loadFromVscode = (kanban: KanbanJson) => {
         this.currentKanban = kanban;
@@ -511,7 +510,7 @@ class BoardState {
 
         if (updateHistory) {
             this.historyUpdateListeners.forEach((listener) =>
-                listener(this.history[this.history.length - 1])
+                listener(this.boardHistory[this.boardHistory.length - 1])
             );
         }
 

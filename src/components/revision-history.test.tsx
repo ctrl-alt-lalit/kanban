@@ -55,7 +55,7 @@ describe('Revision History', () => {
         const histScroller = it.next().value as HTMLDivElement;
 
         const numHistItems = histScroller.childElementCount;
-        expect(numHistItems).toBe(boardState.getHistory().length + 1);
+        expect(numHistItems).toBe(boardState.history.length + 1);
 
         const secondToLast = Array.from(histScroller.childNodes)[
             numHistItems - 2
@@ -93,7 +93,7 @@ describe('Revision History', () => {
         boardState.rollBackHistory(0);
 
         const histScroller = it.next().value as HTMLDivElement;
-        expect(histScroller.childElementCount).toBe(boardState.getHistory().length + 1);
+        expect(histScroller.childElementCount).toBe(boardState.history.length + 1);
 
         it.return();
     });
