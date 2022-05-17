@@ -1,9 +1,15 @@
 /* Imported by index.css, do NOT import manually */
 
+:root {
+    --task-background: var(--vscode-activityBar-background);
+    --task-foreground: var(--vscode-chart);
+    --task-icon: var(--vscode-activityBar-foreground);
+}
+
 .task {
     margin-top: 0.5rem;
-    background-color: var(--vscode-activityBar-background);
-    color: var(--vscode-chart);
+    background-color: var(--task-background);
+    /* color: var(--task-foreground); */
 }
 
 .task-handle {
@@ -21,21 +27,21 @@
 }
 
 .task-handle .codicon-gripper {
-    color: var(--vscode-activityBar-foreground);
+    color: var(--task-icon);
     opacity: 0.25;
 }
 
 .task-delete {
     transition: background-color 0.3s, color 0.3s;
-    color: var(--vscode-activityBar-foreground);
+    color: var(--task-icon);
     cursor: pointer;
 }
 
 .task-delete:hover,
 .task-delete:focus,
 .task-delete:active {
-    color: var(--vscode-activityBar-background);
-    background-color: var(--vscode-activityBar-foreground);
+    color: var(--task-background);
+    background-color: var(--task-icon);
 }
 
 .task-section {
@@ -44,7 +50,7 @@
     color: var(--vscode-editor-foreground);
     margin: 0 !important;
     width: 100% !important;
-    border: 1px solid var(--vscode-activityBar-background);
+    border: 1px solid var(--task-background);
     box-sizing: border-box !important;
     cursor: text;
     transition: border-color 0.2s;

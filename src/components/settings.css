@@ -1,8 +1,14 @@
 /* Imported by index.css, do NOT import manually */
 
+:root {
+    --settings-background: var(--vscode-editor-background);
+    --settings-foreground: var(--vscode-editor-foreground);
+    --settings-link: var(--vscode-editor-selectionBackground);
+}
+
 .settings {
-    background-color: var(--vscode-editor-background);
-    color: var(--vscode-editor-foreground);
+    background-color: var(--settings-background);
+    color: var(--settings-foreground);
     height: 100%;
     flex-direction: column;
     align-items: center;
@@ -36,7 +42,7 @@
 
 .settings-titlebar a {
     cursor: pointer;
-    color: var(--vscode-editor-foreground) !important;
+    color: var(--settings-foreground) !important;
     font-size: 2.5rem !important;
     margin-left: 0.5rem;
 }
@@ -51,14 +57,14 @@
 .settings-titlebar a:hover .codicon,
 .settings-titlebar a:focus .codicon,
 .settings-titlebar a:active .codicon {
-    color: var(--vscode-editor-selectionBackground) !important;
+    color: var(--settings-link) !important;
 }
 
 
 a.settings-link {
     cursor: pointer;
-    color: var(--vscode-editor-foreground) !important;
-    /* border-bottom: 1px var(--vscode-editor-foreground) solid; */
+    color: var(--settings-foreground) !important;
+    /* border-bottom: 1px var(--settings-foreground) solid; */
     padding: 3px;
     padding-right: 5px;
     transition: 0.2s;
@@ -74,8 +80,8 @@ a.settings-link .codicon {
 a.settings-link:hover,
 a.settings-link:focus,
 a.settings-link:active {
-    color: var(--vscode-editor-selectionBackground) !important;
-    /* border-color: var(--vscode-editor-selectionBackground); */
+    color: var(--settings-link) !important;
+    /* border-color: var(--settings-link); */
 }
 
 
@@ -113,7 +119,7 @@ a.settings-link:active {
     height: 1.8rem;
     border-radius: 1.6rem;
     transition: 0.2s;
-    background-color: var(--vscode-editor-foreground);
+    background-color: var(--settings-foreground);
     box-shadow: 0 0 2px 0 rgba(10, 10, 10, 0.29);
     text-align: center;
 }
@@ -125,7 +131,7 @@ a.settings-link:active {
 
 .toggle-switch-button .codicon {
     font-size: 1.5rem !important;
-    color: var(--vscode-editor-background);
+    color: var(--settings-background);
     margin-top: 0.15rem;
     margin-left: 0.05rem;
     transition: color 0.3s;
