@@ -56,8 +56,10 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; op
                                 onMouseEnter={() => boardState.displayKanban(histObj.data)}
                                 onMouseLeave={() => boardState.refreshKanban()}
                             >
-                                <h3>{`${index + 1}. ${this.stateChangeName(prevChange)}`}</h3>
-                                <p> {prevDetail} </p>
+                                <div className="history-item-inside">
+                                    <h3>{`${index + 1}. ${this.stateChangeName(prevChange)}`}</h3>
+                                    <p> {prevDetail} </p>{' '}
+                                </div>
                             </a>
                         );
                     })}
@@ -78,8 +80,12 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; op
                                 onMouseEnter={() => boardState.refreshKanban()}
                                 onMouseLeave={() => boardState.refreshKanban()}
                             >
-                                <h3> {`${this.state.history.length + 1}. ${mostRecentChange}`}</h3>
-                                <p> {mostRecentDetail} </p>
+                                <div className="history-item-inside">
+                                    <h3>
+                                        {`${this.state.history.length + 1}. ${mostRecentChange}`}
+                                    </h3>
+                                    <p> {mostRecentDetail} </p>
+                                </div>
                             </a>
                         );
                     })()}

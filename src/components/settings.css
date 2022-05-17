@@ -81,7 +81,6 @@ a.settings-link:hover,
 a.settings-link:focus,
 a.settings-link:active {
     color: var(--settings-link) !important;
-    /* border-color: var(--settings-link); */
 }
 
 
