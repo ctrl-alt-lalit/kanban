@@ -150,7 +150,10 @@ function Task({
                             }}
                             id={`${data.id}-display`}
                         >
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                className={data.text ? '' : 'half-opacity'}
+                            >
                                 {data.text || '_enter text or markdown here_'}
                             </ReactMarkdown>
                         </div>

@@ -9,7 +9,6 @@
 .task {
     margin-top: 0.5rem;
     background-color: var(--task-background);
-    /* color: var(--task-foreground); */
 }
 
 .task-handle {
@@ -94,4 +93,8 @@
     overflow: hidden;
     animation-direction: reverse;
     pointer-events: none;
+}
+
+.half-opacity {
+    opacity: 0.5;
 }
