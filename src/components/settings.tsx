@@ -42,7 +42,7 @@ class SettingsPanel extends React.Component<
         return (
             <div className="settings" style={style}>
                 <div className="settings-titlebar">
-                    <a onClick={() => this.setState({ open: false })} title="Hide Revision History">
+                    <a onClick={() => this.setState({ open: false })} title="Hide Settings">
                         <span className="codicon codicon-chevron-left" />
                     </a>
                     <h1> Settings </h1>
