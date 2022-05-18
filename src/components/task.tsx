@@ -6,6 +6,7 @@ import boardState from '../util/board-state';
 import { TaskJson } from '../util/kanban-types';
 import remarkGfm from 'remark-gfm';
 import vscodeHandler, { ColorTheme } from '../util/vscode-handler';
+import remarkBreaks from 'remark-breaks';
 
 let previousFocusedTaskId = '';
 let anyTaskIsFocused = false;
@@ -176,7 +177,7 @@ function Task({
                             id={`${data.id}-display`}
                         >
                             <ReactMarkdown
-                                remarkPlugins={[remarkGfm]}
+                                remarkPlugins={[remarkGfm, remarkBreaks]}
                                 className={data.text ? '' : 'half-opacity'}
                             >
                                 {data.text || '_enter text or markdown here_'}
