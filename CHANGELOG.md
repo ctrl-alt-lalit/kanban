@@ -1,5 +1,12 @@
 # Changelog
 
+### 1.7.1
+
+-   Removed small gaps between history elements
+-   "Hide Settings" button has correct tooltip
+-   Task colors are brighter for light themes
+-   Can create multiple line breaks in a task with "\\"
+
 ## 1.7.0
 
 -   Revision History shows current board state
