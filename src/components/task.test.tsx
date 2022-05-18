@@ -17,7 +17,7 @@ function* taskSetup() {
             columnId={defaultColumn.id}
             columnIndex={0}
             defaultToEdit={false}
-            colorFilter={'#ffffff40'}
+            columnColor={'#ffffff'}
         />
     );
     const task = wrapper.container.firstElementChild as HTMLDivElement;
@@ -62,7 +62,7 @@ describe('<Task>', () => {
                 columnId={''}
                 columnIndex={0}
                 defaultToEdit={false}
-                colorFilter={'#ffffff40'}
+                columnColor={'#ffffff'}
             />
         );
         const task = wrapper.container.firstElementChild as HTMLDivElement;
@@ -85,7 +85,7 @@ describe('<Task>', () => {
                 columnId={''}
                 columnIndex={0}
                 defaultToEdit={true}
-                colorFilter={'#ffffff40'}
+                columnColor={'#ffffff'}
             />
         );
 

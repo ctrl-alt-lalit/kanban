@@ -1,12 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import Storage from './storage';
-import { KanbanJson } from '../util/kanban-types';
-
-export type ApiMessage = {
-    command: 'save' | 'load' | 'open-settings';
-    data: KanbanJson | null;
-};
+import { ApiMessage } from '../util/vscode-handler';
 
 export default class Panel {
     static show(context: vscode.ExtensionContext) {
@@ -41,9 +36,22 @@ export default class Panel {
             retainContextWhenHidden: true,
         });
 
+        // initialize default hmtml and color theme
         this.webviewPanel.webview.html = this.makeHtml();
+        this.webviewPanel.webview.postMessage({
+            command: 'theme-changed',
+            data: vscode.window.activeColorTheme.kind,
+        });
+
+        // have webview listen for events from vscode
         this.webviewPanel.onDidDispose(() => this.dispose(), null, this.disposables);
         this.webviewPanel.webview.onDidReceiveMessage((message) => this.receiveMessage(message));
+        vscode.window.onDidChangeActiveColorTheme((e) => {
+            this.webviewPanel.webview.postMessage({
+                command: 'theme-changed',
+                data: e.kind,
+            });
+        });
     }
 
     private dispose() {
