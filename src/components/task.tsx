@@ -29,7 +29,7 @@ function colorToFilter(color: string, filterStrengh: number) {
     if (color[0] === '#') {
         return color + (filterStrengh * 256).toString(16).padStart(2, '0');
     } else {
-        return `rgba${color.slice(3, -1)}, 0.25)`;
+        return `rgba${color.slice(3, -1)}, ${filterStrengh})`;
     }
 }
 
