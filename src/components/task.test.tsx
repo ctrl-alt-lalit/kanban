@@ -50,6 +50,7 @@ jest.mock('react-markdown', () => (props: any) => {
 });
 
 jest.mock('remark-gfm', () => () => {});
+jest.mock('remark-breaks', () => () => {});
 
 describe('<Task>', () => {
     it('Renders a task', () => {
