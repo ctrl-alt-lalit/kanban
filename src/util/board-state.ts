@@ -1,6 +1,7 @@
 import { createColumnJson, createKanbanJson, createTaskJson, KanbanJson } from './kanban-types';
-import VsCodeHandler from './vscode-handler';
+import VsCodeHandler, { ColorTheme } from './vscode-handler';
 import clone from 'just-clone';
+import vscodeHandler from './vscode-handler';
 
 /**
  * Enumeration of possible board state changes that can occur.
@@ -44,6 +45,7 @@ class BoardState {
      */
     constructor() {
         VsCodeHandler.addLoadListener(this.loadFromVscode);
+        vscodeHandler.addThemeChangeListener(this.themeChangeListener);
         VsCodeHandler.load();
     }
 
@@ -483,6 +485,10 @@ class BoardState {
         return true;
     }
 
+    get isLightMode() {
+        return this.vscodeInLightTheme;
+    }
+
     /*******************
      * Private Methods *
      *******************/
@@ -518,6 +524,13 @@ class BoardState {
     }
 
     private hasChangedSinceSave = false;
+
+    private vscodeInLightTheme = false;
+    private themeChangeListener = (theme: ColorTheme) => {
+        this.vscodeInLightTheme =
+            theme === ColorTheme.THEME_LIGHT || theme === ColorTheme.THEME_LIGHT_HIGHCONTRAST;
+        this.refreshKanban();
+    };
 }
 
 export default new BoardState();

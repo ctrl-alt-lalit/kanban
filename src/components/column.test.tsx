@@ -216,20 +216,9 @@ describe('<Column />', () => {
                 const changeSpy = jest.spyOn(boardState, 'setColumnColor');
                 changeSpy.mockClear();
                 userEvent.type(input, 'aaaaaa');
+                input.blur();
 
                 expect(changeSpy).toHaveBeenCalled();
-                setup.next();
-            });
-
-            it("does not change color if there's less than 6 characters", () => {
-                const setup = inputSetup();
-                const input = setup.next().value as HTMLInputElement;
-
-                const changeSpy = jest.spyOn(boardState, 'setColumnColor');
-                changeSpy.mockClear();
-                userEvent.type(input, 'aaa');
-
-                expect(changeSpy).not.toHaveBeenCalled();
                 setup.next();
             });
         });

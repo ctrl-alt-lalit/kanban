@@ -10,13 +10,6 @@ import remarkBreaks from 'remark-breaks';
 
 let previousFocusedTaskId = '';
 let anyTaskIsFocused = false;
-let isLightMode = document.querySelector('body')!.classList.contains('vscode-light');
-
-const lightModeListener = (theme: ColorTheme) => {
-    isLightMode = theme === ColorTheme.THEME_LIGHT || theme === ColorTheme.THEME_LIGHT_HIGHCONTRAST;
-    boardState.refreshKanban();
-};
-vscodeHandler.addThemeChangeListener(lightModeListener);
 
 /**
  * Converts css color to one with reduced opacity. Does no input checking.
@@ -77,7 +70,7 @@ function Task({
     const [text, setText] = React.useState(data.text);
     const [beingDeleted, setBeingDeleted] = React.useState(false);
 
-    const filterStrengh = isLightMode ? 0.75 : 0.25;
+    const filterStrengh = boardState.isLightMode ? 0.75 : 0.25;
 
     return (
         <Draggable key={data.id} draggableId={data.id} index={index}>

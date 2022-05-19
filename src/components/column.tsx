@@ -1,7 +1,6 @@
 import React from 'react';
 import { Droppable } from 'react-beautiful-dnd';
 import Task from './task';
-import { HexColorInput } from 'react-colorful';
 import boardState from '../util/board-state';
 import { ControlledMenu, MenuItem, useMenuState } from '@szhsin/react-menu';
 import { ColumnJson } from '../util/kanban-types';
@@ -41,52 +40,6 @@ function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; i
 
     /* Color Picker code */
 
-    /**
-     * Changes this Column's color
-     *
-     * @param color {string} new color the column should have
-     */
-    const changeColor = (color: string) => {
-        if (color.length < 6) {
-            return;
-        }
-        boardState.setColumnColor(data.id, color);
-    };
-
-    const colorPickerStyle = {
-        // CSS styles so that color picker "swipes" open and closed
-        maxHeight: colorPickerOpen ? '6rem' : 0,
-        pointerEvents: colorPickerOpen ? 'all' : 'none',
-        transition: 'max-height 0.4s linear',
-    } as const;
-
-    const darkSwatches = [
-        // colors to pick from in dark mode
-        '#dd302a',
-        '#cf4d19',
-        '#ec9c25',
-        '#7ac41a',
-        '#416a0b',
-        '#338c84',
-        '#344fa2',
-        '#d741e3',
-        '#9900ef',
-        '#6a6a6a',
-    ];
-    const lightSwatches = [
-        // colors to pick from in light mode
-        '#ff6900',
-        '#fcb900',
-        '#7bdcb5',
-        '#00d084',
-        '#8ed1fc',
-        '#0693e3',
-        '#abb8c3',
-        '#eb144c',
-        '#f78da7',
-        '#9900ef',
-    ];
-    const swatches = document.querySelector('body.vscode-dark') ? lightSwatches : darkSwatches;
     /* End Color Picker */
 
     const anchorProps = {
@@ -207,20 +160,11 @@ function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; i
             </div>
 
             {/* Color Picker */}
-            <div className="column-color-picker" style={colorPickerStyle}>
-                {swatches.map((swatch) => (
-                    <button
-                        key={swatch}
-                        className="column-color-picker__swatch"
-                        style={{ backgroundColor: swatch }}
-                        onClick={() => changeColor(swatch)}
-                    />
-                ))}
-                <div className="text-picker">
-                    <div className="input-tag"> # </div>
-                    <HexColorInput color={data.color} onChange={changeColor} />
-                </div>
-            </div>
+            <ColorPicker
+                isOpen={colorPickerOpen}
+                color={data.color}
+                changeColor={(color) => boardState.setColumnColor(data.id, color)}
+            />
 
             {/* Add Task Button */}
             <a
@@ -266,6 +210,88 @@ function Column({ data, numCols, index }: { data: ColumnJson; numCols: number; i
                     </div>
                 )}
             </Droppable>
+        </div>
+    );
+}
+
+const darkSwatches = [
+    // colors to pick from in dark mode
+    '#dd302a',
+    '#cf4d19',
+    '#ec9c25',
+    '#7ac41a',
+    '#416a0b',
+    '#338c84',
+    '#344fa2',
+    '#d741e3',
+    '#9900ef',
+    '#6a6a6a',
+];
+const lightSwatches = [
+    // colors to pick from in light mode
+    '#ff6900',
+    '#fcb900',
+    '#7bdcb5',
+    '#00d084',
+    '#8ed1fc',
+    '#0693e3',
+    '#abb8c3',
+    '#eb144c',
+    '#f78da7',
+    '#9900ef',
+];
+
+function ColorPicker({
+    isOpen,
+    color,
+    changeColor,
+}: {
+    isOpen: boolean;
+    color: string;
+    changeColor: (color: string) => void;
+}): JSX.Element {
+    const [textColor, setTextColor] = React.useState(color.slice(1));
+    const swatches = boardState.isLightMode ? lightSwatches : darkSwatches;
+
+    const colorPickerStyle = {
+        // CSS styles so that color picker "swipes" open and closed
+        maxHeight: isOpen ? '6rem' : 0,
+        pointerEvents: isOpen ? 'all' : 'none',
+        transition: 'max-height 0.4s linear',
+    } as const;
+
+    return (
+        <div className="column-color-picker" style={colorPickerStyle}>
+            {swatches.map((swatch) => (
+                <button
+                    key={swatch}
+                    className="column-color-picker__swatch"
+                    style={{ backgroundColor: swatch }}
+                    onClick={() => changeColor(swatch)}
+                />
+            ))}
+            <div className="text-picker">
+                <div className="input-tag"> # </div>
+                <input
+                    value={textColor}
+                    onChange={(e) => {
+                        const newColor = e.target.value;
+                        if (newColor.length > 6 || !/^[\da-fA-F]*$/.test(newColor)) {
+                            return;
+                        }
+                        setTextColor(newColor);
+                    }}
+                    onBlur={() => {
+                        if (textColor.length === 3) {
+                            changeColor(
+                                `#${textColor[0]}${textColor[0]}${textColor[1]}${textColor[1]}${textColor[2]}${textColor[2]}`
+                            );
+                        } else if (textColor.length === 6) {
+                            changeColor(`#${textColor}`);
+                        }
+                    }}
+                />
+            </div>
         </div>
     );
 }
