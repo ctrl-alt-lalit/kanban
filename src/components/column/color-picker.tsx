@@ -3,29 +3,29 @@ import boardState from '../../util/board-state';
 
 const darkSwatches = [
     // colors to pick from in light mode
-    '#ff6900',
-    '#fcb900',
-    '#7bdcb5',
-    '#00d084',
-    '#8ed1fc',
-    '#0693e3',
-    '#abb8c3',
-    '#eb144c',
-    '#f78da7',
-    '#9900ef',
+    '#eb144c', // red
+    '#ff6900', // orange
+    '#fcb900', // yellow
+    '#7bdcb5', // lighter green
+    '#00d084', // light green
+    '#8ed1fc', // lighter blue
+    '#0693e3', // blue
+    '#f78da7', // pink
+    '#9900ef', // purple
+    '#abb8c3', // light gray
 ];
 const lightSwatches = [
     // colors to pick from in dark mode
-    '#dd302a',
-    '#cf4d19',
-    '#ec9c25',
-    '#7ac41a',
-    '#416a0b',
-    '#338c84',
-    '#344fa2',
-    '#d741e3',
-    '#9900ef',
-    '#6a6a6a',
+    '#dd302a', // red
+    '#cf4d19', // burnt orange
+    '#ec9c25', // gold
+    '#7ac41a', // light green
+    '#416a0b', // green
+    '#338c84', // teal
+    '#344fa2', // indigo
+    '#d741e3', // pink
+    '#9900ef', // purple
+    '#6a6a6a', // dark grey
 ];
 
 export default function ColorPicker({
