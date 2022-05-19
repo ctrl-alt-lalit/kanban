@@ -16,7 +16,7 @@ body {
 }
 
 @import 'board.css';
-@import 'column.css';
+@import 'column/column.css';
 @import 'task.css';
 @import 'revision-history.css';
 @import 'settings.css';

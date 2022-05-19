@@ -1,9 +1,9 @@
-import Column from '../components/column';
-import boardState from '../util/board-state';
+import Column from '../column';
+import boardState from '../../util/board-state';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createColumnJson, createKanbanJson, createTaskJson } from '../util/kanban-types';
-import { randomString, rightClick } from '../util/test-helpers';
+import { createColumnJson, createKanbanJson, createTaskJson } from '../../util/kanban-types';
+import { randomString, rightClick } from '../../util/test-helpers';
 
 jest.mock('react-beautiful-dnd', () => {
     const dragDropElem = ({ children }: { children: Function }) =>
@@ -180,47 +180,6 @@ describe('<Column />', () => {
             userEvent.click(colorToggle);
             expect(colorPicker.style.maxHeight).toBe('0');
             setup.next();
-        });
-    });
-
-    describe('Color picker', () => {
-        it("can change a column's color with clickable swatches", () => {
-            const setup = colorSetup();
-            const picker = setup.next().value as HTMLDivElement;
-
-            const swatch = picker.querySelector('button')!;
-            const changeSpy = jest.spyOn(boardState, 'setColumnColor');
-            changeSpy.mockClear();
-
-            userEvent.click(swatch);
-            expect(changeSpy).toHaveBeenCalled();
-            setup.next();
-        });
-
-        describe('text input', () => {
-            function* inputSetup() {
-                const setup = colorSetup();
-                const picker = setup.next().value as HTMLDivElement;
-
-                const input = picker.querySelector('.text-picker input') as HTMLInputElement;
-                userEvent.clear(input);
-                yield input;
-
-                setup.next();
-            }
-
-            it("can change a column's color", () => {
-                const setup = inputSetup();
-                const input = setup.next().value as HTMLInputElement;
-
-                const changeSpy = jest.spyOn(boardState, 'setColumnColor');
-                changeSpy.mockClear();
-                userEvent.type(input, 'aaaaaa');
-                input.blur();
-
-                expect(changeSpy).toHaveBeenCalled();
-                setup.next();
-            });
         });
     });
 
