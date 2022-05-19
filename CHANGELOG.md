@@ -1,9 +1,16 @@
 # Changelog
 
+### 1.7.2
+
+-   BUGFIXES:
+    -   History elements' border color changes on hover
+    -   Fixed memory leak when adding listener for color theme change
+
 ### 1.7.1
 
--   Removed small gaps between history elements
--   "Hide Settings" button has correct tooltip
+-   BUGFIXES:
+    -   Removed small gaps between history elements
+    -   "Hide Settings" button has correct tooltip
 -   Task colors are brighter for light themes
 -   Can create multiple line breaks in a task with "\\"
 
