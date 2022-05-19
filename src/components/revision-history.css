@@ -61,6 +61,7 @@
 .history-item {
     background-color: var(--history-background);
     color: var(--history-foreground);
+    border-color: var(--history-foreground);
     width: 90%;
     cursor: pointer;
     transition: 0.2s;
@@ -68,7 +69,7 @@
 
 .history-item-inside {
     margin-top: 0.5rem;
-    border-left: 0.2rem solid var(--history-foreground);
+    border-left: 0.2rem solid;
     padding-left: 0.5rem;
     display: inline-block;
 }

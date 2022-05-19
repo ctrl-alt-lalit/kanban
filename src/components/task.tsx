@@ -13,8 +13,8 @@ let anyTaskIsFocused = false;
 /**
  * Converts css color to one with reduced opacity. Does no input checking.
  *
- * @param color string with 2 forms: "#RRGGBB" or "rgb(R, G, B)".
- * @param filterStrengh number betwen 0 and 1 (inclusive)
+ * @param color string of form "#RRGGBB" or "rgb(R, G, B)".
+ * @param filterStrengh number between 0 and 1 (inclusive)
  * @returns color with reduced opacity
  */
 function colorToFilter(color: string, filterStrengh: number) {
@@ -119,7 +119,7 @@ export default class Task extends React.Component<
                             onContextMenu={(event) => (event.cancelable = false)} //tells column not to make menu
                             id={this.id}
                         >
-                            {/* 'Handle' user must click on to move the whole Task (react-beautiful-dnd) */}
+                            {/* Handle user must click on to move the whole Task (react-beautiful-dnd) */}
                             <div
                                 className="task-handle"
                                 {...provided.dragHandleProps}
