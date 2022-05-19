@@ -17,11 +17,17 @@ function App(): JSX.Element {
             .forEach((t) => toast.dismiss(t.id));
     }, [toasts]);
 
+    const [settingsOpen, setSettingsOpen] = React.useState(false);
+    const [historyOpen, setHistoryOpen] = React.useState(false);
+
     return (
         <>
-            <SettingsPanel />
-            <Board />
-            <RevisionHistory />
+            <SettingsPanel isOpen={settingsOpen} closeSettings={() => setSettingsOpen(false)} />
+            <Board
+                toggleSettings={() => setSettingsOpen(!settingsOpen)}
+                toggleHistory={() => setHistoryOpen(!historyOpen)}
+            />
+            <RevisionHistory isOpen={historyOpen} closeHistory={() => setHistoryOpen(false)} />
             <Toaster
                 toastOptions={{
                     duration: 2000,

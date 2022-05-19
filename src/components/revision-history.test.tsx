@@ -7,7 +7,7 @@ import clone from 'just-clone';
 import { randomString } from '../util/test-helpers';
 
 function* panelSetup() {
-    const wrapper = render(<RevisionHistory />);
+    const wrapper = render(<RevisionHistory isOpen={true} closeHistory={() => null} />);
     const histPanel = wrapper.container.firstElementChild as HTMLDivElement;
     yield histPanel;
 
@@ -20,24 +20,6 @@ function* panelSetup() {
 const togglePanel = () => window.dispatchEvent(new CustomEvent('toggle-history'));
 
 describe('Revision History', () => {
-    it('can open and close', () => {
-        const it = panelSetup();
-        const histPanel = it.next().value as HTMLDivElement;
-
-        expect(parseInt(histPanel.style.maxWidth)).toBe(0);
-
-        togglePanel();
-
-        expect(parseInt(histPanel.style.maxWidth)).toBeGreaterThan(0);
-
-        const closeButton = histPanel.querySelector('.history-titlebar a')!;
-        userEvent.click(closeButton);
-
-        expect(parseInt(histPanel.style.maxWidth)).toBe(0);
-
-        it.return();
-    });
-
     it('keeps track of changes and allows you to roll them back', () => {
         const it = panelSetup();
         it.next();

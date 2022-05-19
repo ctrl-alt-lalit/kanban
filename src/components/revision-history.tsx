@@ -5,39 +5,39 @@ import boardState, { HistoryObject, StateChanges } from '../util/board-state';
 /**
  * React component showing a list of edits the user has made since the board was opened.
  */
-class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; open: boolean }> {
+class RevisionHistory extends React.Component<
+    { isOpen: boolean; closeHistory: () => void },
+    { history: HistoryObject[] }
+> {
     /* Create the component and make it listen for open event */
     constructor(props: never) {
         super(props);
 
         this.state = {
             history: clone(boardState.history) as HistoryObject[],
-            open: false,
         };
     }
 
     componentDidMount() {
-        window.addEventListener('toggle-history', this.toggleListener);
         boardState.addHistoryUpdateListener(this.historyUpdater);
     }
 
     componentWillUnmount() {
-        window.removeEventListener('toggle-history', this.toggleListener);
         boardState.removeHistoryUpdateListener(this.historyUpdater);
     }
 
     render(): JSX.Element {
         const style = {
             // CSS styles so that this panel will 'swipe' open and closed
-            maxWidth: this.state.open ? '25%' : 0,
+            maxWidth: this.props.isOpen ? '25%' : 0,
             transition: 'max-width 0.3s ease 0s',
-            pointerEvents: this.state.open ? 'all' : 'none',
+            pointerEvents: this.props.isOpen ? 'all' : 'none',
         } as const;
 
         return (
             <div className="history" style={style}>
                 <div className="history-titlebar">
-                    <a onClick={() => this.setState({ open: false })} title="Hide Revision History">
+                    <a onClick={this.props.closeHistory} title="Hide Revision History">
                         <span className="codicon codicon-chevron-right"></span>
                     </a>
                     <h1> Revision History </h1>
@@ -138,9 +138,6 @@ class RevisionHistory extends React.Component<{}, { history: HistoryObject[]; op
                 return 'ERROR';
         }
     }
-
-    /* Callback for when the open event is fired */
-    private toggleListener = () => this.setState({ open: !this.state.open });
 }
 
 export default RevisionHistory;

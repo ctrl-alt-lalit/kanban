@@ -7,9 +7,8 @@ import vscodeHandler from '../util/vscode-handler';
  * React component showing a list of edits the user has made since the board was opened.
  */
 class SettingsPanel extends React.Component<
-    {},
+    { isOpen: boolean; closeSettings: () => void },
     {
-        open: boolean;
         autosave: boolean;
         saveToFile: boolean;
     }
@@ -18,8 +17,7 @@ class SettingsPanel extends React.Component<
     constructor(props: never) {
         super(props);
 
-        this.state = { open: false, autosave: false, saveToFile: false };
-        window.addEventListener('toggle-settings', this.toggleListener);
+        this.state = { autosave: false, saveToFile: false };
     }
 
     componentDidMount() {
@@ -28,21 +26,20 @@ class SettingsPanel extends React.Component<
 
     componentWillUnmount() {
         boardState.removeKanbanChangeListener(this.stateListener);
-        window.removeEventListener('toggle-settings', this.toggleListener);
     }
 
     render(): JSX.Element {
         const style = {
             // CSS styles so that this panel will 'swipe' open and closed
-            maxWidth: this.state.open ? '25%' : 0,
+            maxWidth: this.props.isOpen ? '25%' : 0,
             transition: 'max-width 0.3s ease 0s',
-            pointerEvents: this.state.open ? 'all' : 'none',
+            pointerEvents: this.props.isOpen ? 'all' : 'none',
         } as const;
 
         return (
             <div className="settings" style={style}>
                 <div className="settings-titlebar">
-                    <a onClick={() => this.setState({ open: false })} title="Hide Settings">
+                    <a onClick={this.props.closeSettings} title="Hide Settings">
                         <span className="codicon codicon-chevron-left" />
                     </a>
                     <h1> Settings </h1>
@@ -92,8 +89,6 @@ class SettingsPanel extends React.Component<
             saveToFile: kanban.saveToFile,
         });
     };
-    /* Callback for when the open event is fired */
-    private toggleListener = () => this.setState({ open: !this.state.open });
 }
 
 export default SettingsPanel;

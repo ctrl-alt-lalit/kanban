@@ -8,7 +8,10 @@ import boardState from '../util/board-state';
 /**
  * A kanban board containing multiple Columns and Tasks that can be dragged to each column.
  */
-class Board extends React.Component<{}, { data: KanbanJson; title: string }> {
+class Board extends React.Component<
+    { toggleSettings: () => void; toggleHistory: () => void },
+    { data: KanbanJson; title: string }
+> {
     /**
      * Creates the Board and loads a StrictKanbanJSON from the Extension Host
      */
@@ -110,14 +113,14 @@ class Board extends React.Component<{}, { data: KanbanJson; title: string }> {
                 <a
                     className="board-settings-toggle"
                     title="Show/Hide Settings"
-                    onClick={() => window.dispatchEvent(new CustomEvent('toggle-settings'))}
+                    onClick={this.props.toggleSettings}
                 >
                     <span className="codicon codicon-gear" />
                 </a>
                 <a
                     className="board-history-open"
                     title="Show/Hide Revision History"
-                    onClick={() => window.dispatchEvent(new CustomEvent('toggle-history'))}
+                    onClick={this.props.toggleHistory}
                 >
                     <span className="codicon codicon-history"></span>
                 </a>
