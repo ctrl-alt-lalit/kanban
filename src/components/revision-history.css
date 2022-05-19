@@ -1,8 +1,14 @@
 /* Imported by index.css, do NOT import manually */
 
+:root {
+    --history-background: var(--vscode-editor-background);
+    --history-foreground: var(--vscode-editor-foreground);
+    --history-link: var(--vscode-editor-selectionBackground);
+}
+
 .history {
-    background-color: var(--vscode-editor-background);
-    color: var(--vscode-editor-foreground);
+    background-color: var(--history-background);
+    color: var(--history-foreground);
     height: 100%;
     flex-direction: column;
     align-items: center;
@@ -21,7 +27,7 @@
 
 .history-titlebar a {
     cursor: pointer;
-    color: var(--vscode-editor-foreground) !important;
+    color: var(--history-foreground) !important;
     font-size: 2.5rem !important;
     margin-left: -0.5rem;
     margin-right: 0.5rem;
@@ -37,7 +43,7 @@
 .history-titlebar a:hover .codicon,
 .history-titlebar a:focus .codicon,
 .history-titlebar a:active .codicon {
-    color: var(--vscode-editor-selectionBackground) !important;
+    color: var(--history-link) !important;
 }
 
 .history-scroller {
@@ -53,19 +59,23 @@
 }
 
 .history-item {
-    background-color: var(--vscode-editor-background);
-    color: var(--vscode-editor-foreground);
-    border-left: 0.2rem solid var(--vscode-editor-foreground);
+    background-color: var(--history-background);
+    color: var(--history-foreground);
     width: 90%;
-    margin-top: 0.5rem;
-    padding-left: 0.5rem;
     cursor: pointer;
     transition: 0.2s;
+}
+
+.history-item-inside {
+    margin-top: 0.5rem;
+    border-left: 0.2rem solid var(--history-foreground);
+    padding-left: 0.5rem;
+    display: inline-block;
 }
 
 .history-item:hover,
 .history-item:focus,
 .history-item:active {
-    color: var(--vscode-editor-selectionBackground);
-    border-color: var(--vscode-editor-selectionBackground);
+    color: var(--history-link);
+    border-color: var(--history-link);
 }

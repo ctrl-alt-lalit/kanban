@@ -1,6 +1,29 @@
 import { createKanbanJson, WeakKanbanJson, KanbanJson, toKanbanJson } from './kanban-types';
-import { ApiMessage } from '../extension/panel';
 declare var acquireVsCodeApi: () => VsCodeApi;
+
+type SaveMessage = {
+    command: 'save' | 'load';
+    data: KanbanJson;
+};
+
+type SettingsMessage = {
+    command: 'open-settings' | 'load';
+    data: null;
+};
+
+export enum ColorTheme {
+    THEME_LIGHT = 1,
+    THEME_DARK = 2,
+    THEME_LIGHT_HIGHCONTRAST = 4,
+    THEME_DARK_HIGHCONTRAST = 3,
+}
+
+type ThemeMessage = {
+    command: 'theme-changed';
+    data: ColorTheme;
+};
+
+export type ApiMessage = SaveMessage | SettingsMessage | ThemeMessage;
 
 interface VsCodeApi {
     postMessage: (message: ApiMessage) => void;
@@ -58,6 +81,14 @@ class VsCodeHandler {
         this.loadCallbacks = this.loadCallbacks.filter((cb) => cb !== callback);
     }
 
+    addThemeChangeListener(callback: (theme: ColorTheme) => void) {
+        this.themeCallbacks.push(callback);
+    }
+
+    removeThemeChangeListener(callback: (theme: ColorTheme) => void) {
+        this.themeCallbacks = this.themeCallbacks.filter((cb) => cb !== callback);
+    }
+
     /**
      * Only call the constructor once in the lifetime of the extension.
      * Using multiple VscodeHandlers has not been tested and is unsupported.
@@ -65,12 +96,14 @@ class VsCodeHandler {
     constructor() {
         // VSCode's postMessage API has no way to set target window identity, so no way to verify
         window.addEventListener('message', (event) => {
-            let { command, data } = event.data as { command: string; data: any };
+            let { command, data } = event.data as ApiMessage;
 
             if (command === 'load') {
                 data ??= createKanbanJson();
                 const kanban = toKanbanJson(data as WeakKanbanJson);
                 this.loadCallbacks.forEach((cb) => cb(kanban));
+            } else if (command === 'theme-changed') {
+                this.themeCallbacks.forEach((cb) => cb(data as ColorTheme));
             }
         });
     }
@@ -80,6 +113,7 @@ class VsCodeHandler {
      * the 'load' message from the Extension Host.
      */
     private loadCallbacks: Array<(kanban: KanbanJson) => void> = [];
+    private themeCallbacks: Array<(theme: ColorTheme) => void> = [];
 }
 
 export default new VsCodeHandler();

@@ -1,11 +1,16 @@
 /* Imported by index.css, do NOT import manually */
 
+:root {
+    --column-background: var(--vscode-editor-background);
+    --column-foreground: var(--vscode-editor-foreground);
+}
+
 .column {
     flex-basis: 0;
     flex-grow: 1;
     flex-direction: column;
     display: flex;
-    border-left: 0.2rem solid var(--vscode-editor-foreground);
+    border-left: 0.2rem solid var(--column-foreground);
     padding-left: 0.3rem;
     transition: border-color 0.3s;
     min-width: 10.5rem;
@@ -20,8 +25,7 @@
 }
 
 .column-title {
-    background-color: var(--vscode-editor-background);
-    color: var(--vscode-editor-foreground);
+    background-color: var(--column-background);
     font-size: 1.25rem;
     margin: 0;
     font-weight: bold;
@@ -32,7 +36,6 @@
 
 .column-titlebar a,
 .column-settings a {
-    color: var(--vscode-editor-foreground);
     padding-left: 0.2rem;
     padding-right: 0.2rem;
     transition: background-color 0.3s, color 0.3s;
@@ -45,7 +48,7 @@
 .column-settings a:hover,
 .column-settings a:focus,
 .column-settings a:active {
-    color: var(--vscode-editor-background) !important;
+    color: var(--column-background) !important;
 }
 
 .column-titlebar .codicon[class*='codicon-'],
@@ -86,7 +89,7 @@
 
 .column-color-picker__swatch:focus {
     outline: none;
-    border: 0.1rem solid var(--vscode-editor-foreground);
+    border: 0.1rem solid var(--column-foreground);
 }
 
 .column-color-picker .text-picker {
@@ -104,8 +107,8 @@
     height: 100%;
     width: 100%;
     border: none;
-    background-color: var(--vscode-editor-background);
-    color: var(--vscode-editor-foreground);
+    background-color: var(--column-background);
+    color: var(--column-foreground);
     border: 1px solid var(--vscode-activityBar-background);
     box-sizing: border-box;
 }

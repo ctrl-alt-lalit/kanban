@@ -17,7 +17,7 @@ function* taskSetup() {
             columnId={defaultColumn.id}
             columnIndex={0}
             defaultToEdit={false}
-            colorFilter={'#ffffff40'}
+            columnColor={'#ffffff'}
         />
     );
     const task = wrapper.container.firstElementChild as HTMLDivElement;
@@ -50,6 +50,7 @@ jest.mock('react-markdown', () => (props: any) => {
 });
 
 jest.mock('remark-gfm', () => () => {});
+jest.mock('remark-breaks', () => () => {});
 
 describe('<Task>', () => {
     it('Renders a task', () => {
@@ -62,7 +63,7 @@ describe('<Task>', () => {
                 columnId={''}
                 columnIndex={0}
                 defaultToEdit={false}
-                colorFilter={'#ffffff40'}
+                columnColor={'#ffffff'}
             />
         );
         const task = wrapper.container.firstElementChild as HTMLDivElement;
@@ -85,7 +86,7 @@ describe('<Task>', () => {
                 columnId={''}
                 columnIndex={0}
                 defaultToEdit={true}
-                colorFilter={'#ffffff40'}
+                columnColor={'#ffffff'}
             />
         );
 

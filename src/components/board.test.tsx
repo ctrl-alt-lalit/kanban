@@ -10,6 +10,7 @@ jest.mock('react-markdown', () => (props: any) => {
 });
 
 jest.mock('remark-gfm', () => () => {});
+jest.mock('remark-breaks', () => () => {});
 
 function* boardSetup() {
     const defaultKanban = createKanbanJson();
