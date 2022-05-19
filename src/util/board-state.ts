@@ -1,7 +1,6 @@
 import { createColumnJson, createKanbanJson, createTaskJson, KanbanJson } from './kanban-types';
-import VsCodeHandler, { ColorTheme } from './vscode-handler';
+import vsCodeHandler, { ColorTheme } from './vscode-handler';
 import clone from 'just-clone';
-import vscodeHandler from './vscode-handler';
 
 /**
  * Enumeration of possible board state changes that can occur.
@@ -44,9 +43,9 @@ class BoardState {
      * Instantiate Object and load VsCode API if it's available.
      */
     constructor() {
-        VsCodeHandler.addLoadListener(this.loadFromVscode);
-        vscodeHandler.addThemeChangeListener(this.themeChangeListener);
-        VsCodeHandler.load();
+        vsCodeHandler.addLoadListener(this.loadFromVscode);
+        vsCodeHandler.addThemeChangeListener(this.themeChangeListener);
+        vsCodeHandler.load();
     }
 
     /**
@@ -406,7 +405,7 @@ class BoardState {
         }
 
         this.hasChangedSinceSave = false;
-        VsCodeHandler.save(this.currentKanban);
+        vsCodeHandler.save(this.currentKanban);
     }
 
     /**
