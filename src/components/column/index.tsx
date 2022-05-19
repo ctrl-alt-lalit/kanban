@@ -5,6 +5,7 @@ import boardState from '../../util/board-state';
 import { ControlledMenu, MenuItem, useMenuState } from '@szhsin/react-menu';
 import { ColumnJson } from '../../util/kanban-types';
 import ColorPicker from './color-picker';
+import ColumnSettings from './column-settings';
 
 let IdOfTaskJustAdded = '';
 
@@ -33,23 +34,10 @@ export default function Column({
         x: 0,
         y: 0,
     });
-    const [title, setTitle] = React.useState(data.title);
 
-    // hooks to open and close settings and color picker
+    const [title, setTitle] = React.useState(data.title);
     const [colorPickerOpen, setColorPickerOpen] = React.useState(false);
     const [settingsOpen, setSettingsOpen] = React.useState(false);
-
-    const settingsStyle = {
-        // CSS styles so that settings menu "swipes" open and closed
-        maxHeight: settingsOpen ? '3rem' : 0,
-        pointerEvents: settingsOpen ? 'all' : 'none',
-        transition: 'max-height 0.4s linear',
-        paddingTop: '0.4rem',
-    } as const;
-
-    /* Color Picker code */
-
-    /* End Color Picker */
 
     const anchorProps = {
         // CSS styles so that buttons match Column's color
@@ -70,16 +58,16 @@ export default function Column({
             }}
             onContextMenu={(event) => {
                 if (event.cancelable) {
-                    //menu on task will set cancellable false
                     event.preventDefault();
                     setMenuAnchorPoint({ x: event.clientX, y: event.clientY });
                     toggleMenu(true);
                     event.stopPropagation();
                 }
+                // else: menu was activated on task
             }}
             id={data.id}
         >
-            {/* Customize context menu */}
+            {/* Customized context menu */}
             <ControlledMenu
                 {...menuProps}
                 anchorPoint={menuAnchorPoint}
@@ -100,7 +88,7 @@ export default function Column({
                 </MenuItem>
             </ControlledMenu>
 
-            {/* Contains the column's title this column's buttons (add task, delete column, show/hide color picker) */}
+            {/* Column Titlebar */}
             <div className="column-titlebar">
                 <input
                     value={title}
@@ -122,53 +110,16 @@ export default function Column({
                 </a>
             </div>
 
-            {/* Settings */}
-            <div className="column-settings" style={settingsStyle}>
-                <a
-                    className="column-color"
-                    title="Change Color"
-                    {...anchorProps}
-                    onClick={() => setColorPickerOpen(!colorPickerOpen)}
-                >
-                    <span className="codicon codicon-symbol-color" />
-                </a>
+            <ColumnSettings
+                columnId={data.id}
+                color={data.color}
+                toggleColorPicker={() => setColorPickerOpen(!colorPickerOpen)}
+                anchorProps={anchorProps}
+                isOpen={settingsOpen}
+                columnIndex={index}
+                numCols={numCols}
+            />
 
-                <a
-                    className="column-left"
-                    title="Move Column Left"
-                    {...anchorProps}
-                    style={{
-                        display: index > 0 ? 'block' : 'none',
-                        color: data.color,
-                    }}
-                    onClick={() => boardState.moveColumn(data.id, index - 1)}
-                >
-                    <span className="codicon codicon-arrow-left" />
-                </a>
-                <a
-                    className="column-right"
-                    title="Move Column Right"
-                    {...anchorProps}
-                    style={{
-                        display: index < numCols - 1 ? 'block' : 'none',
-                        color: data.color,
-                    }}
-                    onClick={() => boardState.moveColumn(data.id, index + 1)}
-                >
-                    <span className="codicon codicon-arrow-right" />
-                </a>
-
-                <a
-                    className="column-delete"
-                    title="Delete Column"
-                    {...anchorProps}
-                    onClick={() => boardState.removeColumn(data.id)}
-                >
-                    <span className="codicon codicon-trash" />
-                </a>
-            </div>
-
-            {/* Color Picker */}
             <ColorPicker
                 isOpen={colorPickerOpen}
                 color={data.color}

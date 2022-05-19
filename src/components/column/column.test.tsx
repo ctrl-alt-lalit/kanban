@@ -57,21 +57,6 @@ function* settingsSetup(index = 0, numCols = 0) {
     setup.next();
 }
 
-function* colorSetup() {
-    const setup = settingsSetup();
-    const settings = setup.next().value as HTMLDivElement;
-
-    const colorToggle = settings.querySelector('.column-color')!;
-    userEvent.click(colorToggle);
-
-    const colorPicker = settings.parentElement!.querySelector(
-        '.column-color-picker'
-    ) as HTMLDivElement;
-    yield colorPicker;
-
-    setup.next();
-}
-
 describe('<Column />', () => {
     it('renders a column', () => {
         const columnData = createColumnJson(randomString(), [createTaskJson(), createTaskJson()]);
@@ -115,70 +100,6 @@ describe('<Column />', () => {
 
             clickSettings(column);
             expect(settings.style.maxHeight).toBe('0');
-            setup.next();
-        });
-    });
-
-    describe('settings panel', () => {
-        it('can delete this column', () => {
-            const setup = settingsSetup();
-            const settings = setup.next().value as HTMLDivElement;
-
-            const deleteButton = settings.querySelector('.column-delete')!;
-            const deleteSpy = jest.spyOn(boardState, 'removeColumn');
-            deleteSpy.mockClear();
-
-            userEvent.click(deleteButton);
-            expect(deleteSpy).toHaveBeenCalled();
-            setup.next();
-        });
-
-        describe('move-column buttons', () => {
-            it('can move a column left and right', () => {
-                const setup = settingsSetup(1, 3);
-                const settings = setup.next().value as HTMLDivElement;
-
-                const moveSpy = jest.spyOn(boardState, 'moveColumn');
-
-                const leftButton = settings.querySelector('.column-left')!;
-                userEvent.click(leftButton);
-
-                const rightButton = settings.querySelector('.column-right')!;
-                userEvent.click(rightButton);
-
-                expect(moveSpy).toHaveBeenCalledTimes(2);
-                setup.next();
-            });
-
-            it('does not show up if a column has no left/right neighbors', () => {
-                const setup = settingsSetup();
-                const settings = setup.next().value as HTMLDivElement;
-
-                const leftButton = settings.querySelector('.column-left') as HTMLAnchorElement;
-                const rightButton = settings.querySelector('.column-right') as HTMLAnchorElement;
-
-                expect(leftButton.style.display).toBe('none');
-                expect(rightButton.style.display).toBe('none');
-
-                setup.next();
-            });
-        });
-
-        it('can open and close the color picker', () => {
-            const setup = settingsSetup();
-            const settings = setup.next().value as HTMLDivElement;
-
-            const colorPicker = settings.parentElement!.querySelector(
-                '.column-color-picker'
-            ) as HTMLDivElement;
-            expect(colorPicker.style.maxHeight).toBe('0');
-
-            const colorToggle = settings.querySelector('.column-color')!;
-            userEvent.click(colorToggle);
-            expect(colorPicker.style.maxHeight).not.toBe('0');
-
-            userEvent.click(colorToggle);
-            expect(colorPicker.style.maxHeight).toBe('0');
             setup.next();
         });
     });
