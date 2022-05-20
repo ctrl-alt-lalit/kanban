@@ -47,7 +47,6 @@ class VsCodeHandler {
 
     /**
      * Tells the Extension Host to save `data`.
-     * @param {KanbanJson} kanban Kanban Board state to be saved
      */
     save(kanban: KanbanJson) {
         kanban.timestamp = Date.now();
@@ -64,8 +63,6 @@ class VsCodeHandler {
     /**
      * Makes it so `callback` will be run immediately after
      * receiving a 'load' command from the Extension Host.
-     *
-     * @param {(data: KanbanJson) => void} callback function to run after loading data
      */
     addLoadListener(callback: (kanban: KanbanJson) => void) {
         this.loadCallbacks.push(callback);
@@ -74,8 +71,6 @@ class VsCodeHandler {
     /**
      * If 'addLoadListener(`callback`)' was called,
      * removes `callback` from the list of load callbacks.
-     *
-     * @param {(data: KanbanJson) => void} callback function to remove
      */
     removeLoadListener(callback: (kanban: KanbanJson) => void) {
         this.loadCallbacks = this.loadCallbacks.filter((cb) => cb !== callback);

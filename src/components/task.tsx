@@ -46,9 +46,9 @@ const ctrlEnterListener = (event: KeyboardEvent) => {
 /**
  * React component showing editable text that is rendered in markdown. This component can be dragged to different Columns.
  *
- * @prop data {TaskJSON} TaskJSON this Task will represent
- * @prop index {number} position of this Task in parent Column's list of Tasks
- * @prop columnId {string} ID of parent Column
+ * @param data {TaskJSON} TaskJSON this Task will represent
+ * @param index {number} position of this Task in parent Column's list of Tasks
+ * @param columnId {string} ID of parent Column
  */
 export default class Task extends React.Component<
     {

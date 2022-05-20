@@ -1,0 +1,20 @@
+{
+    "tags": {
+      "allowUnknownTags": true,
+      "dictionaries": ["jsdoc"]
+    },
+    "source": {
+      "include": ["src"],
+      "includePattern": "\\.[jt]sx?$"
+    },
+    "plugins": [
+        "node_modules/better-docs/typescript",
+        "node_modules/better-docs/component"
+    ],
+    "opts": {
+      "destination": "docs",
+      "recurse": true,
+      "readme": "README.md",
+      "template": "node_modules/better-docs"
+    }
+}
