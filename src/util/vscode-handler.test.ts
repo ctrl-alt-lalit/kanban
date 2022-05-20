@@ -19,7 +19,8 @@ globalThis.acquireVsCodeApi = () => {
     };
 };
 
-import VsCodeHandler from '../util/vscode-handler';
+import VsCodeHandler, { ColorTheme } from '../util/vscode-handler';
+import vscodeHandler from '../util/vscode-handler';
 
 describe('VsCodeHandler', () => {
     it('sends messages to the Extension Host', () => {
@@ -59,13 +60,18 @@ describe('VsCodeHandler', () => {
         expect(result).toEqual(expected);
     });
 
-    it('only loads data with a "load" command', () => {
+    it('can recognize a color theme change', () => {
         const event = new CustomEvent('message') as any;
-        event.data = { command: 'invalid' };
+        event.data = { command: 'theme-changed', data: ColorTheme.THEME_LIGHT };
+        const themeChangeMock = jest.fn();
+        vscodeHandler.addThemeChangeListener(themeChangeMock);
 
-        const listener = jest.fn();
-        VsCodeHandler.addLoadListener(listener);
         window.dispatchEvent(event);
-        expect(listener).not.toHaveBeenCalled();
+        expect(themeChangeMock).toHaveBeenCalled();
+        vscodeHandler.removeThemeChangeListener(themeChangeMock);
+
+        themeChangeMock.mockClear();
+        window.dispatchEvent(event);
+        expect(themeChangeMock).not.toHaveBeenCalled();
     });
 });
