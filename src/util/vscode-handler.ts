@@ -1,3 +1,9 @@
+/**
+ * @file Provides a "meta-API" for the VsCode Api. Only exposing functionality that is relevant to the extension.
+ *
+ * This also makes testing easier, since the VsCode API only has to be emulated in one place rather than throughout the project.
+ */
+
 import { createKanbanJson, WeakKanbanJson, KanbanJson, toKanbanJson } from './kanban-types';
 declare var acquireVsCodeApi: () => VsCodeApi;
 
@@ -11,6 +17,9 @@ type SettingsMessage = {
     data: null;
 };
 
+/**
+ * The types of color themes VSCode supports.
+ */
 export enum ColorTheme {
     THEME_LIGHT = 1,
     THEME_DARK = 2,
@@ -23,6 +32,9 @@ type ThemeMessage = {
     data: ColorTheme;
 };
 
+/**
+ * The types of messages this extension can receive from the Extension Host.
+ */
 export type ApiMessage = SaveMessage | SettingsMessage | ThemeMessage;
 
 interface VsCodeApi {
@@ -86,7 +98,6 @@ class VsCodeHandler {
 
     /**
      * Only call the constructor once in the lifetime of the extension.
-     * Using multiple VscodeHandlers has not been tested and is unsupported.
      */
     constructor() {
         // VSCode's postMessage API has no way to set target window identity, so no way to verify
@@ -103,10 +114,6 @@ class VsCodeHandler {
         });
     }
 
-    /**
-     * List of callbacks to run after receiving
-     * the 'load' message from the Extension Host.
-     */
     private loadCallbacks: Array<(kanban: KanbanJson) => void> = [];
     private themeCallbacks: Array<(theme: ColorTheme) => void> = [];
 }
