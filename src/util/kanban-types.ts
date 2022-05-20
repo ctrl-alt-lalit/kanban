@@ -1,9 +1,9 @@
 /**
- * @file Provides functions to convert from (Task | Column | Kanban)JSONs to their stricter variants.
+ * @file Provides functions to convert from Weak(Task | Column | Kanban)JSONs to their stricter variants.
  * Also gives factory methods for each of the strict JSONs.
  *
- * Less strict exist for backwards-compatibility. While the strict types are what the current version
- * of this extension should use anyway. Converting all the less strict types at the beginning lets
+ * Weak types exist for backwards-compatibility. While the normal types are what the current version
+ * of this extension uses. Converting all the weak types at the beginning lets
  * the rest of the extension assume that strict, up-to-date types are always in use.
  */
 
@@ -48,7 +48,7 @@ export type TaskJson = {
 };
 
 /**
- * If `task` is a string, converts it to a TaskJSON
+ * If `task` is a string, creates a TaskJSON containing that string.
  *
  * @param {TaskJson | string} task TaskJSON or string being converted
  * @returns {TaskJson} `task` or a TaskJSON with its text field equal to `task`
@@ -62,10 +62,10 @@ export function toTaskJson(task: TaskJson | string): TaskJson {
 }
 
 /**
- * Converts a ColumnJSON to a StrictColumnJSON
+ * Converts a WeakColumnJSON to a ColumnJSON. Conversion does NOT happen in-place.
  *
- * @param {WeakColumnJson} column ColumnJSON being converted
- * @returns {ColumnJson} StrictColumnJSON with `column`'s fields (when possible) or default values
+ * @param {WeakColumnJson} column WeakColumnJSON being converted
+ * @returns {ColumnJson} ColumnJSON with `column`'s fields (when possible) or default values
  */
 export function toColumnJson(column: WeakColumnJson): ColumnJson {
     return {
@@ -77,10 +77,10 @@ export function toColumnJson(column: WeakColumnJson): ColumnJson {
 }
 
 /**
- * Converts a KanbanJSON to StrictKanbanJSON
+ * Converts a WeakKanbanJSON to a KanbanJSON. Conversion does NOT happen in-place.
  *
- * @param {WeakKanbanJson} kanban  KanbanJSON being converted
- * @returns {KanbanJson} StrictKanbanJSON with `kanban`'s fields (when possible) or default values
+ * @param {WeakKanbanJson} kanban  WeakKanbanJSON being converted
+ * @returns {KanbanJson} KanbanJSON with `kanban`'s fields (when possible) or default values
  */
 export function toKanbanJson(kanban: WeakKanbanJson): KanbanJson {
     let autosave = false;

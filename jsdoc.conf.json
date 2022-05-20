@@ -5,7 +5,7 @@
     },
     "source": {
       "include": ["src"],
-      "includePattern": "\\.[jt]sx?$"
+      "includePattern": ".*(?!.test).[jt]sx?$"
     },
     "plugins": [
         "node_modules/better-docs/typescript",
