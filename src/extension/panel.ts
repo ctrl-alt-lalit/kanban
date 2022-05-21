@@ -12,6 +12,7 @@ import { ApiMessage } from '../util/vscode-handler';
  */
 export default class Panel {
     /**
+     * Displays a the Kanban webview panel, by either creating one or focusing on an existing one.
      *
      * @param {vscode.ExtensionContext} context Context recieved as a paramater in the {@link activate} function
      */
