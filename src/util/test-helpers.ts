@@ -1,6 +1,7 @@
 import userEvent from '@testing-library/user-event';
 
 /**
+ * @ignore
  * Wait for a specified number of milliseconds
  * @param ms milliseconds to wait for
  */
@@ -11,6 +12,7 @@ export function wait(ms: number) {
 }
 
 /**
+ * @ignore
  * @returns a random string of 10 characters
  */
 export function randomString() {
@@ -18,6 +20,7 @@ export function randomString() {
 }
 
 /**
+ * @ignore
  * Right clicks on an HTMLElement
  * @param element HTMLElement to click on
  */
@@ -26,6 +29,7 @@ export function rightClick(element: HTMLElement) {
 }
 
 /**
+ * @ignore
  * @returns True or False at random
  */
 export function randomBoolean() {
@@ -33,6 +37,7 @@ export function randomBoolean() {
 }
 
 /**
+ * @ignore
  * @param hi highest number to return (exclusive)
  * @param lo lowest number to return (inclusive)
  * @returns a random integer in the range [lo, hi)
