@@ -4,6 +4,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { isWeakKanbanJson } from '../util/kanban-types';
 
 /**
  * Wrapper for VSCode Mementos and/or the filesystem -- depending on what the user saved their board to.
@@ -44,6 +45,7 @@ export default class Storage {
      * @returns The most recently saved Kanban board
      */
     public async loadKanban<T>(): Promise<T> {
+        //TODO: put default kanban initialization here
         const mementoData = this.memento.get<T>(Storage.kanbanKey, null as any) as any;
         if (this.saveUris.length === 0) {
             return mementoData;
@@ -54,6 +56,9 @@ export default class Storage {
             try {
                 const buffer = await vscode.workspace.fs.readFile(saveUri);
                 fileData = JSON.parse(buffer.toString());
+                if (!isWeakKanbanJson(fileData)) {
+                    continue;
+                }
                 this.preferredUri = saveUri;
                 break;
             } catch {
