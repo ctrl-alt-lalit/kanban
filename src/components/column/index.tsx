@@ -1,3 +1,6 @@
+/**
+ * @file React component showing a vertical list of Tasks. Tasks from other Columns can be dropped into this list and vice-versa.
+ */
 import React from 'react';
 import { Droppable } from 'react-beautiful-dnd';
 import Task from '../task';
@@ -16,8 +19,6 @@ let IdOfTaskJustAdded = '';
  * @param numCols {number} number of Columns in the parent Board
  * @param index {nummber} index of this column in the parent Board's column list
  *
- * A StrictColumnJSON passed in will update the data prop of this Column to the parameter. If this Columns' id (a string)
- * is given, then this Column will be deleted.
  */
 export default function Column({
     data,
