@@ -4,7 +4,7 @@
 
 -   BUGFIXES:
     -   History elements' border color changes on hover
-    -   Fixed memory leak when adding listener for color theme change
+    -   Fixed a (really small) memory leak when adding listener for color theme change
 
 ### 1.7.1
 
