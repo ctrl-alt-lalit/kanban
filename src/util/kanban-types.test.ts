@@ -161,22 +161,22 @@ describe('Kanban Type Handler', () => {
         });
     });
 
-    describe('isWeakKanbanJson()', () => {
-        it('returns true when obj is a WeakKanbanJson', () => {
-            expect(KT.isWeakKanbanJson(KT.createKanbanJson())).toBe(true);
-        });
+    // describe('isWeakKanbanJson()', () => {
+    //     it('returns true when obj is a WeakKanbanJson', () => {
+    //         expect(KT.isWeakKanbanJson(KT.createKanbanJson())).toBe(true);
+    //     });
 
-        it('returns false otherwise', () => {
-            const fakeKanban = {
-                cols: [
-                    {
-                        id: 'id',
-                        tasks: 'wrong',
-                    },
-                ],
-            };
+    //     it('returns false otherwise', () => {
+    //         const fakeKanban = {
+    //             cols: [
+    //                 {
+    //                     id: 'id',
+    //                     tasks: 'wrong',
+    //                 },
+    //             ],
+    //         };
 
-            expect(KT.isWeakKanbanJson(fakeKanban)).toBe(false);
-        });
-    });
+    //         expect(KT.isWeakKanbanJson(fakeKanban)).toBe(false);
+    //     });
+    // });
 });

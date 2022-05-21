@@ -4,7 +4,6 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { isWeakKanbanJson } from '../util/kanban-types';
 
 /**
  * Wrapper for VSCode Mementos and/or the filesystem -- depending on what the user saved their board to.
@@ -107,4 +106,87 @@ export default class Storage {
     private static kanbanKey = 'columns';
     private saveUris: vscode.Uri[] = [];
     private preferredUri: vscode.Uri | undefined = undefined;
+}
+
+/**
+ * Checks if `obj` is a WeakKanbanJson (or KanbanJson)
+ * @param {any} obj Object to be verified
+ */
+export function isWeakKanbanJson(obj: any): boolean {
+    const mandatoryKanbanKeys = ['cols'] as const;
+    const optionalKanbanKeys = [
+        'title',
+        'ncols',
+        'settings',
+        'autosave',
+        'saveToFile',
+        'timestamp',
+    ] as const;
+    if (!matchingKeys(obj, mandatoryKanbanKeys, optionalKanbanKeys)) {
+        return false;
+    }
+
+    if (!Array.isArray(obj.cols)) {
+        return false;
+    }
+
+    for (const col of obj.cols) {
+        if (!isWeakColumnJson(col)) {
+            return false;
+        }
+    }
+
+    return true;
+
+    function matchingKeys(
+        obj: any,
+        requiredKeys: Readonly<string[]>,
+        optionalKeys: Readonly<string[]>
+    ): boolean {
+        if (typeof obj !== 'object') {
+            return false;
+        }
+
+        let keys = Object.keys(obj).filter((key) => !optionalKeys.includes(key));
+        for (const key of keys) {
+            if (!requiredKeys.includes(key)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function isWeakTaskJson(obj: any): boolean {
+        if (typeof obj === 'string') {
+            return true;
+        }
+
+        if (typeof obj !== 'object') {
+            return false;
+        }
+
+        return typeof obj.id === 'string' && typeof obj.text === 'string';
+    }
+
+    function isWeakColumnJson(obj: any): boolean {
+        const mandatoryColKeys = ['title', 'tasks'] as const;
+        const optionalColKeys = ['ntasks', 'id', 'color'] as const;
+
+        if (!matchingKeys(obj, mandatoryColKeys, optionalColKeys)) {
+            return false;
+        }
+
+        if (typeof obj.title !== 'string' || !Array.isArray(obj.tasks)) {
+            return false;
+        }
+
+        for (const task of obj.tasks) {
+            if (!isWeakTaskJson(task)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
