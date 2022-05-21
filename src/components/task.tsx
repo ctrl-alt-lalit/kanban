@@ -12,7 +12,7 @@ let anyTaskIsFocused = false;
 
 /**
  * Converts css color to one with reduced opacity. Does no input checking.
- *
+ * @ignore
  * @param color string of form "#RRGGBB" or "rgb(R, G, B)".
  * @param filterStrengh number between 0 and 1 (inclusive)
  * @returns color with reduced opacity
@@ -28,6 +28,7 @@ function colorToFilter(color: string, filterStrengh: number) {
 /**
  * Listens for the keyboard shortcut 'Ctrl + Enter'. If a task is currently being edited,
  * then that task stops being edited. Otherwise, the previously edited task will be edited again.
+ * @ignore
  */
 const ctrlEnterListener = (event: KeyboardEvent) => {
     if (!event.ctrlKey || event.key !== 'Enter') {
@@ -44,8 +45,8 @@ const ctrlEnterListener = (event: KeyboardEvent) => {
 };
 
 /**
- * React component showing editable text that is rendered in markdown. This component can be dragged to different Columns.
- *
+ * Representation of a {@link KanbanJson}'s task. Can be edited by the user and dragged between {@link Column}s.
+ * @component
  * @param data {TaskJSON} TaskJSON this Task will represent
  * @param index {number} position of this Task in parent Column's list of Tasks
  * @param columnId {string} ID of parent Column
@@ -61,6 +62,9 @@ export default class Task extends React.Component<
     },
     { editing: boolean; text: string; beingDeleted: boolean }
 > {
+    /**
+     * @ignore
+     */
     constructor(props: never) {
         super(props);
         this.state = {
@@ -70,18 +74,27 @@ export default class Task extends React.Component<
         };
     }
 
+    /**
+     * If this is the first task to mount, adds a listener for ctrl+enter shortcut
+     */
     componentDidMount() {
         if (++Task.numTasks === 1) {
             window.addEventListener('keypress', ctrlEnterListener);
         }
     }
 
+    /**
+     * If this is the last task to unmount, removes the ctrl+enter listener
+     */
     componentWillUnmount() {
         if (--Task.numTasks === 0) {
             window.removeEventListener('keypress', ctrlEnterListener);
         }
     }
 
+    /**
+     * @ignore
+     */
     render() {
         return (
             <Draggable key={this.id} draggableId={this.id} index={this.props.index}>
