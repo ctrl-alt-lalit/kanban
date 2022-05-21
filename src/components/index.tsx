@@ -1,3 +1,6 @@
+/**
+ * @file Entry point for Kanban UI. This element is what gets attached to the webview.
+ */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import toast, { Toaster, useToasterStore } from 'react-hot-toast';
@@ -7,6 +10,9 @@ import RevisionHistory from './revision-history';
 import './index.css';
 import SettingsPanel from './settings-panel';
 
+/**
+ * Root element for entire Kanban GUI. Also manages communication between Board, Settings, and Revision History.
+ */
 function App(): JSX.Element {
     const { toasts } = useToasterStore();
     const TOAST_LIMIT = 2;
