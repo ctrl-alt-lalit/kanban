@@ -1,7 +1,20 @@
+/**
+ * @file Manages saving and loading the Kanban board.
+ */
+
 import * as vscode from 'vscode';
 import * as path from 'path';
 
+/**
+ * Wrapper for VSCode Mementos and/or the filesystem -- depending on what the user saved their board to.
+ */
 export default class Storage {
+    /**
+     *
+     * @param {vscode.Memento} memento Memento to save/load board to/from
+     * @param {string | undefined} workspacePath Absolute path of current workspace (if applicable)
+     * @param {string[]} saveFilePaths List of file paths to save/load board to/from
+     */
     constructor(
         memento: vscode.Memento,
         workspacePath: string | undefined,
@@ -26,6 +39,10 @@ export default class Storage {
         }
     }
 
+    /**
+     * Checks the VSCode Memento and a list of files (determined by extension settings) for Kanban boards.
+     * @returns The most recently saved Kanban board
+     */
     public async loadKanban<T>(): Promise<T> {
         const mementoData = this.memento.get<T>(Storage.kanbanKey, null as any) as any;
         if (this.saveUris.length === 0) {
@@ -60,6 +77,10 @@ export default class Storage {
         return fileTime >= mementoTime ? fileData : mementoData;
     }
 
+    /**
+     * Saves `data` to a memento or a file -- depending on the value of `data.saveToFile`.
+     * @param {KanbanJson} data The board to save
+     */
     public saveKanban<T>(data: T) {
         const kanban = data as any;
         if (!kanban?.saveToFile || this.saveUris.length === 0) {
