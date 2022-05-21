@@ -1,6 +1,12 @@
-import React from 'react';
+/**
+ * @file Component contained inside a {@link Column} that can move or delete it.
+ */
 import boardState from '../../util/board-state';
 
+/**
+ * Component contained inside a {@link Column}.
+ * Can be used to move, delete, or open the {@link ColorPicker} for the Column.
+ */
 export default function ColumnSettings({
     columnId,
     toggleColorPicker,

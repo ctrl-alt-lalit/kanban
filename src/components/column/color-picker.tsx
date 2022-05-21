@@ -1,3 +1,7 @@
+/**
+ * @file A component which exists inside a {@link Column} which can change the color of that Column.
+ */
+
 import React from 'react';
 import boardState from '../../util/board-state';
 
@@ -28,6 +32,15 @@ const lightSwatches = [
     '#6a6a6a', // dark grey
 ];
 
+/**
+ * Selection of colored swatches and a text input that exists within a {@link Column}.
+ * Used to change the color of that Column.
+ *
+ *
+ * @param {boolean} isOpen whether the component is currently open
+ * @param {string} color current color of the containing Column
+ * @param {Function} changeColor function used to change the color of the containing Column
+ */
 export default function ColorPicker({
     isOpen,
     color,
