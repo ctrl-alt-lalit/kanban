@@ -1,3 +1,7 @@
+/**
+ * @file Component containing containing the main feature, an interactive Kanban Board! Has multiple {@link Column}s with {@link Task}s that can be dragged to each column.
+ */
+
 import React from 'react';
 import Column from './column';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
@@ -6,14 +10,14 @@ import { createKanbanJson, KanbanJson } from '../util/kanban-types';
 import boardState from '../util/board-state';
 
 /**
- * A kanban board containing multiple Columns and Tasks that can be dragged to each column.
+ * A kanban board containing multiple {@link Column}s and {@link Task}s that can be dragged to each column.
  */
-class Board extends React.Component<
+export default class Board extends React.Component<
     { toggleSettings: () => void; toggleHistory: () => void },
     { data: KanbanJson; title: string }
 > {
     /**
-     * Creates the Board and loads a StrictKanbanJSON from the Extension Host
+     * Gives Board temporary default values so it has something to display
      */
     constructor(props: never) {
         super(props);
@@ -23,6 +27,9 @@ class Board extends React.Component<
         };
     }
 
+    /**
+     * Adds listeners to boardState and keyboardShortcuts. Requests previously saved Kanban.
+     */
     componentDidMount() {
         boardState.addKanbanChangeListener(this.loadCallback);
         boardState.refreshKanban();
@@ -30,11 +37,17 @@ class Board extends React.Component<
         window.addEventListener('keypress', this.saveShortcut);
     }
 
+    /**
+     * Removes listeners.
+     */
     componentWillUnmount() {
         boardState.removeKanbanChangeListener(this.loadCallback);
         window.removeEventListener('keypress', this.saveShortcut);
     }
 
+    /**
+     * @ignore
+     */
     render(): JSX.Element {
         return (
             <div className="board">
@@ -79,6 +92,7 @@ class Board extends React.Component<
 
     /**
      * React component containing the title of this Board and all its buttons (save, toggle autosave, settings)
+     * @ignore
      */
     private Titlebar = (): JSX.Element => {
         return (
@@ -130,6 +144,7 @@ class Board extends React.Component<
 
     /**
      * Vertical bar on that adds a column to the board when clicked.
+     * @ignore
      */
     private AddColumnButton = (): JSX.Element => (
         <a className="board-add-column" title="Add Column" onClick={() => boardState.addColumn()}>
@@ -151,6 +166,7 @@ class Board extends React.Component<
     /**
      * Listens for 'Ctrl + S' to save
      * @param event a KeyboardEvent
+     * @ignore
      */
     private saveShortcut = (event: KeyboardEvent) => {
         if (event.ctrlKey && event.key === 's') {
@@ -158,5 +174,3 @@ class Board extends React.Component<
         }
     };
 }
-
-export default Board;
