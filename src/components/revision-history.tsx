@@ -1,15 +1,21 @@
+/**
+ * @file Component that shows a list of edits the user has made since the board was opened.
+ */
+
 import clone from 'just-clone';
 import React from 'react';
 import boardState, { HistoryObject, StateChanges } from '../util/board-state';
 
 /**
- * React component showing a list of edits the user has made since the board was opened.
+ * Shows a list of edits the user has made since the board was opened.
  */
-class RevisionHistory extends React.Component<
+export default class RevisionHistory extends React.Component<
     { isOpen: boolean; closeHistory: () => void },
     { history: HistoryObject[] }
 > {
-    /* Create the component and make it listen for open event */
+    /**
+     * Creates internal copy of {@link boardState.history}
+     */
     constructor(props: never) {
         super(props);
 
@@ -18,14 +24,23 @@ class RevisionHistory extends React.Component<
         };
     }
 
+    /**
+     * Adds a listener for history updates, to keep list of edits up-to-date.
+     */
     componentDidMount() {
         boardState.addHistoryUpdateListener(this.historyUpdater);
     }
 
+    /**
+     * Removes history update listener
+     */
     componentWillUnmount() {
         boardState.removeHistoryUpdateListener(this.historyUpdater);
     }
 
+    /**
+     * @ignore
+     */
     render(): JSX.Element {
         const style = {
             // CSS styles so that this panel will 'swipe' open and closed
@@ -99,6 +114,7 @@ class RevisionHistory extends React.Component<
      * history list when a user makes a change.
      *
      * @param histObj {HistoryObject} HistoryObject to append to history
+     * @ignore
      */
     private historyUpdater = (histObj: HistoryObject) => {
         const copy = this.state.history;
@@ -109,6 +125,7 @@ class RevisionHistory extends React.Component<
     /**
      * @param change {StateChanges} what kind of change happened
      * @returns String representation for what StateChange happened
+     * @ignore
      */
     /* istanbul ignore next */
     private stateChangeName(change: StateChanges) {
@@ -139,5 +156,3 @@ class RevisionHistory extends React.Component<
         }
     }
 }
-
-export default RevisionHistory;

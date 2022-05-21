@@ -1,5 +1,5 @@
 /**
- * @file Toggleable panel to display and edit board settings.
+ * @file Toggleable component to display and edit board settings.
  */
 
 import React from 'react';
