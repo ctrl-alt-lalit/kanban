@@ -1,3 +1,9 @@
+/**
+ * @file Provides a "meta-API" for the VsCode Api. Only exposing functionality that is relevant to the extension.
+ *
+ * This also makes testing easier, since the VsCode API only has to be emulated in one place rather than throughout the project.
+ */
+
 import { createKanbanJson, WeakKanbanJson, KanbanJson, toKanbanJson } from './kanban-types';
 declare var acquireVsCodeApi: () => VsCodeApi;
 
@@ -11,6 +17,9 @@ type SettingsMessage = {
     data: null;
 };
 
+/**
+ * The types of color themes VSCode supports.
+ */
 export enum ColorTheme {
     THEME_LIGHT = 1,
     THEME_DARK = 2,
@@ -23,6 +32,9 @@ type ThemeMessage = {
     data: ColorTheme;
 };
 
+/**
+ * The types of messages this extension can receive from the Extension Host.
+ */
 export type ApiMessage = SaveMessage | SettingsMessage | ThemeMessage;
 
 interface VsCodeApi {
@@ -47,7 +59,6 @@ class VsCodeHandler {
 
     /**
      * Tells the Extension Host to save `data`.
-     * @param {KanbanJson} kanban Kanban Board state to be saved
      */
     save(kanban: KanbanJson) {
         kanban.timestamp = Date.now();
@@ -64,8 +75,6 @@ class VsCodeHandler {
     /**
      * Makes it so `callback` will be run immediately after
      * receiving a 'load' command from the Extension Host.
-     *
-     * @param {(data: KanbanJson) => void} callback function to run after loading data
      */
     addLoadListener(callback: (kanban: KanbanJson) => void) {
         this.loadCallbacks.push(callback);
@@ -74,8 +83,6 @@ class VsCodeHandler {
     /**
      * If 'addLoadListener(`callback`)' was called,
      * removes `callback` from the list of load callbacks.
-     *
-     * @param {(data: KanbanJson) => void} callback function to remove
      */
     removeLoadListener(callback: (kanban: KanbanJson) => void) {
         this.loadCallbacks = this.loadCallbacks.filter((cb) => cb !== callback);
@@ -91,7 +98,6 @@ class VsCodeHandler {
 
     /**
      * Only call the constructor once in the lifetime of the extension.
-     * Using multiple VscodeHandlers has not been tested and is unsupported.
      */
     constructor() {
         // VSCode's postMessage API has no way to set target window identity, so no way to verify
@@ -108,10 +114,6 @@ class VsCodeHandler {
         });
     }
 
-    /**
-     * List of callbacks to run after receiving
-     * the 'load' message from the Extension Host.
-     */
     private loadCallbacks: Array<(kanban: KanbanJson) => void> = [];
     private themeCallbacks: Array<(theme: ColorTheme) => void> = [];
 }

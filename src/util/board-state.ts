@@ -1,9 +1,16 @@
+/**
+ * @file Provides an API for React components to modify the global Kanban Board state.
+ *
+ * This enables components to modify the board without having to pass a state change up the shadow DOM. Additionally,
+ * components can maintain an internal state (for performance reasons) and update the boardState when needed for coherency.
+ */
+
 import { createColumnJson, createKanbanJson, createTaskJson, KanbanJson } from './kanban-types';
-import VsCodeHandler from './vscode-handler';
+import vsCodeHandler, { ColorTheme } from './vscode-handler';
 import clone from 'just-clone';
 
 /**
- * Enumeration of possible board state changes that can occur.
+ * Enumeration of all possible board state changes.
  */
 export enum StateChanges {
     // Board setting changes
@@ -29,39 +36,46 @@ export enum StateChanges {
     BOARD_LOADED,
 }
 
+/**
+ * Snapshot of a previous board state, including what change resulted in this state.
+ */
 export type HistoryObject = {
     change: StateChanges;
     data: KanbanJson;
     details: string;
 };
 
+type ChangeCallback = (kanban: KanbanJson) => void;
+type HistoryCallback = (historyItem: HistoryObject) => void;
+
 /**
  * Manages the state of a Kanban board. All state modifications should happen through this object, so that it can keep track of them.
  */
 class BoardState {
     /**
-     * Instantiate Object and load VsCode API if it's available.
+     * Load VsCode API if it's available and attempt to load board from extension host.
      */
     constructor() {
-        VsCodeHandler.addLoadListener(this.loadFromVscode);
-        VsCodeHandler.load();
+        vsCodeHandler.addLoadListener(this.loadFromVscode);
+        vsCodeHandler.addThemeChangeListener(this.themeChangeListener);
+        vsCodeHandler.load();
     }
 
     /**
      * Add a callback to be run whenever the current kanban state is changed
      *
-     * @param listener callback to be added
+     * @param {ChangeCallback} listener callback to be added
      */
-    public addKanbanChangeListener(listener: (kanban: KanbanJson) => void) {
+    public addKanbanChangeListener(listener: ChangeCallback) {
         this.kanbanChangeListeners.push(listener);
     }
 
     /**
      * Remove a callback added with addKanbanChangeListener().
      *
-     * @param listener callback to be removed
+     * @param {ChangeCallback} listener callback to be removed
      */
-    public removeKanbanChangeListener(listener: (kanban: KanbanJson) => void) {
+    public removeKanbanChangeListener(listener: ChangeCallback) {
         this.kanbanChangeListeners = this.kanbanChangeListeners.filter((l) => l !== listener);
     }
 
@@ -75,32 +89,31 @@ class BoardState {
     /**
      * Add a callback to be run whenever the change history is updated.
      *
-     * @param listener callback to be added
+     * @param {HistoryCallback} listener callback to be added
      */
-    public addHistoryUpdateListener(listener: (history: HistoryObject) => void) {
+    public addHistoryUpdateListener(listener: HistoryCallback) {
         this.historyUpdateListeners.push(listener);
     }
 
     /**
      * Remove a callback added with addHistoryUpdateListener().
      *
-     * @param listener callback to be removed
+     * @param {HistoryCallback} listener callback to be removed
      */
-    public removeHistoryUpdateListener(listener: (history: HistoryObject) => void) {
+    public removeHistoryUpdateListener(listener: HistoryCallback) {
         this.historyUpdateListeners = this.historyUpdateListeners.filter((l) => l !== listener);
     }
 
     /**
-     * @returns a copy of this BoardState's history list
+     * A readonly reference of the boardState's history
+     * @returns {HistoryObject[]}
      */
     public get history(): readonly HistoryObject[] {
         return this.boardHistory;
     }
 
     /**
-     * Sets the autosave field of the current board state to newAutosave
-     *
-     * @param newAutosave desired autosave value for current board state
+     * Sets the autosave field of the current board state to `newAutosave`
      */
     public setAutosave(newAutosave: boolean): void {
         if (newAutosave === this.currentKanban.autosave) {
@@ -117,9 +130,7 @@ class BoardState {
     }
 
     /**
-     * Sets the saveToFile field of the current board state to newSaveToFile
-     *
-     * @param newSaveToFile desired saveToFile value for current board state
+     * Sets the saveToFile field of the current board state to `newSaveToFile`
      */
     public setSaveToFile(newSaveToFile: boolean): void {
         if (newSaveToFile === this.currentKanban.saveToFile) {
@@ -136,12 +147,9 @@ class BoardState {
     }
 
     /**
-     * Sets the title filed of the current board state to newTitle.
+     * Sets the title field of the current board state to `newTitle`.
      *
-     * By design, it takes a second for this change to be registered
-     * in the Board State's change history.
-     *
-     * @param newTitle desired title for current board state
+     * History will not be updated if `newTitle` equals the old title.
      */
     public setBoardTitle(newTitle: string): void {
         const oldTitle = this.currentKanban.title;
@@ -158,7 +166,7 @@ class BoardState {
     }
 
     /**
-     * Appends a column to the current board state's column list.
+     * Appends an empty column to the current board.
      */
     public addColumn(): void {
         const columnName = `Column ${this.currentKanban.cols.length + 1}`;
@@ -171,7 +179,7 @@ class BoardState {
     /**
      * Removes a column with the given id from the current board state.
      *
-     * @param id ID of column to remove
+     * @param {string} id ID of column to remove
      */
     public removeColumn(id: string): void {
         const columnIdx = this.getColumnIndex(id);
@@ -190,13 +198,12 @@ class BoardState {
     }
 
     /**
-     * Changes the title of the column with the given id.
+     * Changes the title of the column with the given id to `newTitle`.
      *
-     * By design, this change takes a second to register in the board state's
-     * change history.
+     * History will not update if `newTitle` equals the column's old title.
      *
-     * @param id ID of column to edit
-     * @param newTitle desired title of column
+     * @param {string} id ID of column to edit
+     * @param {string} newTitle desired title of column
      */
     public setColumnTitle(id: string, newTitle: string) {
         const columnIdx = this.getColumnIndex(id);
@@ -221,10 +228,12 @@ class BoardState {
     }
 
     /**
-     * Changes the color of the column with the given id.
+     * Changes the color of the column with the given id to `newColor`
      *
-     * @param id ID of column to edit
-     * @param newColor desired color  of column
+     * Does nothing if `newColor` equals the column's old color
+     *
+     * @param {string} id ID of column to edit
+     * @param {string} newColor desired color  of column
      */
     public setColumnColor(id: string, newColor: string) {
         const columnIdx = this.getColumnIndex(id);
@@ -252,8 +261,8 @@ class BoardState {
      * specified index in the current board state's column list.
      * Other columns will be shifted accommodate this movement.
      *
-     * @param id ID of column to move
-     * @param toIndex desired index of column
+     * @param {string} id ID of column to move
+     * @param {number} toIndex desired index of column
      */
     public moveColumn(id: string, toIndex: number) {
         if (toIndex < 0 || toIndex >= this.currentKanban.cols.length) {
@@ -277,10 +286,10 @@ class BoardState {
     }
 
     /**
-     * Append's a task to the task list of the column with the given id.
+     * Append's an empty task to a column's task list.
      *
-     * @param columnId ID of the column to add a task to
-     * @returns the ID of the newly created task
+     * @param {string} columnId ID of the column to add a task to
+     * @returns {string} the ID of the newly created task
      */
     public addTask(columnId: string): string {
         const columnIdx = this.getColumnIndex(columnId);
@@ -297,8 +306,8 @@ class BoardState {
     /**
      * Removes a task with the specified ID from the column with the given ID.
      *
-     * @param columnId ID of column containing task to remove
-     * @param taskId ID of task to remove
+     * @param {string} columnId ID of column containing task to remove
+     * @param {string} taskId ID of task to remove
      */
     public removeTask(columnId: string, taskId: string): void {
         const columnIdx = this.getColumnIndex(columnId);
@@ -328,13 +337,12 @@ class BoardState {
 
     /**
      * Moves a task from one column and/or position to another column and/or position.
+     * `sourceCol` may equal `destCol`.
      *
-     * sourceCol can equal destCol.
-     *
-     * @param sourceCol ID of column already containing task
-     * @param destCol ID of column task should be moved to
-     * @param sourceIndex starting position of task in SourceCol's task list
-     * @param destIndex desired position in destCol's task list
+     * @param {string} sourceCol ID of column already containing task
+     * @param {string} destCol ID of column task should be moved to
+     * @param {number} sourceIndex starting position of task in SourceCol's task list
+     * @param {number} destIndex desired position in destCol's task list
      */
     public moveTask(
         sourceCol: string,
@@ -364,8 +372,8 @@ class BoardState {
     }
 
     /**
-     * Rolls back the current state to the state found at changeHistory[index].
-     * @param index index into BoardState's change history that the current state should be rolled back to
+     * Rolls back the current state to the state found at `boardState.history[index]`.
+     * @param {number} index History index to roll back to
      */
     public rollBackHistory(index: number) {
         if (index < 0 || index >= this.boardHistory.length) {
@@ -385,8 +393,7 @@ class BoardState {
     }
 
     /**
-     * Save a given StrictKanbanJSON or, if no kanban is provided, the BoardStates' current state.
-     * @param kanban StrictKanbanJSON to save
+     * Save a `kanban` or, if no kanban is provided, boardStates' current state.
      */
     public save(kanban: KanbanJson | null = null) {
         if (kanban) {
@@ -404,37 +411,40 @@ class BoardState {
         }
 
         this.hasChangedSinceSave = false;
-        VsCodeHandler.save(this.currentKanban);
+        vsCodeHandler.save(this.currentKanban);
     }
 
     /**
-     * @returns a copy of the BoardState's current state
+     * @returns {KanbanJson} a copy of the BoardState's current state
      */
-    public getCurrentState() {
+    public getCurrentState(): KanbanJson {
         return clone(this.currentKanban);
     }
 
     /**
-     * Make the kanban-change listeners load a given StrictKanbanJSON
-     * @param kanban StrictKanbanJSON to load
+     * Make the kanban change-listeners load `kanban`
      */
     public displayKanban(kanban: KanbanJson) {
         this.kanbanChangeListeners.forEach((listener) => listener(kanban));
     }
 
-    get changedSinceSave() {
+    /**
+     * Whether the boardState has been updated since it was last saved.
+     * @returns {boolean}
+     */
+    public get changedSinceSave(): boolean {
         return this.hasChangedSinceSave;
     }
 
     /**
-     * Change a task's text.
+     * Change a tasks text to `newText`.
      *
-     * By design, it takes a second for this change to register in
-     * the BoardState's change history.
-     *
-     * @param columnId ID of column containing task to edit
-     * @param taskId ID of task to edit
-     * @param newText desired text of the task
+     * @param {string} columnId ID of column containing task to edit
+     * @param {number} columnIndex index of column containing task to edit
+     * @param {string} taskId ID of task to edit
+     * @param {number} taskIndex index of task to edit
+     * @param {string} newText what the task's text will be changed to
+     * @returns {boolean} `true` if the operation is successful
      */
     public setTaskText(
         columnId: string,
@@ -442,7 +452,7 @@ class BoardState {
         taskId: string,
         taskIndex: number,
         newText: string
-    ) {
+    ): boolean {
         if (columnIndex < 0 || columnIndex >= this.currentKanban.cols.length) {
             return false;
         }
@@ -483,12 +493,19 @@ class BoardState {
         return true;
     }
 
+    /**
+     * Check's if VsCode's active color theme is a "light" or "light and high-contrast" theme.
+     */
+    get isLightMode(): boolean {
+        return this.vscodeInLightTheme;
+    }
+
     /*******************
      * Private Methods *
      *******************/
     private currentKanban = createKanbanJson();
-    private kanbanChangeListeners: Array<(kanban: KanbanJson) => void> = [];
-    private historyUpdateListeners: Array<(historyStep: HistoryObject) => void> = [];
+    private kanbanChangeListeners: ChangeCallback[] = [];
+    private historyUpdateListeners: HistoryCallback[] = [];
 
     private boardHistory: HistoryObject[] = [];
 
@@ -518,6 +535,13 @@ class BoardState {
     }
 
     private hasChangedSinceSave = false;
+
+    private vscodeInLightTheme = false;
+    private themeChangeListener = (theme: ColorTheme) => {
+        this.vscodeInLightTheme =
+            theme === ColorTheme.THEME_LIGHT || theme === ColorTheme.THEME_LIGHT_HIGHCONTRAST;
+        this.refreshKanban();
+    };
 }
 
 export default new BoardState();

@@ -5,24 +5,16 @@ import { Draggable } from 'react-beautiful-dnd';
 import boardState from '../util/board-state';
 import { TaskJson } from '../util/kanban-types';
 import remarkGfm from 'remark-gfm';
-import vscodeHandler, { ColorTheme } from '../util/vscode-handler';
 import remarkBreaks from 'remark-breaks';
 
 let previousFocusedTaskId = '';
 let anyTaskIsFocused = false;
-let isLightMode = document.querySelector('body')!.classList.contains('vscode-light');
-
-const lightModeListener = (theme: ColorTheme) => {
-    isLightMode = theme === ColorTheme.THEME_LIGHT || theme === ColorTheme.THEME_LIGHT_HIGHCONTRAST;
-    boardState.refreshKanban();
-};
-vscodeHandler.addThemeChangeListener(lightModeListener);
 
 /**
  * Converts css color to one with reduced opacity. Does no input checking.
- *
- * @param color string with 2 forms: "#RRGGBB" or "rgb(R, G, B)".
- * @param filterStrengh number betwen 0 and 1 (inclusive)
+ * @ignore
+ * @param color string of form "#RRGGBB" or "rgb(R, G, B)".
+ * @param filterStrengh number between 0 and 1 (inclusive)
  * @returns color with reduced opacity
  */
 function colorToFilter(color: string, filterStrengh: number) {
@@ -36,8 +28,9 @@ function colorToFilter(color: string, filterStrengh: number) {
 /**
  * Listens for the keyboard shortcut 'Ctrl + Enter'. If a task is currently being edited,
  * then that task stops being edited. Otherwise, the previously edited task will be edited again.
+ * @ignore
  */
-window.addEventListener('keypress', (event) => {
+const ctrlEnterListener = (event: KeyboardEvent) => {
     if (!event.ctrlKey || event.key !== 'Enter') {
         return;
     }
@@ -49,145 +42,186 @@ window.addEventListener('keypress', (event) => {
         const taskDisplay = document.getElementById(`${previousFocusedTaskId}-display`);
         taskDisplay?.click();
     }
-});
+};
 
 /**
- * React component showing editable text that is rendered in markdown. This component can be dragged to different Columns.
- *
- * @prop data {TaskJSON} TaskJSON this Task will represent
- * @prop index {number} position of this Task in parent Column's list of Tasks
- * @prop columnId {string} ID of parent Column
+ * Representation of a {@link KanbanJson}'s task. Can be edited by the user and dragged between {@link Column}s.
+ * @component
+ * @param data {TaskJSON} TaskJSON this Task will represent
+ * @param index {number} position of this Task in parent Column's list of Tasks
+ * @param columnId {string} ID of parent Column
  */
-function Task({
-    data,
-    index,
-    columnId,
-    defaultToEdit, // aka Task just added
-    columnIndex,
-    columnColor,
-}: {
-    data: TaskJson;
-    index: number;
-    columnId: string;
-    defaultToEdit: boolean;
-    columnIndex: number;
-    columnColor: string; //#RRGGBB40
-}): JSX.Element {
-    const [editing, setEditing] = React.useState(defaultToEdit);
-    const [text, setText] = React.useState(data.text);
-    const [beingDeleted, setBeingDeleted] = React.useState(false);
+export default class Task extends React.Component<
+    {
+        data: TaskJson;
+        index: number;
+        columnId: string;
+        defaultToEdit: boolean;
+        columnIndex: number;
+        columnColor: string; // "#RRGGBB"
+    },
+    { editing: boolean; text: string; beingDeleted: boolean }
+> {
+    /**
+     * @ignore
+     */
+    constructor(props: never) {
+        super(props);
+        this.state = {
+            editing: this.props.defaultToEdit,
+            text: this.props.data.text,
+            beingDeleted: false,
+        };
+    }
 
-    const filterStrengh = isLightMode ? 0.75 : 0.25;
+    /**
+     * If this is the first task to mount, adds a listener for ctrl+enter shortcut
+     */
+    componentDidMount() {
+        if (++Task.numTasks === 1) {
+            window.addEventListener('keypress', ctrlEnterListener);
+        }
+    }
 
-    return (
-        <Draggable key={data.id} draggableId={data.id} index={index}>
-            {(provided, snapshot) => {
-                const beingDragged = snapshot.isDragging && !snapshot.isDropAnimating;
+    /**
+     * If this is the last task to unmount, removes the ctrl+enter listener
+     */
+    componentWillUnmount() {
+        if (--Task.numTasks === 0) {
+            window.removeEventListener('keypress', ctrlEnterListener);
+        }
+    }
 
-                columnColor = colorToFilter(columnColor, filterStrengh);
-                if (snapshot.isDropAnimating) {
-                    // transition to target column's color instead of home column's
-                    const targetColumn = document.getElementById(snapshot.draggingOver ?? '');
-                    if (targetColumn) {
-                        columnColor = colorToFilter(targetColumn.style.color, filterStrengh); // rgb -> rgba
+    /**
+     * @ignore
+     */
+    render() {
+        return (
+            <Draggable key={this.id} draggableId={this.id} index={this.props.index}>
+                {(provided, snapshot) => {
+                    const beingDragged = snapshot.isDragging && !snapshot.isDropAnimating;
+
+                    this.colorFilter = colorToFilter(this.props.columnColor, this.filterStrength);
+                    if (snapshot.isDropAnimating) {
+                        // transition to target column's color instead of home column's
+                        const targetColumn = document.getElementById(snapshot.draggingOver ?? '');
+                        if (targetColumn) {
+                            this.colorFilter = colorToFilter(
+                                targetColumn.style.color,
+                                this.filterStrength
+                            ); // rgb -> rgba
+                        }
                     }
-                }
 
-                let bgColor = beingDragged ? 'rgba(0,0,0,0)' : columnColor;
-                let borderColor = beingDragged
-                    ? 'var(--vscode-activityBar-background)'
-                    : columnColor;
+                    let bgColor = beingDragged ? 'rgba(0,0,0,0)' : this.colorFilter;
+                    let borderColor = beingDragged
+                        ? 'var(--vscode-activityBar-background)'
+                        : this.colorFilter;
 
-                //draggable container for the task (see react-beautiful-dnd)
-                return (
-                    <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        className={[
-                            'task',
-                            defaultToEdit ? 'task-added' : '',
-                            beingDeleted ? 'task-deleted' : '',
-                            snapshot.isDragging ? 'drag' : '',
-                        ].join(' ')}
-                        onContextMenu={(event) => (event.cancelable = false)} //tells column not to make menu
-                        id={data.id}
-                    >
-                        {/* 'Handle' user must click on to move the whole Task (react-beautiful-dnd) */}
+                    //draggable container for the task (see react-beautiful-dnd)
+                    return (
                         <div
-                            className="task-handle"
-                            {...provided.dragHandleProps}
-                            onMouseDown={() => setEditing(false)}
-                            style={{
-                                backgroundColor: bgColor,
-                            }}
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            className={[
+                                'task',
+                                this.props.defaultToEdit ? 'task-added' : '',
+                                this.state.beingDeleted ? 'task-deleted' : '',
+                                snapshot.isDragging ? 'drag' : '',
+                            ].join(' ')}
+                            onContextMenu={(event) => (event.cancelable = false)} //tells column not to make menu
+                            id={this.id}
                         >
-                            <a
-                                className="task-delete"
-                                title="Delete Task"
-                                onClick={() => {
-                                    setBeingDeleted(true);
-                                    setTimeout(() => boardState.removeTask(columnId, data.id), 180);
+                            {/* Handle user must click on to move the whole Task (react-beautiful-dnd) */}
+                            <div
+                                className="task-handle"
+                                {...provided.dragHandleProps}
+                                onMouseDown={() => this.setState({ editing: false })}
+                                style={{
+                                    backgroundColor: bgColor,
                                 }}
                             >
-                                <span className="codicon codicon-close" />
-                            </a>
-                            <span className="codicon codicon-gripper" />
-                        </div>
+                                <a
+                                    className="task-delete"
+                                    title="Delete Task"
+                                    onClick={() => {
+                                        this.setState({ beingDeleted: true });
+                                        setTimeout(
+                                            () =>
+                                                boardState.removeTask(this.props.columnId, this.id),
+                                            180
+                                        );
+                                    }}
+                                >
+                                    <span className="codicon codicon-close" />
+                                </a>
+                                <span className="codicon codicon-gripper" />
+                            </div>
 
-                        {/* Main content. Autosizing textbox or text rendered as markdown */}
-                        <TextAreaAutosize
-                            className="task-edit task-section"
-                            id={`${data.id}-edit`}
-                            value={text}
-                            onChange={(event) => {
-                                setText(event.target.value);
-                            }}
-                            onFocus={() => {
-                                previousFocusedTaskId = data.id;
-                                anyTaskIsFocused = true;
-                            }}
-                            onBlur={() => {
-                                setEditing(false);
-                                anyTaskIsFocused = false;
-                                boardState.setTaskText(columnId, columnIndex, data.id, index, text);
-                            }}
-                            style={{
-                                display: editing ? 'block' : 'none',
-                                borderColor: borderColor,
-                            }}
-                        />
-                        <div
-                            className="task-display task-section"
-                            onClick={() => {
-                                setEditing(true);
-                                setTimeout(() => {
-                                    const textArea = document.getElementById(
-                                        `${data.id}-edit`
-                                    ) as HTMLTextAreaElement;
+                            {/* Main content. Autosizing textbox or text rendered as markdown */}
+                            <TextAreaAutosize
+                                className="task-edit task-section"
+                                id={`${this.id}-edit`}
+                                value={this.state.text}
+                                onChange={(event) => {
+                                    this.setState({ text: event.target.value });
+                                }}
+                                onFocus={() => {
+                                    previousFocusedTaskId = this.id;
+                                    anyTaskIsFocused = true;
+                                }}
+                                onBlur={() => {
+                                    this.setState({ editing: false });
+                                    anyTaskIsFocused = false;
+                                    boardState.setTaskText(
+                                        this.props.columnId,
+                                        this.props.columnIndex,
+                                        this.id,
+                                        this.props.index,
+                                        this.state.text
+                                    );
+                                }}
+                                style={{
+                                    display: this.state.editing ? 'block' : 'none',
+                                    borderColor: borderColor,
+                                }}
+                            />
+                            <div
+                                className="task-display task-section"
+                                onClick={() => {
+                                    this.setState({ editing: true });
+                                    setTimeout(() => {
+                                        const textArea = document.getElementById(
+                                            `${this.id}-edit`
+                                        ) as HTMLTextAreaElement;
 
-                                    textArea.focus();
-                                    textArea.selectionStart = 0;
-                                    textArea.selectionEnd = textArea.value.length;
-                                }, 0); // Put refocusing at end of event queue so that React's DOM recreation happens first.
-                            }}
-                            style={{
-                                display: editing ? 'none' : 'block',
-                                borderColor: borderColor,
-                            }}
-                            id={`${data.id}-display`}
-                        >
-                            <ReactMarkdown
-                                remarkPlugins={[remarkGfm, remarkBreaks]}
-                                className={data.text ? '' : 'half-opacity'}
+                                        textArea.focus();
+                                        textArea.selectionStart = 0;
+                                        textArea.selectionEnd = textArea.value.length;
+                                    }, 0); // Put refocusing at end of event queue so that React's DOM recreation happens first.
+                                }}
+                                style={{
+                                    display: this.state.editing ? 'none' : 'block',
+                                    borderColor: borderColor,
+                                }}
+                                id={`${this.id}-display`}
                             >
-                                {data.text || '_enter text or markdown here_'}
-                            </ReactMarkdown>
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm, remarkBreaks]}
+                                    className={this.state.text ? '' : 'half-opacity'}
+                                >
+                                    {this.state.text || '_enter text or markdown here_'}
+                                </ReactMarkdown>
+                            </div>
                         </div>
-                    </div>
-                );
-            }}
-        </Draggable>
-    );
-}
+                    );
+                }}
+            </Draggable>
+        );
+    }
 
-export default Task;
+    private filterStrength = boardState.isLightMode ? 0.75 : 0.25;
+    private id = this.props.data.id;
+    private colorFilter = this.props.columnColor;
+    private static numTasks = 0;
+}

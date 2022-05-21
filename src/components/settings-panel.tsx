@@ -1,48 +1,54 @@
+/**
+ * @file Toggleable component to display and edit board settings.
+ */
+
 import React from 'react';
 import boardState from '../util/board-state';
 import { KanbanJson } from '../util/kanban-types';
 import vscodeHandler from '../util/vscode-handler';
 
 /**
- * React component showing a list of edits the user has made since the board was opened.
+ * Toggleable panel to display and edit board settings.
  */
 class SettingsPanel extends React.Component<
-    {},
+    { isOpen: boolean; closeSettings: () => void },
     {
-        open: boolean;
         autosave: boolean;
         saveToFile: boolean;
     }
 > {
-    /* Create the component and make it listen for open event */
     constructor(props: never) {
         super(props);
 
-        this.state = { open: false, autosave: false, saveToFile: false };
-        window.addEventListener('toggle-settings', this.toggleListener);
+        this.state = { autosave: false, saveToFile: false };
     }
 
+    /**
+     * Adds listener to boardstate for potential settings changes that may come by way of {@link RevisionHistory} component.
+     */
     componentDidMount() {
         boardState.addKanbanChangeListener(this.stateListener);
     }
 
+    /**
+     * Removes change listener.
+     */
     componentWillUnmount() {
         boardState.removeKanbanChangeListener(this.stateListener);
-        window.removeEventListener('toggle-settings', this.toggleListener);
     }
 
     render(): JSX.Element {
         const style = {
             // CSS styles so that this panel will 'swipe' open and closed
-            maxWidth: this.state.open ? '25%' : 0,
+            maxWidth: this.props.isOpen ? '25%' : 0,
             transition: 'max-width 0.3s ease 0s',
-            pointerEvents: this.state.open ? 'all' : 'none',
+            pointerEvents: this.props.isOpen ? 'all' : 'none',
         } as const;
 
         return (
             <div className="settings" style={style}>
                 <div className="settings-titlebar">
-                    <a onClick={() => this.setState({ open: false })} title="Hide Settings">
+                    <a onClick={this.props.closeSettings} title="Hide Settings">
                         <span className="codicon codicon-chevron-left" />
                     </a>
                     <h1> Settings </h1>
@@ -92,12 +98,13 @@ class SettingsPanel extends React.Component<
             saveToFile: kanban.saveToFile,
         });
     };
-    /* Callback for when the open event is fired */
-    private toggleListener = () => this.setState({ open: !this.state.open });
 }
 
 export default SettingsPanel;
 
+/**
+ * @ignore
+ */
 function ToggleSwitch({
     isToggled,
     onToggle,

@@ -16,7 +16,7 @@ function* boardSetup() {
     const defaultKanban = createKanbanJson();
     boardState.save(defaultKanban);
 
-    const wrapper = render(<Board />);
+    const wrapper = render(<Board toggleSettings={() => null} toggleHistory={() => null} />);
     const board = wrapper.container.firstElementChild as HTMLDivElement;
     yield board;
 
@@ -31,7 +31,7 @@ describe('<Board />', () => {
         ]);
         boardState.save(kanbanData);
 
-        const wrapper = render(<Board />);
+        const wrapper = render(<Board toggleSettings={() => null} toggleHistory={() => null} />);
         const board = wrapper.container.firstElementChild as HTMLDivElement;
 
         const title = board.querySelector('input.board-title') as HTMLInputElement;
@@ -69,76 +69,35 @@ describe('<Board />', () => {
 
             userEvent.click(saveButton);
             expect(spy).toHaveBeenCalled();
-
-            spy.mockClear();
             setup.next();
         });
 
         it('can open revision history', () => {
-            const setup = boardSetup();
-            const board = setup.next().value as HTMLDivElement;
+            const historyToggleMock = jest.fn();
+            const wrapper = render(
+                <Board toggleHistory={historyToggleMock} toggleSettings={() => null} />
+            );
+            const board = wrapper.container as HTMLDivElement;
 
             const historyButton = board.querySelector('a.board-history-open')!;
-            const spy = jest.spyOn(window, 'dispatchEvent');
-
             userEvent.click(historyButton);
-            expect(spy).toHaveBeenCalled();
-            setup.next();
+            expect(historyToggleMock).toHaveBeenCalled();
+            wrapper.unmount();
         });
 
         it('can open and close the settings panel', () => {
-            const setup = boardSetup();
-            const board = setup.next().value as HTMLDivElement;
+            const settingsToggleMock = jest.fn();
+            const wrapper = render(
+                <Board toggleSettings={settingsToggleMock} toggleHistory={() => null} />
+            );
+            const board = wrapper.container as HTMLDivElement;
 
             const historyButton = board.querySelector('a.board-settings-toggle')!;
-            const spy = jest.spyOn(window, 'dispatchEvent');
-
             userEvent.click(historyButton);
-            expect(spy).toHaveBeenCalled();
-            setup.next();
+            expect(settingsToggleMock).toHaveBeenCalled();
+            wrapper.unmount();
         });
     });
-
-    /*
-    describe('settings panel', () => {
-        function* settingsSetup() {
-            const setup = boardSetup();
-            const board = setup.next().value as HTMLDivElement;
-
-            const settingsButton = board.querySelector('a.board-settings-toggle')!;
-            userEvent.click(settingsButton);
-
-            const settingsPanel = board.querySelector('.board-settings') as HTMLDivElement;
-            yield settingsPanel;
-
-            setup.next();
-        }
-
-        it('can toggle autosave', () => {
-            const setup = settingsSetup();
-            const settings = setup.next().value as HTMLDivElement;
-
-            const autosaveToggle = settings.querySelector('a.board-autosave')!;
-            const spy = jest.spyOn(boardState, 'changeAutosave');
-
-            userEvent.click(autosaveToggle);
-            expect(spy).toHaveBeenCalled();
-            setup.next();
-        });
-
-        it('can toggle save-to-file', () => {
-            const setup = settingsSetup();
-            const settings = setup.next().value as HTMLDivElement;
-
-            const saveFileToggle = settings.querySelector('a.board-save-file')!;
-            const spy = jest.spyOn(boardState, 'changeSaveToFile');
-
-            userEvent.click(saveFileToggle);
-            expect(spy).toHaveBeenCalled();
-            setup.next();
-        });
-    });
-    */
 
     it('can add a column', () => {
         const setup = boardSetup();
@@ -149,7 +108,6 @@ describe('<Board />', () => {
 
         userEvent.click(addButton);
         expect(spy).toHaveBeenCalled();
+        setup.return();
     });
-
-    // UserEvent not working with ctrl + S. Can't test save shortcut
 });
