@@ -1,9 +1,20 @@
+/**
+ * @file Wrapper around a VSCode webview panel to make managing the webview's state and how to show the webview easier.
+ */
+
 import * as vscode from 'vscode';
 import * as path from 'path';
 import Storage from './storage';
 import { ApiMessage } from '../util/vscode-handler';
 
+/**
+ * Handles the creation, destruction, and activation of the webview panel that contains the Kanban board.
+ */
 export default class Panel {
+    /**
+     *
+     * @param {vscode.ExtensionContext} context Context recieved as a paramater in the {@link activate} function
+     */
     static show(context: vscode.ExtensionContext) {
         const column = vscode.window.activeTextEditor?.viewColumn;
 
@@ -14,6 +25,9 @@ export default class Panel {
         }
     }
 
+    /***********
+     * Private *
+     ***********/
     private static current: Panel | undefined = undefined;
     private readonly webviewPanel: vscode.WebviewPanel;
     private storage: Storage;

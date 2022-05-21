@@ -106,6 +106,7 @@ class BoardState {
 
     /**
      * A readonly reference of the boardState's history
+     * @returns {HistoryObject[]}
      */
     public get history(): readonly HistoryObject[] {
         return this.boardHistory;
@@ -414,9 +415,9 @@ class BoardState {
     }
 
     /**
-     * @returns {KanbanJSON} a copy of the BoardState's current state
+     * @returns {KanbanJson} a copy of the BoardState's current state
      */
-    public getCurrentState() {
+    public getCurrentState(): KanbanJson {
         return clone(this.currentKanban);
     }
 
@@ -427,7 +428,11 @@ class BoardState {
         this.kanbanChangeListeners.forEach((listener) => listener(kanban));
     }
 
-    get changedSinceSave() {
+    /**
+     * Whether the boardState has been updated since it was last saved.
+     * @returns {boolean}
+     */
+    public get changedSinceSave(): boolean {
         return this.hasChangedSinceSave;
     }
 

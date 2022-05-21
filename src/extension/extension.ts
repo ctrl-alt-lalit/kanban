@@ -1,7 +1,14 @@
+/**
+ * @file Entry point for the extension. Tells VSCode how to activate the extension and what UI elements to update so the user can use the extension.
+ */
+
 import * as vscode from 'vscode'; //contains the VS Code extension API
 import Panel from './panel';
 
-// extension is activated the very first time a command is executed
+/**
+ * This is executed every time VSCode is opened and the extension is initialized/activated.
+ * Gives VSCode a "view board" command and reads extension settings.
+ */
 export function activate(context: vscode.ExtensionContext) {
     const viewCommand = 'kanban.view';
     context.subscriptions.push(
@@ -40,6 +47,13 @@ export function activate(context: vscode.ExtensionContext) {
     });
 }
 
+/**
+ * Tells VSCode to create a "Kanban" button on the status bar.
+ *
+ * @param {string} alignment where the button should be: left, right, or nowhere
+ * @param {number} priority where the button should be in relation to other buttons
+ * @param {string} viewCommand command parsed by VSCode to open the Kanban extension
+ */
 function createViewButton(
     alignment: 'None' | 'Left' | 'Right',
     priority: number,
