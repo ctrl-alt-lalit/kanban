@@ -1,4 +1,7 @@
+.github/
 .vscode/
+coverage/
+docs/
 
 images/
 !images/icon.png
@@ -8,17 +11,22 @@ node_modules/
 !node_modules/@vscode/codicons/dist/codicon.ttf
 !node_modules/@szhsin/react-menu/dist/index.css
 
-public/
 src/
-coverage/
 
 .eslintrc.json
 .gitignore
+.prettierrc.yaml
+
 .yarnrc
+
 jest.config.js
+jsdoc.conf.js
+*.vsix
+
 tsconfig.extension.json
 tsconfig.json
+
+webpack-extension.config.js
+webpack.config.js
 yarn-error.log
 yarn.lock
-*.vsix
-webpack.config.js
