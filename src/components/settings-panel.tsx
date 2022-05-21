@@ -1,10 +1,14 @@
+/**
+ * @file Toggleable panel to display and edit board settings.
+ */
+
 import React from 'react';
 import boardState from '../util/board-state';
 import { KanbanJson } from '../util/kanban-types';
 import vscodeHandler from '../util/vscode-handler';
 
 /**
- * React component showing a list of edits the user has made since the board was opened.
+ * Toggleable panel to display and edit board settings.
  */
 class SettingsPanel extends React.Component<
     { isOpen: boolean; closeSettings: () => void },
@@ -13,17 +17,22 @@ class SettingsPanel extends React.Component<
         saveToFile: boolean;
     }
 > {
-    /* Create the component and make it listen for open event */
     constructor(props: never) {
         super(props);
 
         this.state = { autosave: false, saveToFile: false };
     }
 
+    /**
+     * Adds listener to boardstate for potential settings changes that may come by way of {@link RevisionHistory} component.
+     */
     componentDidMount() {
         boardState.addKanbanChangeListener(this.stateListener);
     }
 
+    /**
+     * Removes change listener.
+     */
     componentWillUnmount() {
         boardState.removeKanbanChangeListener(this.stateListener);
     }
@@ -93,6 +102,9 @@ class SettingsPanel extends React.Component<
 
 export default SettingsPanel;
 
+/**
+ * @ignore
+ */
 function ToggleSwitch({
     isToggled,
     onToggle,
