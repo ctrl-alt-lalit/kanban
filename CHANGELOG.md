@@ -1,14 +1,20 @@
 # Changelog
 
+### 1.7.3
+
+-   Minor Perfomance Enhancements:
+    -   made many lambda callbacks either static functions or memoized lambdas
+    -   memoized many portions of React components
+
 ### 1.7.2
 
--   BUGFIXES:
+-   Bugfixes:
     -   History elements' border color changes on hover
     -   Fixed a (really small) memory leak when adding listener for color theme change
 
 ### 1.7.1
 
--   BUGFIXES:
+-   Bugfixes:
     -   Removed small gaps between history elements
     -   "Hide Settings" button has correct tooltip
 -   Task colors are brighter for light themes
