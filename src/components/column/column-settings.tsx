@@ -1,7 +1,24 @@
 /**
  * @file Component contained inside a {@link Column} that can move or delete it.
  */
+import React from 'react';
 import boardState from '../../util/board-state';
+
+interface ColumnSettingsArgs {
+    columnId: string;
+    toggleColorPicker: () => void;
+    anchorProps: AnchorProperties;
+    isOpen: boolean;
+    color: string;
+    columnIndex: number;
+    numCols: number;
+}
+
+interface AnchorProperties {
+    style?: { color: string };
+    onMouseEnter?: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => string;
+    onMouseLeave?: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => string;
+}
 
 /**
  * Component contained inside a {@link Column}.
@@ -15,15 +32,7 @@ export default function ColumnSettings({
     color,
     columnIndex,
     numCols,
-}: {
-    columnId: string;
-    toggleColorPicker: () => void;
-    anchorProps: unknown;
-    isOpen: boolean;
-    color: string;
-    columnIndex: number;
-    numCols: number;
-}): JSX.Element {
+}: ColumnSettingsArgs): JSX.Element {
     const settingsStyle = {
         // CSS styles so that settings menu "swipes" open and closed
         maxHeight: isOpen ? '3rem' : 0,
