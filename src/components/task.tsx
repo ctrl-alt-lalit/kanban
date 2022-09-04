@@ -129,6 +129,7 @@ export default class Task extends React.Component<
                                 this.state.beingDeleted ? 'task-deleted' : '',
                                 snapshot.isDragging ? 'drag' : '',
                             ].join(' ')}
+                            //TODO: code smell
                             onContextMenu={(event) => (event.cancelable = false)} //tells column not to make menu
                             id={this.id}
                         >
@@ -136,7 +137,7 @@ export default class Task extends React.Component<
                             <div
                                 className="task-handle"
                                 {...provided.dragHandleProps}
-                                onMouseDown={() => this.setState({ editing: false })}
+                                onMouseDown={this.preventEditing}
                                 style={{
                                     backgroundColor: bgColor,
                                 }}
@@ -144,14 +145,7 @@ export default class Task extends React.Component<
                                 <a
                                     className="task-delete"
                                     title="Delete Task"
-                                    onClick={() => {
-                                        this.setState({ beingDeleted: true });
-                                        setTimeout(
-                                            () =>
-                                                boardState.removeTask(this.props.columnId, this.id),
-                                            180
-                                        );
-                                    }}
+                                    onClick={this.delete}
                                 >
                                     <span className="codicon codicon-close" />
                                 </a>
@@ -166,21 +160,8 @@ export default class Task extends React.Component<
                                 onChange={(event) => {
                                     this.setState({ text: event.target.value });
                                 }}
-                                onFocus={() => {
-                                    previousFocusedTaskId = this.id;
-                                    anyTaskIsFocused = true;
-                                }}
-                                onBlur={() => {
-                                    this.setState({ editing: false });
-                                    anyTaskIsFocused = false;
-                                    boardState.setTaskText(
-                                        this.props.columnId,
-                                        this.props.columnIndex,
-                                        this.id,
-                                        this.props.index,
-                                        this.state.text
-                                    );
-                                }}
+                                onFocus={this.onFocus}
+                                onBlur={this.onBlur}
                                 style={{
                                     display: this.state.editing ? 'block' : 'none',
                                     borderColor: borderColor,
@@ -188,18 +169,7 @@ export default class Task extends React.Component<
                             />
                             <div
                                 className="task-display task-section"
-                                onClick={() => {
-                                    this.setState({ editing: true });
-                                    setTimeout(() => {
-                                        const textArea = document.getElementById(
-                                            `${this.id}-edit`
-                                        ) as HTMLTextAreaElement;
-
-                                        textArea.focus();
-                                        textArea.selectionStart = 0;
-                                        textArea.selectionEnd = textArea.value.length;
-                                    }, 0); // Put refocusing at end of event queue so that React's DOM recreation happens first.
-                                }}
+                                onClick={this.onClick}
                                 style={{
                                     display: this.state.editing ? 'none' : 'block',
                                     borderColor: borderColor,
@@ -220,8 +190,49 @@ export default class Task extends React.Component<
         );
     }
 
-    private filterStrength = boardState.isLightMode ? 0.75 : 0.25;
-    private id = this.props.data.id;
+    private preventEditing = () => {
+        this.setState({ editing: false });
+    };
+
+    private delete = () => {
+        this.setState({ beingDeleted: true });
+        setTimeout(() => boardState.removeTask(this.props.columnId, this.id), 180);
+    };
+
+    private onFocus = () => {
+        previousFocusedTaskId = this.id;
+        anyTaskIsFocused = true;
+    };
+
+    private onBlur = () => {
+        this.setState({ editing: false });
+        anyTaskIsFocused = false;
+        boardState.setTaskText(
+            this.props.columnId,
+            this.props.columnIndex,
+            this.id,
+            this.props.index,
+            this.state.text
+        );
+    };
+
+    private onClick = () => {
+        this.setState({ editing: true });
+        setTimeout(() => {
+            const textArea = document.getElementById(`${this.id}-edit`) as HTMLTextAreaElement;
+
+            textArea.focus();
+            textArea.selectionStart = 0;
+            textArea.selectionEnd = textArea.value.length;
+        }, 0);
+    };
+
+    private get filterStrength() {
+        return boardState.isLightMode ? 0.75 : 0.25;
+    }
+    private get id() {
+        return this.props.data.id;
+    }
     private colorFilter = this.props.columnColor;
     private static numTasks = 0;
 }
