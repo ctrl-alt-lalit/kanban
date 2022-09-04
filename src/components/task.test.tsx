@@ -1,3 +1,4 @@
+import React from 'react';
 import Task from '../components/task';
 import boardState from '../util/board-state';
 import { fireEvent, render } from '@testing-library/react';
