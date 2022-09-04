@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import boardState from '../../util/board-state';
+import React from 'react';
 import ColorPicker from './color-picker';
 
 describe('Color Picker', () => {
