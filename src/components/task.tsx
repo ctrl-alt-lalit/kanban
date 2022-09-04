@@ -129,8 +129,9 @@ export default class Task extends React.Component<
                                 this.state.beingDeleted ? 'task-deleted' : '',
                                 snapshot.isDragging ? 'drag' : '',
                             ].join(' ')}
-                            //TODO: code smell
-                            onContextMenu={(event) => (event.cancelable = false)} //tells column not to make menu
+                            onContextMenu={(event) => {
+                                (event as unknown as ContextMenuEvent).preventCustomMenu = true;
+                            }}
                             id={this.id}
                         >
                             {/* Handle user must click on to move the whole Task (react-beautiful-dnd) */}
@@ -235,4 +236,8 @@ export default class Task extends React.Component<
     }
     private colorFilter = this.props.columnColor;
     private static numTasks = 0;
+}
+
+export interface ContextMenuEvent extends Event {
+    preventCustomMenu: boolean | undefined;
 }

@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { Droppable } from 'react-beautiful-dnd';
-import Task from '../task';
+import Task, { ContextMenuEvent } from '../task';
 import boardState from '../../util/board-state';
 import { ControlledMenu, MenuItem, useMenuState } from '@szhsin/react-menu';
 import { ColumnJson } from '../../util/kanban-types';
@@ -58,13 +58,16 @@ export default function Column({
                 width: `${100 / numCols}%`,
             }}
             onContextMenu={(event) => {
-                if (event.cancelable) {
-                    event.preventDefault();
-                    setMenuAnchorPoint({ x: event.clientX, y: event.clientY });
-                    toggleMenu(true);
-                    event.stopPropagation();
+                let cmEvent = event as unknown as ContextMenuEvent;
+                if (cmEvent.preventCustomMenu) {
+                    // menu was activated on task. Use system default.
+                    return;
                 }
-                // else: menu was activated on task
+
+                event.preventDefault();
+                setMenuAnchorPoint({ x: event.clientX, y: event.clientY });
+                toggleMenu(true);
+                event.stopPropagation();
             }}
             id={data.id}
         >
