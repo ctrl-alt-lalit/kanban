@@ -40,14 +40,78 @@ export default function Column({
     const [colorPickerOpen, setColorPickerOpen] = React.useState(false);
     const [settingsOpen, setSettingsOpen] = React.useState(false);
 
+    type AnchorMouseEvent = React.MouseEvent<HTMLAnchorElement, MouseEvent>;
     const anchorProps = {
         // CSS styles so that buttons match Column's color
         style: { color: data.color },
-        onMouseEnter: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) =>
+        onMouseEnter: (event: AnchorMouseEvent) =>
             (event.currentTarget.style.backgroundColor = data.color),
-        onMouseLeave: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) =>
-            (event.currentTarget.style.backgroundColor = 'inherit'),
+        onMouseLeave: React.useCallback(
+            (event: AnchorMouseEvent) => (event.currentTarget.style.backgroundColor = 'inherit'),
+            []
+        ),
     } as const;
+
+    const toggleColorFn = React.useCallback(
+        () => setColorPickerOpen(!colorPickerOpen),
+        [setColorPickerOpen, colorPickerOpen]
+    );
+
+    const columnSettings = React.useMemo(
+        () => (
+            <ColumnSettings
+                columnId={data.id}
+                color={data.color}
+                toggleColorPicker={toggleColorFn}
+                anchorProps={anchorProps}
+                isOpen={settingsOpen}
+                columnIndex={index}
+                numCols={numCols}
+            />
+        ),
+        [data.id, data.color, toggleColorFn, anchorProps, settingsOpen, index, numCols]
+    );
+
+    const changeColorFn = React.useCallback(
+        (color: string) => {
+            if (color !== data.color) {
+                boardState.setColumnColor(data.id, color);
+            }
+        },
+        [data.id, data.color]
+    );
+
+    const colorPicker = React.useMemo(
+        () => (
+            <ColorPicker isOpen={colorPickerOpen} color={data.color} changeColor={changeColorFn} />
+        ),
+        [colorPickerOpen, data.color, changeColorFn]
+    );
+
+    const AddTaskFn = React.useCallback(() => {
+        const taskId = boardState.addTask(data.id);
+        IdOfTaskJustAdded = taskId;
+        setTimeout(() => {
+            const taskElem = document.getElementById(`${taskId}-edit`);
+            taskElem?.focus();
+            IdOfTaskJustAdded = '';
+        }, 0);
+    }, [data.id]);
+
+    const makeTask = React.useCallback(
+        (task, taskIndex) => (
+            <Task
+                data={task}
+                index={taskIndex}
+                key={task.id}
+                columnId={data.id}
+                columnIndex={index}
+                defaultToEdit={IdOfTaskJustAdded === task.id}
+                columnColor={data.color}
+            />
+        ),
+        [data.id, data.color, index, IdOfTaskJustAdded]
+    );
 
     return (
         <div
@@ -114,36 +178,15 @@ export default function Column({
                 </a>
             </div>
 
-            <ColumnSettings
-                columnId={data.id}
-                color={data.color}
-                toggleColorPicker={() => setColorPickerOpen(!colorPickerOpen)}
-                anchorProps={anchorProps}
-                isOpen={settingsOpen}
-                columnIndex={index}
-                numCols={numCols}
-            />
-
-            <ColorPicker
-                isOpen={colorPickerOpen}
-                color={data.color}
-                changeColor={(newColor) => boardState.setColumnColor(data.id, newColor)}
-            />
+            {columnSettings}
+            {colorPicker}
 
             {/* Add Task Button */}
             <a
                 className="column-add-task"
                 title="Add Task"
                 style={{ color: data.color, borderColor: data.color }}
-                onClick={() => {
-                    const taskId = boardState.addTask(data.id);
-                    IdOfTaskJustAdded = taskId;
-                    setTimeout(() => {
-                        const taskElem = document.getElementById(`${taskId}-edit`);
-                        taskElem?.focus();
-                        IdOfTaskJustAdded = '';
-                    }, 0);
-                }}
+                onClick={AddTaskFn}
             >
                 <span className="codicon codicon-add" />
             </a>
@@ -156,17 +199,7 @@ export default function Column({
                         {...provided.droppableProps}
                         className={`column-tasks ${snapshot.isDraggingOver ? 'drag-over' : ''}`}
                     >
-                        {data.tasks.map((task, taskIndex) => (
-                            <Task
-                                data={task}
-                                index={taskIndex}
-                                key={task.id}
-                                columnId={data.id}
-                                columnIndex={index}
-                                defaultToEdit={IdOfTaskJustAdded === task.id}
-                                columnColor={data.color}
-                            />
-                        ))}
+                        {data.tasks.map(makeTask)}
                         {provided.placeholder}
                     </div>
                 )}

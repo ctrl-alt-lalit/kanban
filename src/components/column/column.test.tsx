@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createColumnJson, createKanbanJson, createTaskJson } from '../../util/kanban-types';
 import { randomString, rightClick } from '../../util/test-helpers';
+import React from 'react';
 
 jest.mock('react-beautiful-dnd', () => {
     const dragDropElem = ({ children }: { children: Function }) =>
