@@ -17,7 +17,9 @@ src/
 .gitignore
 .prettierrc.yaml
 
-.yarnrc
+.yarn*
+yarn-error.log
+yarn.lock
 
 jest.config.js
 jsdoc.conf.js
@@ -28,5 +30,3 @@ tsconfig.json
 
 webpack-extension.config.js
 webpack.config.js
-yarn-error.log
-yarn.lock
