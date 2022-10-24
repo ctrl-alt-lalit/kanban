@@ -5,7 +5,7 @@
  */
 
 import { createKanbanJson, WeakKanbanJson, KanbanJson, toKanbanJson } from './kanban-types';
-declare var acquireVsCodeApi: () => VsCodeApi;
+declare const acquireVsCodeApi: () => VsCodeApi;
 
 type SaveMessage = {
     command: 'save' | 'load';
