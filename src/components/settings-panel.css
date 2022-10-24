@@ -19,10 +19,9 @@
 
 .settings h2 {
     font-weight: normal;
-    width: 90%;
-    font-size: 1rem;;
+    width: 12vw;
+    font-size: 1rem;
 }
-
 
 .settings h2 .label {
     white-space: nowrap;
@@ -30,7 +29,6 @@
     display: inline-block;
     margin-left: 0.5rem;
 }
-
 
 .settings-titlebar {
     display: flex;
@@ -60,7 +58,6 @@
     color: var(--settings-link) !important;
 }
 
-
 a.settings-link {
     cursor: pointer;
     color: var(--settings-foreground) !important;
@@ -82,7 +79,6 @@ a.settings-link:focus,
 a.settings-link:active {
     color: var(--settings-link) !important;
 }
-
 
 /*****************************
   Toggle Switch

@@ -2,9 +2,8 @@
 
 ### 1.7.3
 
--   Minor Perfomance Enhancements:
-    -   made many lambda callbacks either static functions or memoized lambdas
-    -   memoized many portions of React components
+-   Many minor performance enhancements
+-   Fixed Settings UI when menu closes
 
 ### 1.7.2
 
