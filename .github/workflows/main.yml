@@ -9,7 +9,7 @@ jobs:
         steps:
             - uses: actions/checkout@v3
 
-            - uses: actions/cache@v3
+            - uses: actions/setup-node@v3
               id: yarn-cache
               with:
                   path: |
@@ -19,9 +19,6 @@ jobs:
                   key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
                   restore-keys: |
                       ${{ runner.os }}-yarn-
-
-            - name: Update yarn
-              run: yarn set version latest
 
             - name: Install dependencies
               run: yarn install --frozen-lockfile
