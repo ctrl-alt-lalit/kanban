@@ -72,7 +72,7 @@
     "vscode:prepublish": "(webpack --config webpack.config.js --mode=production) && (webpack --config webpack-extension.config.js --mode=production)",
     "build": "(webpack --config webpack.config.js --mode=development) && (webpack --config webpack-extension.config.js --mode=development)",
     "test": "jest",
-    "package": "vsce package",
+    "package": "vsce package --no-yarn",
     "docs": "jsdoc -c jsdoc.conf.json"
   },
   "devDependencies": {
