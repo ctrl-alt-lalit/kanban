@@ -1,6 +1,6 @@
 # Changelog
 
-### 1.7.3
+### 1.7.4
 
 -   Many minor performance enhancements
 -   Fixed Settings UI when menu closes

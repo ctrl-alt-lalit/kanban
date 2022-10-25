@@ -17,7 +17,8 @@ src/
 .gitignore
 .prettierrc.yaml
 
-.yarn*
+.yarn/
+.yarnrc*
 yarn-error.log
 yarn.lock
 
