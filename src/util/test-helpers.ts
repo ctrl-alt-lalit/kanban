@@ -25,7 +25,7 @@ export function randomString() {
  * @ignore
  */
 export function rightClick(element: HTMLElement) {
-    userEvent.click(element, { button: 2 });
+    userEvent.pointer({ target: element, keys: '[MouseRight]' });
 }
 
 /**

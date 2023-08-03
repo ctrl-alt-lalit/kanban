@@ -5,6 +5,7 @@ import boardState from '../util/board-state';
 import { createColumnJson, createKanbanJson } from '../util/kanban-types';
 import clone from 'just-clone';
 import { randomString } from '../util/test-helpers';
+import React from 'react';
 
 function* panelSetup() {
     const wrapper = render(<RevisionHistory isOpen={true} closeHistory={() => null} />);

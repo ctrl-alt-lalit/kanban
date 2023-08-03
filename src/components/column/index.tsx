@@ -6,7 +6,7 @@ import { Droppable } from 'react-beautiful-dnd';
 import Task, { ContextMenuEvent } from '../task';
 import boardState from '../../util/board-state';
 import { ControlledMenu, MenuItem, useMenuState } from '@szhsin/react-menu';
-import { ColumnJson } from '../../util/kanban-types';
+import { ColumnJson, TaskJson } from '../../util/kanban-types';
 import ColorPicker from './color-picker';
 import ColumnSettings from './column-settings';
 
@@ -30,7 +30,7 @@ export default function Column({
     index: number;
 }) {
     // open and close context menu
-    const { toggleMenu, ...menuProps } = useMenuState();
+    const [menuProps, toggleMenu] = useMenuState();
     const [menuAnchorPoint, setMenuAnchorPoint] = React.useState({
         x: 0,
         y: 0,
@@ -99,7 +99,7 @@ export default function Column({
     }, [data.id]);
 
     const makeTask = React.useCallback(
-        (task, taskIndex) => (
+        (task: TaskJson, taskIndex: number) => (
             <Task
                 data={task}
                 index={taskIndex}
@@ -140,7 +140,7 @@ export default function Column({
                 {...menuProps}
                 anchorPoint={menuAnchorPoint}
                 onClose={() => toggleMenu(false)}
-                menuStyles={{
+                menuStyle={{
                     color: 'var(--vscode-editor-foreground)',
                     backgroundColor: 'var(--vscode-editor-background)',
                 }}

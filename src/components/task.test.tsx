@@ -4,7 +4,7 @@ import boardState from '../util/board-state';
 import { fireEvent, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createColumnJson, createKanbanJson, createTaskJson } from '../util/kanban-types';
-import { randomString, rightClick } from '../util/test-helpers';
+import { randomString } from '../util/test-helpers';
 
 function* taskSetup() {
     const defaultKanban = createKanbanJson('', [createColumnJson('', [createTaskJson()])]);

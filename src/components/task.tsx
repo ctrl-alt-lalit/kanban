@@ -65,7 +65,7 @@ export default class Task extends React.Component<
     /**
      * @ignore
      */
-    constructor(props: never) {
+    constructor(props: any) {
         super(props);
         this.state = {
             editing: this.props.defaultToEdit,

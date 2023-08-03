@@ -17,7 +17,7 @@ class SettingsPanel extends React.Component<
         saveToFile: boolean;
     }
 > {
-    constructor(props: never) {
+    constructor(props: any) {
         super(props);
 
         this.state = { autosave: false, saveToFile: false };

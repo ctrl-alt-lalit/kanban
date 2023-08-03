@@ -4,6 +4,7 @@ import boardState from '../util/board-state';
 import { createColumnJson, createKanbanJson } from '../util/kanban-types';
 import userEvent from '@testing-library/user-event';
 import { randomString } from '../util/test-helpers';
+import React from 'react';
 
 jest.mock('react-markdown', () => (props: any) => {
     return <>{props.children}</>;
