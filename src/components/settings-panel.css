@@ -32,41 +32,42 @@
 
 .settings-titlebar {
     display: flex;
-    flex-direction: row-reverse;
-    align-items: center;
     width: 100%;
-    margin-left: auto;
+    margin-top: 1rem;
 }
 
 .settings-titlebar a {
     cursor: pointer;
     color: var(--settings-foreground) !important;
-    font-size: 2.5rem !important;
-    margin-left: 0.5rem;
+    transition: color 0.2s;
+}
+
+.settings-titlebar a:hover,
+.settings-titlebar a:focus,
+.settings-titlebar a:active {
+    color: var(--settings-link) !important;
 }
 
 .settings-titlebar a .codicon {
-    margin-top: 0.5rem !important;
-    font-size: 2rem !important;
-    transition: color 0.2s;
+    font-size: 2.5rem !important;
     font-weight: bold;
+    vertical-align: middle;
 }
 
-.settings-titlebar a:hover .codicon,
-.settings-titlebar a:focus .codicon,
-.settings-titlebar a:active .codicon {
-    color: var(--settings-link) !important;
+.settings-titlebar h1 {
+    display: inline-block;
+    vertical-align: middle;
 }
 
 a.settings-link {
     cursor: pointer;
     color: var(--settings-foreground) !important;
-    /* border-bottom: 1px var(--settings-foreground) solid; */
     padding: 3px;
     padding-right: 5px;
     transition: 0.2s;
     display: inline-flex;
     margin-left: 4px;
+    vertical-align: middle;
 }
 
 a.settings-link .codicon {
