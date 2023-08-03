@@ -71,16 +71,10 @@
   "scripts": {
     "vscode:prepublish": "(webpack --config webpack.config.js --mode=production) && (webpack --config webpack-extension.config.js --mode=production)",
     "build": "(webpack --config webpack.config.js --mode=development) && (webpack --config webpack-extension.config.js --mode=development)",
-    "test": "jest",
     "package": "vsce package --no-yarn",
     "docs": "jsdoc -c jsdoc.conf.json"
   },
   "devDependencies": {
-    "@testing-library/dom": "^9.3.1",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/user-event": "^14.4.3",
-    "@types/jest": "^29.5.3",
     "@types/node": "^20.4.5",
     "@types/react": "^18.2.17",
     "@types/react-beautiful-dnd": "^13.1.1",
