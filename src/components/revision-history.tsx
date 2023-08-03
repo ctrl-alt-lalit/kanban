@@ -53,9 +53,9 @@ export default class RevisionHistory extends React.Component<
             <div className="history" style={style}>
                 <div className="history-titlebar">
                     <a onClick={this.props.closeHistory} title="Hide Revision History">
+                        <h1> Revision History </h1>
                         <span className="codicon codicon-chevron-right"></span>
                     </a>
-                    <h1> Revision History </h1>
                 </div>
                 <div className="history-scroller">
                     {this.state.history.map((histObj, index) => {

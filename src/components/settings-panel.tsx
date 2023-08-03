@@ -50,8 +50,8 @@ class SettingsPanel extends React.Component<
                 <div className="settings-titlebar">
                     <a onClick={this.props.closeSettings} title="Hide Settings">
                         <span className="codicon codicon-chevron-left" />
+                        <h1> Settings </h1>
                     </a>
-                    <h1> Settings </h1>
                 </div>
 
                 <h2>
