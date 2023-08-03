@@ -19,7 +19,7 @@ export default class Board extends React.Component<
     /**
      * Gives Board temporary default values so it has something to display
      */
-    constructor(props: never) {
+    constructor(props: any) {
         super(props);
         this.state = {
             data: createKanbanJson(),

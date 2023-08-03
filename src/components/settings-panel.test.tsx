@@ -6,6 +6,7 @@ import { createColumnJson, createKanbanJson } from '../util/kanban-types';
 import clone from 'just-clone';
 import { randomString } from '../util/test-helpers';
 import vscodeHandler from '../util/vscode-handler';
+import React from 'react';
 
 function* panelSetup() {
     const wrapper = render(<SettingsPanel isOpen={true} closeSettings={() => null} />);

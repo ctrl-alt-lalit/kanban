@@ -7,7 +7,7 @@
  * the rest of the extension assume that strict, up-to-date types are always in use.
  */
 
-import cuid from 'cuid';
+import { createId } from '@paralleldrive/cuid2';
 
 export type WeakColumnJson = {
     title: string;
@@ -55,7 +55,7 @@ export type TaskJson = {
  */
 export function toTaskJson(task: TaskJson | string): TaskJson {
     if (typeof task === 'string') {
-        return { text: task, id: cuid() };
+        return { text: task, id: createId() };
     } else {
         return task;
     }
@@ -71,7 +71,7 @@ export function toColumnJson(column: WeakColumnJson): ColumnJson {
     return {
         title: column.title,
         tasks: column.tasks.map((task) => toTaskJson(task)),
-        id: column.id ?? cuid(),
+        id: column.id ?? createId(),
         color: column.color ?? 'var(--vscode-editor-foreground)',
     };
 }
@@ -106,7 +106,7 @@ export function toKanbanJson(kanban: WeakKanbanJson): KanbanJson {
 export function createTaskJson(text?: string): TaskJson {
     return {
         text: text ?? '',
-        id: cuid(),
+        id: createId(),
     };
 }
 
@@ -120,7 +120,7 @@ export function createColumnJson(title?: string, tasks?: TaskJson[], color?: str
     return {
         title: title ?? 'New Column',
         tasks: tasks ?? [],
-        id: cuid(),
+        id: createId(),
         color: color ?? 'var(--vscode-editor-foreground)',
     };
 }

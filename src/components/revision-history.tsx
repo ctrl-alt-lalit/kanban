@@ -16,7 +16,7 @@ export default class RevisionHistory extends React.Component<
     /**
      * Creates internal copy of {@link boardState.history}
      */
-    constructor(props: never) {
+    constructor(props: any) {
         super(props);
 
         this.state = {
