@@ -32,48 +32,50 @@ const lightSwatches = [
     '#6a6a6a', // dark grey
 ];
 
+function isValidColorString(color: string): boolean {
+    return color.length <= 6 && /^[\da-fA-F]*$/.test(color);
+}
+
 /**
  * Selection of colored swatches and a text input that exists within a {@link Column}.
  * Used to change the color of that Column.
- *
- *
- * @param {boolean} isOpen whether the component is currently open
- * @param {string} color current color of the containing Column
- * @param {Function} changeColor function used to change the color of the containing Column
  */
 export default function ColorPicker({
-    isOpen,
-    color,
-    changeColor,
+    isOpen, // Whether this component is currently open
+    color, // Containing column's current color
+    changeColor, // function used to change the column's color
 }: {
     isOpen: boolean;
     color: string;
     changeColor: (color: string) => void;
 }): JSX.Element {
-    const [textColor, setTextColor] = React.useState(color.slice(1));
+    const startingTextColor = isValidColorString(color.slice(1)) ? color.slice(1) : '';
+    const [textColor, setTextColor] = React.useState(startingTextColor);
     const swatches = boardState.isLightMode ? lightSwatches : darkSwatches;
 
     const onInputChange = React.useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
             const newColor = event.target.value;
-            if (newColor.length > 6 || !/^[\da-fA-F]*$/.test(newColor)) {
-                return;
+            if (isValidColorString(newColor)) {
+                setTextColor(newColor);
             }
-            setTextColor(newColor);
-            console.log(newColor);
         },
         [setTextColor]
     );
 
     const validateAndChangeColor = React.useCallback(
         (color: string) => {
+            let colorStr = color;
             if (color.length === 3) {
-                changeColor(`#${color[0]}${color[0]}${color[1]}${color[1]}${color[2]}${color[2]}`);
-            } else if (color.length === 6) {
-                changeColor(`#${color}`);
+                colorStr = `${color[0]}${color[0]}${color[1]}${color[1]}${color[2]}${color[2]}`;
+            }
+
+            if (isValidColorString(colorStr)) {
+                changeColor('#' + colorStr);
+                setTextColor(colorStr);
             }
         },
-        [changeColor]
+        [changeColor, setTextColor]
     );
 
     const makeSwatchButton = React.useCallback(
@@ -82,10 +84,10 @@ export default function ColorPicker({
                 key={swatch}
                 className="column-color-picker__swatch"
                 style={{ backgroundColor: swatch }}
-                onClick={() => changeColor(swatch)}
+                onClick={() => validateAndChangeColor(swatch.slice(1))}
             />
         ),
-        []
+        [validateAndChangeColor]
     );
 
     const swatchButtons = React.useMemo(

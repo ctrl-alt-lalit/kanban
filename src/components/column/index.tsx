@@ -15,7 +15,7 @@ let IdOfTaskJustAdded = '';
 /**
  * React component showing a vertical list of Tasks. Tasks from other Columns can be dropped into this list and vice-versa.
  *
- * @param data {StrictColumnJSON} StrictColumnJSON this Component Represents
+ * @param data {ColumnJson} JSON this Component Represents
  * @param numCols {number} number of Columns in the parent Board
  * @param index {nummber} index of this column in the parent Board's column list
  *
