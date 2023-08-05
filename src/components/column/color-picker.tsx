@@ -33,7 +33,21 @@ const lightSwatches = [
 ];
 
 function isValidColorString(color: string): boolean {
-    return color.length <= 6 && /^[\da-fA-F]*$/.test(color);
+    return (color.length === 6 || color.length === 3) && /^[\da-fA-F]*$/.test(color);
+}
+
+/**
+ *
+ * @param cssColor {string} assumed to have one of the forms: '#rgb', '#rrggbb', or 'var(--VARNAME)'
+ */
+function calculateStartingColor(cssColor: string): string {
+    if (isValidColorString(cssColor.slice(1))) {
+        // #rgb or #rrggbb, remove leading #
+        return cssColor.slice(1);
+    }
+
+    // var(--VARNAME), extract the --VARNAME
+    return getComputedStyle(document.body).getPropertyValue(cssColor.slice(4, -1));
 }
 
 /**
@@ -49,8 +63,7 @@ export default function ColorPicker({
     color: string;
     changeColor: (color: string) => void;
 }): JSX.Element {
-    const startingTextColor = isValidColorString(color.slice(1)) ? color.slice(1) : '';
-    const [textColor, setTextColor] = React.useState(startingTextColor);
+    const [textColor, setTextColor] = React.useState(calculateStartingColor(color));
     const swatches = boardState.isLightMode ? lightSwatches : darkSwatches;
 
     const onInputChange = React.useCallback(
