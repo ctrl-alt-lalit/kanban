@@ -2,7 +2,7 @@
  * @file Entry point for Kanban UI. This element is what gets attached to the webview.
  */
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import toast, { Toaster, useToasterStore } from 'react-hot-toast';
 import Board from './board';
 import RevisionHistory from './revision-history';
@@ -50,4 +50,5 @@ function App(): JSX.Element {
     );
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const root = createRoot(document.getElementById('root')!);
+root.render(<App />);

@@ -165,7 +165,7 @@
 
 .column-added {
     animation: grow-column;
-    animation-duration: 0.2s;
+    animation-duration: 0.3s;
     animation-timing-function: ease-out;
     overflow: hidden;
     pointer-events: none;

@@ -24,10 +24,12 @@ export default function Column({
     data,
     numCols,
     index,
+    justAdded,
 }: {
     data: ColumnJson;
     numCols: number;
     index: number;
+    justAdded: boolean;
 }) {
     // open and close context menu
     const [menuProps, toggleMenu] = useMenuState();
@@ -115,7 +117,7 @@ export default function Column({
 
     return (
         <div
-            className="column"
+            className={['column', justAdded ? 'column-added' : ''].join(' ')}
             style={{
                 color: data.color,
                 borderColor: data.color,
