@@ -162,3 +162,30 @@
     margin-bottom: 1rem;
     overflow-y: scroll;
 }
+
+.column-added {
+    animation: grow-column;
+    animation-duration: 0.2s;
+    animation-timing-function: ease-out;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.column-deleted {
+    animation: grow-column;
+    animation-duration: 0.2s;
+    animation-timing-function: ease-in;
+    animation-direction: reverse;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+@keyframes grow-column {
+    from {
+        max-width: 0;
+    }
+
+    to {
+        max-width: 100%;
+    }
+}
