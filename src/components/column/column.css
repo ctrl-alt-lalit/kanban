@@ -173,7 +173,7 @@
 
 .column-deleted {
     animation: grow-column;
-    animation-duration: 0.2s;
+    animation-duration: 0.3s;
     animation-timing-function: ease-in;
     animation-direction: reverse;
     overflow: hidden;
@@ -181,11 +181,18 @@
 }
 
 @keyframes grow-column {
-    from {
+    0% {
         max-width: 0;
+        opacity: 0;
     }
 
-    to {
+    50% {
+        max-width: 25%;
+        opacity: 1;
+    }
+
+    100% {
         max-width: 100%;
+        opacity: 1;
     }
 }
