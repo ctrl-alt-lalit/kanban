@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.7.5
+
+-   Fixed text box in color picker occasionally showing a CSS var insatead of a hex value
+-   States in the revision history panel now show in reverse order -- with the most recent edit on top
+-   Buttons to close the revision history or settings panels now also encompass the title, so they're easier to click
+
 ### 1.7.4
 
 -   Many minor performance enhancements
