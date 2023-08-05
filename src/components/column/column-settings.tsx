@@ -41,6 +41,12 @@ export default function ColumnSettings({
         paddingTop: '0.4rem',
     } as const;
 
+    const deleteThisColumn = React.useCallback(() => {
+        const columnDiv = document.getElementById(columnId) as HTMLDivElement;
+        columnDiv.classList.add('column-deleted');
+        setTimeout(() => boardState.removeColumn(columnId), 200);
+    }, [columnId]);
+
     return (
         <div className="column-settings" style={settingsStyle}>
             <a
@@ -81,7 +87,7 @@ export default function ColumnSettings({
                 className="column-delete"
                 title="Delete Column"
                 {...anchorProps}
-                onClick={() => boardState.removeColumn(columnId)}
+                onClick={deleteThisColumn}
             >
                 <span className="codicon codicon-trash" />
             </a>
