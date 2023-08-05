@@ -14,7 +14,7 @@ import boardState from '../util/board-state';
  */
 export default class Board extends React.Component<
     { toggleSettings: () => void; toggleHistory: () => void },
-    { data: KanbanJson; title: string }
+    { data: KanbanJson; title: string; columnJustAdded: boolean }
 > {
     /**
      * Gives Board temporary default values so it has something to display
@@ -24,6 +24,7 @@ export default class Board extends React.Component<
         this.state = {
             data: createKanbanJson(),
             title: 'Kanban',
+            columnJustAdded: false,
         };
     }
 
@@ -60,6 +61,10 @@ export default class Board extends React.Component<
                                 numCols={this.state.data.cols.length}
                                 index={index}
                                 key={col.id}
+                                justAdded={
+                                    this.state.columnJustAdded &&
+                                    index === this.state.data.cols.length - 1
+                                }
                             />
                         ))}
                     </DragDropContext>
@@ -147,12 +152,18 @@ export default class Board extends React.Component<
      * @ignore
      */
     private AddColumnButton = (): JSX.Element => (
-        <a className="board-add-column" title="Add Column" onClick={() => boardState.addColumn()}>
+        <a className="board-add-column" title="Add Column" onClick={this.addColumnClickHandler}>
             <div className="vertical-line"></div>
             <span className="codicon codicon-add"></span>
             <div className="vertical-line"></div>
         </a>
     );
+
+    private addColumnClickHandler = () => {
+        boardState.addColumn();
+        this.setState({ columnJustAdded: true });
+        setTimeout(() => this.setState({ columnJustAdded: false }), 200);
+    };
 
     private loadCallback = (data: KanbanJson) => {
         this.setState({ data: data, title: data.title });
