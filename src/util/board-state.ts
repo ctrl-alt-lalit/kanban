@@ -503,7 +503,7 @@ class BoardState {
     /*******************
      * Private Methods *
      *******************/
-    private currentKanban = createKanbanJson();
+    private currentKanban = createKanbanJson(' ', []); // default to an visually empty board before loading from extension host
     private kanbanChangeListeners: ChangeCallback[] = [];
     private historyUpdateListeners: HistoryCallback[] = [];
 
