@@ -1,10 +1,12 @@
 # Changelog
 
-### 1.7.5
+## 1.8.0
 
 -   Fixed text box in color picker occasionally showing a CSS var insatead of a hex value
 -   States in the revision history panel now show in reverse order -- with the most recent edit on top
 -   Buttons to close the revision history or settings panels now also encompass the title, so they're easier to click
+-   Columns now grow/shrink when being added/deleted
+-   Unfortunately, unit tests have been removed. This is due to Jest no longer supporting custom environment configurations. A more integrated, Selenium solution is currently being investigated.
 
 ### 1.7.4
 
