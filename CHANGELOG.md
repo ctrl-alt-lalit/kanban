@@ -7,7 +7,6 @@
 -   Buttons to close the revision history or settings panels now also encompass the title, so they're easier to click
 -   Columns now grow/shrink when being added/deleted
 -   The default board no longer briefly appears before loading the current one.
--   Unfortunately, unit tests have been removed. This is due to Jest no longer supporting custom environment configurations. A more integrated, Selenium solution is currently being investigated.
 
 ### 1.7.4
 
