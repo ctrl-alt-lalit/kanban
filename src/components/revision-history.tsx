@@ -68,8 +68,14 @@ export default class RevisionHistory extends React.Component<
                                 className="history-item"
                                 onClick={() => boardState.rollBackHistory(index)}
                                 key={index}
-                                onMouseEnter={() => boardState.displayKanban(histObj.data)}
-                                onMouseLeave={() => boardState.refreshKanban()}
+                                onMouseEnter={() => {
+                                    this.setBoardScanlines(true);
+                                    boardState.displayKanban(histObj.data);
+                                }}
+                                onMouseLeave={() => {
+                                    this.setBoardScanlines(false);
+                                    boardState.refreshKanban();
+                                }}
                             >
                                 <div className="history-item-inside">
                                     <h3>{`${index + 1}. ${this.stateChangeName(prevChange)}`}</h3>
@@ -153,6 +159,20 @@ export default class RevisionHistory extends React.Component<
                 return 'Settings Changed';
             default:
                 return 'ERROR';
+        }
+    }
+
+    private boardHtmlElement: HTMLElement | undefined = undefined;
+
+    private setBoardScanlines(showScanlines: boolean) {
+        if (!this.boardHtmlElement) {
+            this.boardHtmlElement = document.querySelector('.board') as HTMLElement;
+        }
+
+        if (showScanlines) {
+            this.boardHtmlElement.classList.add('scanlines');
+        } else {
+            this.boardHtmlElement.classList.remove('scanlines');
         }
     }
 }

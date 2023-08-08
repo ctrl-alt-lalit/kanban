@@ -3,6 +3,7 @@
 :root {
     --board-background: var(--vscode-editor-background);
     --board-foreground: var(--vscode-editor-foreground);
+    --scanline-color: rgba(var(--board-foreground), 0.3);
 }
 
 .board {
@@ -64,7 +65,7 @@
     top: 0.7rem;
     right: -0.3rem;
     font-size: 1rem !important;
-    background: radial-gradient(var(--board-background) 28%, transparent 28%)
+    background: radial-gradient(var(--board-background) 28%, transparent 28%);
 }
 
 .board-content {
@@ -121,4 +122,57 @@
     padding-top: 0.2rem;
     padding-bottom: 0.2rem;
     padding-left: 0.1rem; /* codicon is not perfectly centered */
+}
+
+/* Add scanline css filter */
+.scanlines {
+    position: relative;
+    overflow: hidden;
+}
+
+.scanlines::before,
+.scanlines::after {
+    content: '';
+    position: absolute;
+    display: block;
+    pointer-events: none;
+}
+
+.scanlines::before {
+    bottom: 100%;
+    width: calc(100% - 35px);
+    height: 2px;
+    z-index: 9;
+    background: var(--board-foreground);
+    opacity: 0.25;
+    animation: moving-scanline 6s linear infinite;
+}
+
+.scanlines::after {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 8;
+    background: linear-gradient(to bottom, transparent 50%, var(--board-foreground) 50%);
+    opacity: 7%;
+    background-size: 100% 4px;
+    animation: scanline-flicker 1s steps(120) infinite;
+    box-shadow: -5px 0 15px 15px var(--board-background) inset;
+}
+
+@keyframes moving-scanline {
+    0% {
+        bottom: calc(0% + 20px);
+    }
+
+    100% {
+        bottom: calc(100% - 22px);
+    }
+}
+
+@keyframes scanline-flicker {
+    0% {
+        background-position: 0 50%;
+    }
 }
