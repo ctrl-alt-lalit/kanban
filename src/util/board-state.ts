@@ -386,9 +386,7 @@ class BoardState {
             details: `Changes reversed to item ${index + 1}`,
         });
 
-        const newKanban = clone(this.boardHistory[index].data);
-        this.currentKanban = newKanban;
-
+        this.currentKanban = clone(this.boardHistory[index].data);
         this.endChange(true);
     }
 
@@ -520,6 +518,8 @@ class BoardState {
 
     private endChange(updateHistory: boolean) {
         this.hasChangedSinceSave = true;
+
+        this.currentKanban.timestamp = Date.now();
 
         if (this.currentKanban.autosave) {
             this.save();

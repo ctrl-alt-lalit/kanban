@@ -78,8 +78,12 @@ export default class RevisionHistory extends React.Component<
                                 }}
                             >
                                 <div className="history-item-inside">
-                                    <h3>{`${index + 1}. ${this.stateChangeName(prevChange)}`}</h3>
-                                    <p> {prevDetail} </p>{' '}
+                                    <h3>{this.stateChangeName(prevChange)}</h3>
+                                    <p>
+                                        {`${prevDetail} at ${formatTimestamp(
+                                            histObj.data.timestamp
+                                        )}`}{' '}
+                                    </p>
                                 </div>
                             </a>
                         );
@@ -91,7 +95,7 @@ export default class RevisionHistory extends React.Component<
                                 ? this.state.history[this.state.history.length - 1]
                                 : null;
                         const mostRecentChange = mostRecent
-                            ? `${this.stateChangeName(mostRecent.change)} (Current Kanban)`
+                            ? `${this.stateChangeName(mostRecent.change)} (Current)`
                             : 'Current Kanban';
                         const mostRecentDetail = mostRecent ? mostRecent.details : '';
                         return (
@@ -102,9 +106,7 @@ export default class RevisionHistory extends React.Component<
                                 onMouseLeave={() => boardState.refreshKanban()}
                             >
                                 <div className="history-item-inside">
-                                    <h3>
-                                        {`${this.state.history.length + 1}. ${mostRecentChange}`}
-                                    </h3>
+                                    <h3>{mostRecentChange}</h3>
                                     <p> {mostRecentDetail} </p>
                                 </div>
                             </a>
@@ -174,5 +176,14 @@ export default class RevisionHistory extends React.Component<
         } else {
             this.boardHtmlElement.classList.remove('scanlines');
         }
+    }
+}
+
+function formatTimestamp(timestamp: number): string {
+    const date = new Date(timestamp);
+    if (date.getDate() !== new Date().getDate()) {
+        return date.toLocaleString();
+    } else {
+        return date.toLocaleTimeString();
     }
 }

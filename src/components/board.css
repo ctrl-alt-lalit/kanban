@@ -128,6 +128,7 @@
 .scanlines {
     position: relative;
     overflow: hidden;
+    filter: saturate(60%);
 }
 
 .scanlines::before,
