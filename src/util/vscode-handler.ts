@@ -17,8 +17,19 @@ type SettingsMessage = {
     data: null;
 };
 
+type ExtensionSettingsMessage = {
+    command: 'extension-settings-changed';
+    data: ExtensionSettingsMessageData;
+};
+
+export type ExtensionSettingsMessageData = {
+    showScanlines: boolean;
+    colorTheme: ColorTheme;
+};
+
 /**
  * The types of color themes VSCode supports.
+ * This must be analagous to vscode.ColorThemeKind
  */
 export enum ColorTheme {
     THEME_LIGHT = 1,
@@ -27,15 +38,10 @@ export enum ColorTheme {
     THEME_DARK_HIGHCONTRAST = 3,
 }
 
-type ThemeMessage = {
-    command: 'theme-changed';
-    data: ColorTheme;
-};
-
 /**
  * The types of messages this extension can receive from the Extension Host.
  */
-export type ApiMessage = SaveMessage | SettingsMessage | ThemeMessage;
+export type ApiMessage = SaveMessage | SettingsMessage | ExtensionSettingsMessage;
 
 interface VsCodeApi {
     postMessage: (message: ApiMessage) => void;
@@ -88,12 +94,16 @@ class VsCodeHandler {
         this.loadCallbacks = this.loadCallbacks.filter((cb) => cb !== callback);
     }
 
-    addThemeChangeListener(callback: (theme: ColorTheme) => void) {
-        this.themeCallbacks.push(callback);
+    addExtensionSettingsChangeListener(
+        callback: (showScanlines: ExtensionSettingsMessageData) => void
+    ) {
+        this.extensionSettingCallbacks.push(callback);
     }
 
-    removeThemeChangeListener(callback: (theme: ColorTheme) => void) {
-        this.themeCallbacks = this.themeCallbacks.filter((cb) => cb !== callback);
+    removeExtensionSettingsChangedListener(callback: (data: ExtensionSettingsMessageData) => void) {
+        this.extensionSettingCallbacks = this.extensionSettingCallbacks.filter(
+            (cb) => cb !== callback
+        );
     }
 
     /**
@@ -108,14 +118,16 @@ class VsCodeHandler {
                 data ??= createKanbanJson();
                 const kanban = toKanbanJson(data as WeakKanbanJson);
                 this.loadCallbacks.forEach((cb) => cb(kanban));
-            } else if (command === 'theme-changed') {
-                this.themeCallbacks.forEach((cb) => cb(data as ColorTheme));
+            } else if (command === 'extension-settings-changed') {
+                this.extensionSettingCallbacks.forEach((cb) =>
+                    cb(data as ExtensionSettingsMessageData)
+                );
             }
         });
     }
 
     private loadCallbacks: Array<(kanban: KanbanJson) => void> = [];
-    private themeCallbacks: Array<(theme: ColorTheme) => void> = [];
+    private extensionSettingCallbacks: Array<(data: ExtensionSettingsMessageData) => void> = [];
 }
 
 export default new VsCodeHandler();

@@ -56,6 +56,11 @@
             "kanban.json"
           ],
           "description": "When attempting to load from a file, check these paths from left to right, stopping at first success."
+        },
+        "kanban.showScanLines": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether a scanline filter should be shown when viewing past Kanban board states in the History panel."
         }
       }
     },

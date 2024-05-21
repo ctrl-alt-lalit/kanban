@@ -50,16 +50,16 @@ export default class Storage {
             return mementoData;
         }
 
-        let fileData = null;
+        let fileKanban: any = null;
         for (const saveUri of this.saveUris) {
             try {
                 const buffer = await vscode.workspace.fs.readFile(saveUri);
-                fileData = JSON.parse(buffer.toString());
-                if (!isWeakKanbanJson(fileData)) {
-                    continue;
+                const fileData = JSON.parse(buffer.toString());
+                if (isWeakKanbanJson(fileData)) {
+                    fileKanban = fileData;
+                    this.preferredUri = saveUri;
+                    break;
                 }
-                this.preferredUri = saveUri;
-                break;
             } catch {
                 /*
                  * File not found.
@@ -70,15 +70,17 @@ export default class Storage {
             }
         }
 
+        // If we have only one, pick the one we have
         if (!mementoData) {
-            return fileData;
-        } else if (!fileData) {
+            return fileKanban;
+        } else if (!fileKanban) {
             return mementoData;
         }
 
+        // We have both; pick the more recent one
         const mementoTime = mementoData?.timestamp ?? -1;
-        const fileTime = fileData?.timestamp ?? -1;
-        return fileTime >= mementoTime ? fileData : mementoData;
+        const fileTime = fileKanban.timestamp ?? -1;
+        return fileTime >= mementoTime ? fileKanban : mementoData;
     }
 
     /**
