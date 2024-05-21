@@ -6,7 +6,7 @@
  */
 
 import { createColumnJson, createKanbanJson, createTaskJson, KanbanJson } from './kanban-types';
-import vsCodeHandler, { ColorTheme } from './vscode-handler';
+import vsCodeHandler, { ColorTheme, ExtensionSettingsMessageData } from './vscode-handler';
 import clone from 'just-clone';
 
 /**
@@ -46,7 +46,7 @@ export type HistoryObject = {
 };
 
 type ChangeCallback = (kanban: KanbanJson) => void;
-type HistoryCallback = (historyItem: HistoryObject) => void;
+type HistoryCallback = (historyItem?: HistoryObject, showScanlines?: boolean) => void;
 
 /**
  * Manages the state of a Kanban board. All state modifications should happen through this object, so that it can keep track of them.
@@ -57,7 +57,7 @@ class BoardState {
      */
     constructor() {
         vsCodeHandler.addLoadListener(this.loadFromVscode);
-        vsCodeHandler.addThemeChangeListener(this.themeChangeListener);
+        vsCodeHandler.addExtensionSettingsChangeListener(this.extensionSettingsChangeListener);
         vsCodeHandler.load();
     }
 
@@ -492,10 +492,17 @@ class BoardState {
     }
 
     /**
-     * Check's if VsCode's active color theme is a "light" or "light and high-contrast" theme.
+     * Checks if VsCode's active color theme is a "light" or "light and high-contrast" theme.
      */
     get isLightMode(): boolean {
         return this.vscodeInLightTheme;
+    }
+
+    /**
+     * Checks if the scanline animation may be shown when viewing past board states in the history panel.
+     */
+    get showScanlinesInHistory(): boolean {
+        return this.showScanlines;
     }
 
     /*******************
@@ -537,10 +544,15 @@ class BoardState {
     private hasChangedSinceSave = false;
 
     private vscodeInLightTheme = false;
-    private themeChangeListener = (theme: ColorTheme) => {
+    private showScanlines = true;
+
+    private extensionSettingsChangeListener = (data: ExtensionSettingsMessageData) => {
         this.vscodeInLightTheme =
-            theme === ColorTheme.THEME_LIGHT || theme === ColorTheme.THEME_LIGHT_HIGHCONTRAST;
-        this.refreshKanban();
+            data.colorTheme === ColorTheme.THEME_LIGHT ||
+            data.colorTheme === ColorTheme.THEME_LIGHT_HIGHCONTRAST;
+        this.showScanlines = data.showScanlines;
+        console.log('Updating Hist with ' + this.showScanlines);
+        this.historyUpdateListeners.forEach((listener) => listener(undefined, this.showScanlines));
     };
 }
 

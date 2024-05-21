@@ -51,22 +51,15 @@ export default class Panel {
             retainContextWhenHidden: true,
         });
 
-        // initialize default hmtml and color theme
+        // initialize default html and color theme
         this.webviewPanel.webview.html = this.makeHtml();
-        this.webviewPanel.webview.postMessage({
-            command: 'theme-changed',
-            data: vscode.window.activeColorTheme.kind,
-        });
+        this.sendSettings();
 
-        // have webview listen for events from vscode
+        // listen for events from vscode, use bespoke callbacks to avoid 'this' issues
         this.webviewPanel.onDidDispose(() => this.dispose(), null, this.disposables);
-        this.webviewPanel.webview.onDidReceiveMessage((message) => this.receiveMessage(message));
-        vscode.window.onDidChangeActiveColorTheme((e) => {
-            this.webviewPanel.webview.postMessage({
-                command: 'theme-changed',
-                data: e.kind,
-            });
-        });
+        this.webviewPanel.webview.onDidReceiveMessage((e) => this.receiveMessage(e));
+        vscode.window.onDidChangeActiveColorTheme((e) => this.changeActiveColorTheme(e));
+        vscode.workspace.onDidChangeConfiguration((e) => this.changeConfiguration(e));
     }
 
     private dispose() {
@@ -146,5 +139,31 @@ export default class Panel {
         } else if (command === 'open-settings') {
             vscode.commands.executeCommand('workbench.action.openSettings', '@ext:lbauskar.kanban');
         }
+    }
+
+    private async changeActiveColorTheme(theme: vscode.ColorTheme): Promise<void> {
+        this.sendSettings(theme.kind);
+    }
+
+    private async changeConfiguration(change: vscode.ConfigurationChangeEvent): Promise<void> {
+        if (change.affectsConfiguration('kanban')) {
+            this.sendSettings();
+        }
+    }
+
+    private async sendSettings(
+        colorTheme?: vscode.ColorThemeKind,
+        showScanlines?: boolean
+    ): Promise<void> {
+        colorTheme ??= vscode.window.activeColorTheme.kind;
+        showScanlines ??= vscode.workspace.getConfiguration('kanban').showScanLines;
+
+        this.webviewPanel.webview.postMessage({
+            command: 'extension-settings-changed',
+            data: {
+                colorTheme: colorTheme.valueOf(),
+                showScanlines: showScanlines ?? true,
+            },
+        });
     }
 }

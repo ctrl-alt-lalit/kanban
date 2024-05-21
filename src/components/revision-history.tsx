@@ -11,7 +11,7 @@ import boardState, { HistoryObject, StateChanges } from '../util/board-state';
  */
 export default class RevisionHistory extends React.Component<
     { isOpen: boolean; closeHistory: () => void },
-    { history: HistoryObject[] }
+    { history: HistoryObject[]; showScanlines: boolean }
 > {
     /**
      * Creates internal copy of {@link boardState.history}
@@ -21,6 +21,7 @@ export default class RevisionHistory extends React.Component<
 
         this.state = {
             history: clone(boardState.history) as HistoryObject[],
+            showScanlines: boardState.showScanlinesInHistory,
         };
     }
 
@@ -124,10 +125,17 @@ export default class RevisionHistory extends React.Component<
      * @param histObj {HistoryObject} HistoryObject to append to history
      * @ignore
      */
-    private historyUpdater = (histObj: HistoryObject) => {
-        const copy = this.state.history;
-        copy.push(histObj);
-        this.setState({ history: copy });
+    private historyUpdater = (histObj?: HistoryObject, showScanlines?: boolean) => {
+        if (histObj !== undefined) {
+            const copy = this.state.history;
+            copy.push(histObj);
+            this.setState({ history: copy });
+        }
+
+        if (showScanlines !== undefined && this.state.showScanlines !== showScanlines) {
+            console.log('hist state changing');
+            this.setState({ showScanlines: showScanlines });
+        }
     };
 
     /**
@@ -171,7 +179,7 @@ export default class RevisionHistory extends React.Component<
             this.boardHtmlElement = document.querySelector('.board') as HTMLElement;
         }
 
-        if (showScanlines) {
+        if (showScanlines && this.state.showScanlines) {
             this.boardHtmlElement.classList.add('scanlines');
         } else {
             this.boardHtmlElement.classList.remove('scanlines');
