@@ -77,6 +77,16 @@
     display: inline-block;
 }
 
+.history-item-inside h3 {
+    margin-block-start: 0.5em;
+    margin-block-end: 0;
+}
+
+.history-item-inside p {
+    margin-block-start: 0;
+    margin-block-end: 0.5em;
+}
+
 .history-item:hover,
 .history-item:focus,
 .history-item:active {
