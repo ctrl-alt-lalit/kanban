@@ -122,7 +122,8 @@ export default class RevisionHistory extends React.Component<
      * Callback to be connected to BoardState that updates this panel's
      * history list when a user makes a change.
      *
-     * @param histObj {HistoryObject} HistoryObject to append to history
+     * @param histObj {HistoryObject | undefined} HistoryObject to append to history
+     * @param showScanlines {boolean | undefined} Whether to use a scanline filter when viewing history
      * @ignore
      */
     private historyUpdater = (histObj?: HistoryObject, showScanlines?: boolean) => {
