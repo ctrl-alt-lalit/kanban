@@ -2,11 +2,13 @@
 
 ## 1.8.0
 
--   Fixed text box in color picker occasionally showing a CSS var insatead of a hex value
--   States in the revision history panel now show in reverse order -- with the most recent edit on top
--   Buttons to close the revision history or settings panels now also encompass the title, so they're easier to click
--   Columns now grow/shrink when being added/deleted
--   The default board no longer briefly appears before loading the current one.
+-   Bugfixes:
+    -   Fixed text box in color picker occasionally showing a CSS var insatead of a hex value
+    -   Buttons to close the revision history or settings panels now also encompass the title, so they're easier to click
+    -   Columns now grow/shrink when being added/deleted
+    -   The default board no longer briefly appears before loading the current one.
+-   When viewing past board states in the history sidebar, a scanline filter is overlaid to make the visual distinction clearer
+    -   These scanlines can be disabled with `kanban.showScanlines`
 
 ### 1.7.4
 
