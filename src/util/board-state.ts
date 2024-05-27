@@ -551,7 +551,6 @@ class BoardState {
             data.colorTheme === ColorTheme.THEME_LIGHT ||
             data.colorTheme === ColorTheme.THEME_LIGHT_HIGHCONTRAST;
         this.showScanlines = data.showScanlines;
-        console.log('Updating Hist with ' + this.showScanlines);
         this.historyUpdateListeners.forEach((listener) => listener(undefined, this.showScanlines));
     };
 }
