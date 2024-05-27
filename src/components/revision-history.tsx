@@ -134,7 +134,6 @@ export default class RevisionHistory extends React.Component<
         }
 
         if (showScanlines !== undefined && this.state.showScanlines !== showScanlines) {
-            console.log('hist state changing');
             this.setState({ showScanlines: showScanlines });
         }
     };

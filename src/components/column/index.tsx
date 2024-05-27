@@ -38,9 +38,13 @@ export default function Column({
         y: 0,
     });
 
+    // Update internal state without re-rendering entire board
     const [title, setTitle] = React.useState(data.title);
     const [colorPickerOpen, setColorPickerOpen] = React.useState(false);
     const [settingsOpen, setSettingsOpen] = React.useState(false);
+
+    // If board changes title via new prop, make sure change is reflected
+    React.useEffect(() => setTitle(data.title), [data.title]);
 
     type AnchorMouseEvent = React.MouseEvent<HTMLAnchorElement, MouseEvent>;
     const anchorProps = {

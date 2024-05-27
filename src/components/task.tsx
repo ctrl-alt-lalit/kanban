@@ -93,6 +93,29 @@ export default class Task extends React.Component<
     }
 
     /**
+     * When the Task is re-rendered with new props, make sure its text matches the new prop data
+     * @param prevProps props the task has in the previous render
+     */
+    componentDidUpdate(
+        prevProps: Readonly<{
+            data: TaskJson;
+            index: number;
+            columnId: string;
+            defaultToEdit: boolean;
+            columnIndex: number;
+            columnColor: string;
+        }>,
+        _prevState: Readonly<{ editing: boolean; text: string; beingDeleted: boolean }>,
+        _snapshot?: any
+    ): void {
+        const prevPropText = prevProps.data.text;
+        const currPropText = this.props.data.text;
+        if (prevPropText !== currPropText && this.state.text === prevPropText) {
+            this.setState({ text: currPropText });
+        }
+    }
+
+    /**
      * @ignore
      */
     render() {
