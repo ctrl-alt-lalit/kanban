@@ -67,12 +67,7 @@ export default function ColorPicker({
     const swatches = boardState.isLightMode ? lightSwatches : darkSwatches;
 
     const onInputChange = React.useCallback(
-        (event: React.ChangeEvent<HTMLInputElement>) => {
-            const newColor = event.target.value;
-            if (isValidColorString(newColor)) {
-                setTextColor(newColor);
-            }
-        },
+        (event: React.ChangeEvent<HTMLInputElement>) => setTextColor(event.target.value),
         [setTextColor]
     );
 

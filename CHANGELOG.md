@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.8.1
+
+-   Fixed column color picker not responding to text edits
+
 ## 1.8.0
 
 -   Bugfixes:
